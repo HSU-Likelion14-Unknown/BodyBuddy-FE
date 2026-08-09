@@ -1,0 +1,33 @@
+@mixin flex(
+  $direction: row,
+  $align-items: center,
+  $justify-content: center,
+  $gap: null
+) {
+  display: flex;
+  align-items: $align-items;
+  justify-content: $justify-content;
+  flex-direction: $direction;
+  gap: $gap;
+}
+
+@function rem($size) {
+  @return calc($size / 16px * 1rem);
+}
+
+@function vw($size) {
+  @return calc($size / 430px * 100vw);
+}
+
+@function vh($size) {
+  @return calc($size / 932px * 100vh);
+}
+
+@mixin hoverEvent($bright: 0.9) {
+  filter: brightness(1);
+  transition: filter 0.3s ease;
+  &:hover {
+    filter: brightness($bright);
+    cursor: pointer;
+  }
+}
