@@ -1,0 +1,98 @@
+@use '@/styles/variables' as *;
+@use '@/styles/function' as *;
+
+.container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100dvh;
+  padding: 12px 0 90px;
+  overflow: hidden;
+  background-color: $color-white;
+}
+
+.suggestion {
+  @include flex(column, center, flex-end);
+
+  flex: 0 0 62px;
+  width: calc(100% + 2px);
+  margin-left: -1px;
+  padding-bottom: 10px;
+  color: $color-primary-accent;
+  background-color: $color-primary-soft;
+
+  strong {
+    font-size: $font-size-14;
+    font-weight: $font-weight-semibold;
+    line-height: 19px;
+  }
+}
+
+.suggestionLabel {
+  @include flex(row, center, center, 4px);
+
+  color: $color-gray5;
+  font-size: $font-size-12;
+  font-weight: $font-weight-medium;
+  line-height: 19px;
+
+  svg {
+    width: 12px;
+    height: 12px;
+  }
+}
+
+.modeTabs {
+  @include flex(row, center, center, 38px);
+
+  flex: 0 0 59px;
+  padding-bottom: 3px;
+  background-color: $color-white;
+}
+
+.modeButton {
+  @include flex(row, center, center, 7px);
+
+  height: 30px;
+  padding: 0;
+  color: $color-gray-medium;
+  font-size: $font-size-10;
+  font-weight: $font-weight-medium;
+  line-height: 14px;
+  background: transparent;
+  border: 0;
+  border-radius: 100px;
+  outline: 0;
+  appearance: none;
+  cursor: pointer;
+
+  &:first-child {
+    width: 87px;
+
+    svg {
+      width: 18px;
+      height: 16px;
+    }
+  }
+
+  &:last-child {
+    width: 95px;
+
+    svg {
+      width: 13px;
+      height: 14px;
+    }
+  }
+
+  svg {
+    flex-shrink: 0;
+  }
+}
+
+.active {
+  color: $color-white;
+  font-size: $font-size-12;
+  font-weight: $font-weight-semibold;
+  line-height: 14px;
+  background-color: $color-primary-accent;
+  box-shadow: 0 4px 4px rgba(113, 71, 3, 0.14);
+}
