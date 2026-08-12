@@ -25,7 +25,11 @@ $font-weight-semibold: 600;
 $font-weight-bold: 700;
 
 // 메인 색상
-$color-primary: #ffb134;
+$color-primary: #ffad34;
+$color-primary-accent: #ffa449;
+$color-primary-soft: #ffebd8;
+$color-primary-light: #fcf5ef;
+$color-primary-deep: #fe7e35;
 $color-sub: #fefefe;
 $color-text: #1a1a1a;
 
@@ -41,6 +45,12 @@ $color-brown2: #d0a070;
 
 // 그레이 스케일 - 뉴트럴 계열
 $color-gray5: #6c655a;
+$color-gray-medium: #958f84;
 $color-gray4: #cbc6bf;
+$color-gray-disabled: #d9d9d9;
 $color-gray3: #e3dcd6;
 $color-gray2: #f6f3f0;
+$color-gray-placeholder: #999999;
+
+// 시스템 색상
+$color-system-blue: #005eff;
