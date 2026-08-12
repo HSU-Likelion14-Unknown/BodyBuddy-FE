@@ -1,6 +1,14 @@
-import { Outlet } from 'react-router-dom';
+import { Outlet, useLocation } from 'react-router-dom';
+import BottomNavigation from './BottomNavigation';
 
 export const Layout = () => {
+  const { pathname } = useLocation();
+
+  const isBottomNavigationHidden =
+    pathname === '/' ||
+    pathname === '/onboarding' ||
+    pathname.startsWith('/onboarding/');
+
   return (
     <div
       style={{
@@ -14,6 +22,7 @@ export const Layout = () => {
       }}
     >
       <Outlet />
+      {!isBottomNavigationHidden && <BottomNavigation />}
     </div>
   );
 };
