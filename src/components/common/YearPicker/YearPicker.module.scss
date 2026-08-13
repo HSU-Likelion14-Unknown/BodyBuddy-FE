@@ -1,0 +1,111 @@
+@use '../../../styles/variables' as *;
+@use '../../../styles/function' as *;
+
+$item-height: 44px;
+$visible-count: 5;
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.4);
+  z-index: 500;
+  display: flex;
+  align-items: flex-end;
+}
+
+.sheet {
+  width: 100%;
+  max-width: 430px;
+  margin: 0 auto;
+  background-color: $color-white;
+  border-radius: 20px 20px 0 0;
+  overflow: hidden;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-bottom: 1px solid $color-gray3;
+}
+
+.cancelBtn {
+  font-size: rem(14px);
+  color: $color-gray5;
+  font-weight: $font-weight-medium;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+}
+
+.headerTitle {
+  font-size: rem(16px);
+  font-weight: $font-weight-semibold;
+  color: $color-black;
+}
+
+.confirmBtn {
+  font-size: rem(14px);
+  color: $color-primary;
+  font-weight: $font-weight-semibold;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+}
+
+.pickerWrap {
+  position: relative;
+  height: $item-height * $visible-count;
+  overflow: hidden;
+}
+
+/* 선택된 항목 하이라이트 박스 */
+.selector {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: $item-height;
+  transform: translateY(-50%);
+  background-color: $color-gray2;
+  border-radius: 8px;
+  margin: 0 16px;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.list {
+  height: 100%;
+  overflow-y: scroll;
+  scroll-snap-type: y mandatory;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+.item {
+  height: $item-height;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  scroll-snap-align: center;
+  font-size: rem(18px);
+  font-weight: $font-weight-medium;
+  color: $color-gray4;
+  cursor: pointer;
+  position: relative;
+  z-index: 2;
+  transition: color 0.15s ease;
+}
+
+.itemSelected {
+  color: $color-primary;
+  font-weight: $font-weight-semibold;
+  font-size: rem(20px);
+}
