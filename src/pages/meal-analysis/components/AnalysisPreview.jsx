@@ -1,12 +1,8 @@
 import styles from './AnalysisPreview.module.scss';
 
-export default function AnalysisPreview({ image, description, isComplete }) {
+export default function AnalysisPreview({ image, description }) {
   return (
-    <div
-      className={`${styles.previewContent} ${
-        isComplete ? styles.complete : ''
-      }`}
-    >
+    <div className={styles.previewContent}>
       {image ? (
         <img src={image} alt="분석 중인 식사" />
       ) : (

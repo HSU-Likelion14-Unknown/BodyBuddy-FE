@@ -66,13 +66,6 @@
   }
 }
 
-.complete {
-  span {
-    width: 100%;
-    animation: none;
-  }
-}
-
 .progressText {
   @include flex(row, center, space-between);
 
