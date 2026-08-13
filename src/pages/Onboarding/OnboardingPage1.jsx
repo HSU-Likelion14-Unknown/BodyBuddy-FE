@@ -75,6 +75,9 @@ export default function OnboardingPage1() {
             <span
               className={`${styles.check} ${isNicknameValid ? styles.checkFilled : ''}`}
             />
+            {nicknameError && (
+              <span className={styles.errorText}>{nicknameError}</span>
+            )}
           </label>
           <input
             type="text"
@@ -83,7 +86,6 @@ export default function OnboardingPage1() {
             value={nickname}
             onChange={handleNicknameChange}
           />
-          {nicknameError && <p className={styles.errorText}>{nicknameError}</p>}
         </div>
 
         {/* 출생연도 */}
