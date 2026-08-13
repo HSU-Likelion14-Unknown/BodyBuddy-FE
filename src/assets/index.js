@@ -4,6 +4,7 @@
 // Onboarding
 import onboardingCharacter1 from '@/assets/onboarding/onboarding1.png';
 import onboardingCharacter2 from '@/assets/onboarding/onboarding2.png';
+import onboardingCharacter3 from '@/assets/onboarding/onboarding3.png';
 import iconBack from '@/assets/onboarding/icon-back.svg';
 import iconChevronDown from '@/assets/onboarding/icon-chevron-down.svg';
 import iconMale from '@/assets/onboarding/icon-male.svg';
@@ -21,6 +22,7 @@ import splashIconChart from '@/assets/splash/icon-chart.svg';
 export {
   onboardingCharacter1,
   onboardingCharacter2,
+  onboardingCharacter3,
   iconBack,
   iconChevronDown,
   iconMale,
