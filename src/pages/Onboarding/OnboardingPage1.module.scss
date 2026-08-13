@@ -80,16 +80,16 @@
 }
 
 .inputError {
-  border-color: #ff4444;
+  border-color: #e61111;
 
   &:focus {
-    border-color: #ff4444;
+    border-color: #e61111;
   }
 }
 
 .errorText {
   font-size: rem(11px);
-  color: #ff4444;
+  color: #e61111;
   letter-spacing: -0.3px;
 }
 
