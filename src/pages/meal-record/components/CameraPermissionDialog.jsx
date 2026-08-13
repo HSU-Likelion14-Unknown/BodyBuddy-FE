@@ -6,11 +6,9 @@ export default function CameraPermissionDialog({ onRetry, onCancel }) {
       <div
         className={styles.permissionDialog}
         role="dialog"
-        aria-modal="true"
-        aria-labelledby="camera-dialog-title"
       >
         <div className={styles.dialogContent}>
-          <h2 id="camera-dialog-title">
+          <h2>
             현재 <strong>‘바디버디’</strong>에서 카메라 사용에
             <br />
             대한 접근 권한이 없습니다.

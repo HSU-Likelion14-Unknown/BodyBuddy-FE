@@ -1,11 +1,18 @@
 import styles from './ManualInputPanel.module.scss';
 
-export default function ManualInputPanel({ value, onChange }) {
+export default function ManualInputPanel({ value, onChange, onAnalyze }) {
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    const description = value.trim();
+
+    if (description) onAnalyze?.({ source: 'manual', description });
+  };
+
   return (
     <form
       className={styles.manualContent}
       role="tabpanel"
-      onSubmit={(event) => event.preventDefault()}
+      onSubmit={handleSubmit}
     >
       <div className={styles.manualField}>
         <label htmlFor="meal-description">

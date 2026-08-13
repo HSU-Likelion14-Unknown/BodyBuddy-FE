@@ -8,7 +8,7 @@ import { useCamera } from '../hooks/useCamera';
 import CameraPermissionDialog from './CameraPermissionDialog';
 import styles from './CameraPanel.module.scss';
 
-export default function CameraPanel() {
+export default function CameraPanel({ onAnalyze }) {
   const [previewImage, setPreviewImage] = useState('');
   const [isPermissionDialogOpen, setIsPermissionDialogOpen] = useState(true);
   const fileInputRef = useRef(null);
@@ -27,7 +27,12 @@ export default function CameraPanel() {
     if (!file) return;
 
     const reader = new FileReader();
-    reader.onload = () => setPreviewImage(String(reader.result));
+    reader.onload = () => {
+      const image = String(reader.result);
+
+      setPreviewImage(image);
+      onAnalyze?.({ source: 'gallery', image });
+    };
     reader.readAsDataURL(file);
     event.target.value = '';
   };
@@ -39,7 +44,10 @@ export default function CameraPanel() {
     }
 
     const image = capturePhoto();
-    if (image) setPreviewImage(image);
+    if (image) {
+      setPreviewImage(image);
+      onAnalyze?.({ source: 'camera', image });
+    }
   };
 
   const showPermissionDialog =
@@ -70,14 +78,13 @@ export default function CameraPanel() {
             <p className={styles.cameraMessage}>카메라를 준비하고 있어요.</p>
           )}
 
-          <div className={styles.cameraGrid} aria-hidden="true" />
+          <div className={styles.cameraGrid} />
           <button
             type="button"
             className={styles.flashButton}
-            aria-label="플래시 미지원"
             disabled
           >
-            <MdFlashOff aria-hidden="true" />
+            <MdFlashOff />
           </button>
         </div>
 
@@ -85,10 +92,9 @@ export default function CameraPanel() {
           <button
             type="button"
             className={styles.controlButton}
-            aria-label="사진 보관함 열기"
             onClick={() => fileInputRef.current?.click()}
           >
-            <MdOutlinePhotoLibrary aria-hidden="true" />
+            <MdOutlinePhotoLibrary />
           </button>
           <input
             ref={fileInputRef}
@@ -101,18 +107,16 @@ export default function CameraPanel() {
           <button
             type="button"
             className={styles.shutterButton}
-            aria-label={previewImage ? '다시 촬영하기' : '사진 촬영하기'}
             onClick={handleShutterClick}
           />
 
           <button
             type="button"
             className={styles.controlButton}
-            aria-label="카메라 방향 전환"
             disabled={cameraStatus !== 'ready' || Boolean(previewImage)}
             onClick={switchCamera}
           >
-            <MdCameraswitch aria-hidden="true" />
+            <MdCameraswitch />
           </button>
         </div>
       </section>

@@ -1,5 +1,6 @@
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { Layout } from './components/layout/Layout';
+import MealAnalysisPage from './pages/meal-analysis/MealAnalysisPage';
 import MealRecordPage from './pages/meal-record/MealRecordPage';
 
 function App() {
@@ -11,6 +12,7 @@ function App() {
           {/* <Route path="/login" element={<LoginPage />} /> */}
           <Route path="/home" element={<></>} />
           <Route path="/meals/new" element={<MealRecordPage />} />
+          <Route path="/meals/analyzing" element={<MealAnalysisPage />} />
           <Route path="/calendar" element={<></>} />
           <Route path="/mypage" element={<></>} />
         </Route>
