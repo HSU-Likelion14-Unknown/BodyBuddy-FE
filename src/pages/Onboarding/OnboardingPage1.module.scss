@@ -59,7 +59,7 @@
   font-weight: $font-weight-medium;
   color: $color-black;
   background-color: $color-white;
-  border: 1px solid $color-gray3;
+  border: 1px solid transparent;
   border-radius: 5px;
   letter-spacing: -0.35px;
   outline: none;
@@ -69,6 +69,10 @@
   &::placeholder {
     color: #999;
   }
+
+  &:focus {
+    border-color: $color-primary;
+  }
 }
 
 .inputActive {
@@ -77,6 +81,10 @@
 
 .inputError {
   border-color: #ff4444;
+
+  &:focus {
+    border-color: #ff4444;
+  }
 }
 
 .errorText {
@@ -93,9 +101,14 @@
   align-items: center;
   justify-content: space-between;
   background-color: $color-white;
-  border: 1px solid $color-gray3;
+  border: 1px solid transparent;
   border-radius: 5px;
   cursor: pointer;
+  transition: border-color 0.2s ease;
+}
+
+.yearTriggerActive {
+  border-color: $color-primary;
 }
 
 .yearPlaceholder {

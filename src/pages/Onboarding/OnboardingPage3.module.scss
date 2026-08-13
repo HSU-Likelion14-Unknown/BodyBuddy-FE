@@ -67,8 +67,14 @@
   gap: 10px;
   padding: 12px;
   background-color: #f5f5f5;
+  border: 1px solid transparent;
   border-radius: 5px;
   flex-shrink: 0;
+  transition: border-color 0.2s ease;
+
+  &:focus-within {
+    border-color: $color-primary;
+  }
 }
 
 .searchIcon {

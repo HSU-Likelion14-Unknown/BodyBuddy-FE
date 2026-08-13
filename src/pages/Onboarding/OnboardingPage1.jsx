@@ -96,7 +96,7 @@ export default function OnboardingPage1() {
           </label>
           <button
             type="button"
-            className={styles.yearTrigger}
+            className={`${styles.yearTrigger} ${birthYear ? styles.yearTriggerActive : ''}`}
             onClick={() => setShowYearPicker(true)}
           >
             <span
