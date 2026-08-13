@@ -10,6 +10,87 @@ $color-primary-pale: #ffe4b8;
   background-color: $color-white;
 }
 
+// 추천 음식이 없는 경우
+.perfectHero {
+  position: relative;
+  width: 313px;
+  height: 247px;
+  margin: 47px auto 23px;
+}
+
+.perfectDecoration,
+.perfectResult {
+  position: absolute;
+  object-fit: contain;
+  pointer-events: none;
+}
+
+.perfectDecoration {
+  top: 0;
+  left: 0;
+  width: 313px;
+  height: 156px;
+}
+
+.perfectResult {
+  top: 33px;
+  left: 72px;
+  width: 183px;
+  height: 214px;
+}
+
+.perfectActionContent {
+  @include flex(column, center, flex-start, 2px);
+
+  width: min(100%, 351px);
+  margin: 80px auto 0;
+}
+
+.completeButton {
+  width: 100%;
+  height: 45px;
+  color: $color-white;
+  font-size: 18px;
+  font-weight: $font-weight-semibold;
+  line-height: 21px;
+  letter-spacing: -0.45px;
+  background-color: $color-primary-accent;
+  border: 0;
+  border-radius: 10px;
+  box-shadow: 0 5px 10px rgba(113, 71, 3, 0.14);
+  cursor: pointer;
+}
+
+.calendarButton {
+  @include flex(row, center, center, 10px);
+
+  height: 38px;
+  padding: 0;
+  color: $color-gray-medium;
+  background-color: transparent;
+  border: 0;
+  cursor: pointer;
+
+  span {
+    padding-bottom: 1px;
+    font-size: 14px;
+    font-weight: $font-weight-medium;
+    line-height: 20px;
+    letter-spacing: -0.35px;
+    border-bottom: 1px solid $color-primary;
+  }
+
+  svg {
+    width: 24px;
+    height: 24px;
+    padding: 5px;
+    color: $color-white;
+    background-color: $color-primary;
+    border-radius: 50%;
+    box-shadow: 0 4px 4px rgba(113, 71, 3, 0.14);
+  }
+}
+
 // 식사 인식 결과
 .mealSummary {
   width: min(100%, 354px);
