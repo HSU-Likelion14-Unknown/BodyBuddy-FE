@@ -64,6 +64,7 @@
   letter-spacing: -0.35px;
   outline: none;
   transition: border-color 0.2s ease;
+  caret-color: $color-primary;
 
   &::placeholder {
     color: #999;
