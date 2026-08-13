@@ -1,0 +1,154 @@
+@use '@/styles/variables' as *;
+@use '@/styles/function' as *;
+
+.container {
+  width: min(100%, 344px);
+  padding: 26px 20px 27px;
+  background-color: $color-primary-light;
+  border-radius: 10px;
+}
+
+.cardHeader {
+  @include flex(row, center, space-between);
+
+  height: 27px;
+  margin-bottom: 13px;
+  color: $color-gray5;
+}
+
+.titleContent {
+  @include flex(row, center, flex-start, 7px);
+
+  min-width: 0;
+
+  h2 {
+    flex-shrink: 0;
+    font-size: 14px;
+    font-weight: $font-weight-medium;
+    line-height: 27px;
+    letter-spacing: -0.35px;
+  }
+
+}
+
+.foodCount {
+  flex-shrink: 0;
+  font-size: 14px;
+  font-weight: $font-weight-medium;
+  line-height: 27px;
+  letter-spacing: -0.35px;
+}
+
+.foodList {
+  @include flex(column, stretch, flex-start, 8px);
+
+  list-style: none;
+}
+
+.foodItem {
+  @include flex(row, center, space-between);
+
+  width: 100%;
+  height: 39px;
+  padding: 5px 6px 5px 12px;
+  color: $color-brown5;
+  background-color: $color-primary;
+  border-radius: 5px;
+}
+
+.foodName {
+  @include flex(row, center, flex-start, 10px);
+
+  min-width: 0;
+  overflow: hidden;
+  font-size: 14px;
+  font-weight: $font-weight-medium;
+  line-height: 20px;
+  letter-spacing: -0.35px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+
+  svg {
+    flex-shrink: 0;
+    width: 17px;
+    height: 17px;
+  }
+}
+
+.deleteButton,
+.addButton {
+  @include flex;
+
+  flex-shrink: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.deleteButton {
+  width: 27px;
+  height: 27px;
+  color: $color-gray-medium;
+  background-color: $color-primary-light;
+
+  svg {
+    width: 21px;
+    height: 21px;
+  }
+}
+
+.addForm {
+  @include flex(row, center, flex-start, 12px);
+
+  margin-top: 8px;
+}
+
+.foodInput {
+  width: 100%;
+  height: 39px;
+  padding: 9px 10px;
+  color: $color-text;
+  font-size: 14px;
+  font-weight: $font-weight-medium;
+  line-height: 20px;
+  letter-spacing: -0.35px;
+  background-color: $color-white;
+  border: 1px solid $color-primary-accent;
+  border-radius: 5px;
+  outline: none;
+
+  &::placeholder {
+    color: $color-gray-placeholder;
+  }
+
+  &:focus {
+    box-shadow: 0 0 0 2px rgba($color-primary-accent, 0.15);
+  }
+}
+
+.addButton {
+  width: 29px;
+  height: 29px;
+  color: $color-white;
+  background-color: $color-primary;
+  transition:
+    color 0.2s ease,
+    background-color 0.2s ease,
+    transform 0.2s ease;
+
+  svg {
+    width: 22px;
+    height: 22px;
+  }
+
+  &:disabled {
+    color: $color-gray2;
+    background-color: $color-gray4;
+    cursor: default;
+  }
+
+  &:not(:disabled):active {
+    transform: scale(0.94);
+  }
+}

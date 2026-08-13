@@ -7,7 +7,12 @@ import { NavLink, useLocation } from 'react-router-dom';
 
 const NAV_ITEMS = [
   { to: '/home', label: '홈', icon: <RiHome6Fill /> },
-  { to: '/meals/new', label: '식사 기록', icon: <MdCameraAlt /> },
+  {
+    to: '/meals/new',
+    activePath: '/meals',
+    label: '식사 기록',
+    icon: <MdCameraAlt />,
+  },
   { to: '/calendar', label: '캘린더', icon: <MdCalendarMonth /> },
   { to: '/mypage', label: '마이페이지', icon: <BsPersonFill /> },
 ];
