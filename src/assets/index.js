@@ -3,10 +3,13 @@
 
 // Onboarding
 import onboardingCharacter1 from '@/assets/onboarding/onboarding1.png';
+import onboardingCharacter2 from '@/assets/onboarding/onboarding2.png';
 import iconBack from '@/assets/onboarding/icon-back.svg';
 import iconChevronDown from '@/assets/onboarding/icon-chevron-down.svg';
 import iconMale from '@/assets/onboarding/icon-male.svg';
 import iconFemale from '@/assets/onboarding/icon-female.svg';
+import iconSearch from '@/assets/onboarding/icon-search.svg';
+import iconCloseSmall from '@/assets/onboarding/icon-close-small.svg';
 
 // Splash
 import splashEllipseBg from '@/assets/splash/ellipse-bg.svg';
@@ -17,10 +20,13 @@ import splashIconChart from '@/assets/splash/icon-chart.svg';
 
 export {
   onboardingCharacter1,
+  onboardingCharacter2,
   iconBack,
   iconChevronDown,
   iconMale,
   iconFemale,
+  iconSearch,
+  iconCloseSmall,
   splashEllipseBg,
   splashCharacter,
   splashIconBulb,

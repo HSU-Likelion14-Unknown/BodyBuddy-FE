@@ -94,19 +94,19 @@
   font-weight: $font-weight-semibold;
   color: $color-brown5;
   text-align: center;
-  line-height: 1.4;
+  line-height: 24px;
   letter-spacing: -0.5px;
 }
 
 /* ── 서브타이틀 ── */
 .subtitle {
   position: absolute;
-  top: 362px;
+  top: 348px;
   left: 50%;
   transform: translateX(-50%);
   font-size: rem(12px);
   font-weight: $font-weight-medium;
-  color: $color-gray5;
+  color: #958f84;
   text-align: center;
   white-space: nowrap;
 }
@@ -120,6 +120,10 @@
   display: flex;
   flex-direction: column;
   gap: 20px;
+}
+
+.contentWithSubtitle {
+  top: 400px;
 }
 
 /* ── 다음으로 버튼 ── */

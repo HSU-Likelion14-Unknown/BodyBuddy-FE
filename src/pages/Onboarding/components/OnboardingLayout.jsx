@@ -44,7 +44,11 @@ export default function OnboardingLayout({
       <h2 className={styles.title}>{title}</h2>
       {subtitle && <p className={styles.subtitle}>{subtitle}</p>}
 
-      <div className={styles.content}>{children}</div>
+      <div
+        className={`${styles.content} ${subtitle ? styles.contentWithSubtitle : ''}`}
+      >
+        {children}
+      </div>
 
       <button
         type="button"
