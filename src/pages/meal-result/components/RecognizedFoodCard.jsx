@@ -4,6 +4,9 @@ import styles from './RecognizedFoodCard.module.scss';
 
 export default function RecognizedFoodCard({ foods, onAdd, onRemove }) {
   const [foodName, setFoodName] = useState('');
+  const hasRecommendedFood = foods.some(
+    (food) => food.source === 'recommendation',
+  );
 
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -20,13 +23,19 @@ export default function RecognizedFoodCard({ foods, onAdd, onRemove }) {
       <div className={styles.cardHeader}>
         <div className={styles.titleContent}>
           <h2>인식된 음식</h2>
+          {hasRecommendedFood && <span>추천된 음식이 포함되어 있어요!</span>}
         </div>
         <span className={styles.foodCount}>{foods.length}개</span>
       </div>
 
       <ul className={styles.foodList}>
         {foods.map((food) => (
-          <li key={food.id} className={styles.foodItem}>
+          <li
+            key={food.id}
+            className={`${styles.foodItem} ${
+              food.source === 'recommendation' ? styles.recommended : ''
+            }`}
+          >
             <span className={styles.foodName}>
               <MdRestaurant />
               {food.name}

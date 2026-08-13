@@ -1,6 +1,7 @@
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { Layout } from './components/layout/Layout';
 import MealAnalysisPage from './pages/meal-analysis/MealAnalysisPage';
+import MealRecommendationPage from './pages/meal-recommendation/MealRecommendationPage';
 import MealRecordPage from './pages/meal-record/MealRecordPage';
 import MealResultPage from './pages/meal-result/MealResultPage';
 
@@ -15,6 +16,10 @@ function App() {
           <Route path="/meals/new" element={<MealRecordPage />} />
           <Route path="/meals/analyzing" element={<MealAnalysisPage />} />
           <Route path="/meals/result" element={<MealResultPage />} />
+          <Route
+            path="/meals/recommendation"
+            element={<MealRecommendationPage />}
+          />
           <Route path="/calendar" element={<></>} />
           <Route path="/mypage" element={<></>} />
         </Route>

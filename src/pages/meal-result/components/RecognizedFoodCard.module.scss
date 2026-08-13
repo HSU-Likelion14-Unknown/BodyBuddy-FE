@@ -1,6 +1,9 @@
 @use '@/styles/variables' as *;
 @use '@/styles/function' as *;
 
+$color-recommendation: #8cb3f6;
+$color-recommendation-soft: #dbe8ff;
+
 .container {
   width: min(100%, 344px);
   padding: 26px 20px 27px;
@@ -29,6 +32,16 @@
     letter-spacing: -0.35px;
   }
 
+  span {
+    overflow: hidden;
+    color: $color-primary-deep;
+    font-size: 12px;
+    font-weight: $font-weight-semibold;
+    line-height: 27px;
+    letter-spacing: -0.3px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
 }
 
 .foodCount {
@@ -54,6 +67,16 @@
   color: $color-brown5;
   background-color: $color-primary;
   border-radius: 5px;
+}
+
+.recommended {
+  color: $color-white;
+  background-color: $color-recommendation;
+
+  .deleteButton {
+    color: #6686b5;
+    background-color: $color-recommendation-soft;
+  }
 }
 
 .foodName {

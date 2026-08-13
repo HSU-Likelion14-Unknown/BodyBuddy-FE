@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { mealPlaceholder, resultMascot } from '@/assets';
 import RecognizedFoodCard from './components/RecognizedFoodCard';
 import styles from './MealResultPage.module.scss';
@@ -11,6 +11,7 @@ const MOCK_FOODS = [
 
 export default function MealResultPage() {
   const { state } = useLocation();
+  const navigate = useNavigate();
   const [foods, setFoods] = useState(() =>
     Array.isArray(state?.foods) ? state.foods : MOCK_FOODS,
   );
@@ -29,6 +30,13 @@ export default function MealResultPage() {
   };
 
   const isManualMeal = state?.source === 'manual' && state?.description;
+
+  const showRecommendation = () => {
+    navigate('/meals/recommendation', {
+      replace: true,
+      state: { ...state, foods },
+    });
+  };
 
   return (
     <main className={styles.container}>
@@ -68,10 +76,10 @@ export default function MealResultPage() {
         <button
           type="button"
           className={styles.recommendButton}
-          title="추천 화면 연결 후 사용할 수 있어요"
-          disabled
+          disabled={state?.recommendationAccepted}
+          onClick={showRecommendation}
         >
-          추천 받을래요
+          {state?.recommendationAccepted ? '추천 실천 완료' : '추천 받을래요'}
         </button>
         <button
           type="button"
@@ -79,7 +87,9 @@ export default function MealResultPage() {
           title="저장 API 연결 후 사용할 수 있어요"
           disabled
         >
-          추천 없이 기록만 할게요
+          {state?.recommendationAccepted
+            ? '이대로 기록할래요'
+            : '추천 없이 기록만 할게요'}
         </button>
       </div>
     </main>

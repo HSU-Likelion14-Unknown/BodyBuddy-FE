@@ -1,0 +1,198 @@
+@use '@/styles/variables' as *;
+@use '@/styles/function' as *;
+
+$color-primary-pale: #ffe4b8;
+
+.container {
+  min-height: 100dvh;
+  padding: calc(35px + env(safe-area-inset-top)) 19px 90px;
+  overflow-x: hidden;
+  background-color: $color-white;
+}
+
+// 식사 인식 결과
+.mealSummary {
+  width: min(100%, 354px);
+  min-height: 181px;
+  margin: 0 auto;
+  padding: 20px 14px;
+  color: $color-brown4;
+  background-color: $color-primary;
+  border-radius: 10px;
+
+  h1 {
+    font-size: 16px;
+    font-weight: $font-weight-semibold;
+    line-height: 20px;
+  }
+}
+
+.foodTags {
+  @include flex(row, center, flex-start, 10px);
+
+  margin-top: 13px;
+  overflow: hidden;
+
+  span,
+  strong {
+    flex-shrink: 0;
+    padding: 3px 10px;
+    font-size: 11px;
+    line-height: 23px;
+    border-radius: 100px;
+  }
+
+  span {
+    color: $color-brown3;
+    font-weight: $font-weight-semibold;
+    background-color: $color-white;
+  }
+
+  strong {
+    color: $color-brown4;
+    font-weight: $font-weight-medium;
+    background-color: $color-primary-soft;
+  }
+}
+
+.mealNutrients {
+  margin-top: 13px;
+  list-style: none;
+
+  li {
+    display: grid;
+    grid-template-columns: 51px minmax(0, 1fr) 58px;
+    gap: 10px;
+    align-items: center;
+    min-height: 22px;
+    font-size: 11px;
+    font-weight: $font-weight-medium;
+    line-height: 22px;
+
+    > span,
+    strong {
+      font-weight: inherit;
+      white-space: nowrap;
+    }
+
+    strong {
+      text-align: right;
+    }
+  }
+}
+
+.mealNutrientBar {
+  height: 6px;
+  overflow: hidden;
+  background-color: $color-primary-pale;
+
+  span {
+    display: block;
+    height: 100%;
+    background-color: $color-white;
+  }
+}
+
+// 추천 음식
+.recommendationContent {
+  margin-top: 20px;
+}
+
+.sectionHeader {
+  @include flex(row, center, space-between);
+
+  width: min(100%, 353px);
+  height: 20px;
+  margin: 0 auto 20px;
+
+  h2 {
+    color: $color-brown4;
+    font-size: 14px;
+    font-weight: $font-weight-semibold;
+    line-height: 20px;
+  }
+
+  span {
+    color: $color-brown2;
+    font-size: 14px;
+    font-weight: $font-weight-medium;
+    line-height: 20px;
+  }
+
+  strong {
+    color: $color-primary-accent;
+    font-weight: inherit;
+  }
+}
+
+// 하단 버튼
+.actionContent {
+  @include flex(column, stretch, flex-start, 6px);
+
+  width: min(100%, 351px);
+  margin: 28px auto 0;
+}
+
+.otherButton,
+.addButton {
+  @include flex(row, center, center, 10px);
+
+  width: 100%;
+  color: $color-white;
+  font-size: 18px;
+  font-weight: $font-weight-semibold;
+  line-height: 21px;
+  letter-spacing: -0.45px;
+  border: 0;
+  border-radius: 10px;
+  box-shadow: 0 5px 10px rgba(113, 71, 3, 0.14);
+  cursor: pointer;
+}
+
+.otherButton {
+  height: 53px;
+  color: $color-primary-soft;
+  background-color: $color-primary;
+
+  span {
+    padding: 3px 10px;
+    color: $color-brown3;
+    font-size: 11px;
+    font-weight: $font-weight-medium;
+    line-height: 23px;
+    letter-spacing: 0;
+    background-color: $color-primary-pale;
+    border-radius: 100px;
+  }
+
+  &:disabled {
+    cursor: default;
+  }
+}
+
+.addButton {
+  height: 45px;
+  background-color: $color-primary-accent;
+}
+
+@media (max-width: 374px) {
+  .container {
+    padding-right: 16px;
+    padding-left: 16px;
+  }
+
+  .foodTags {
+    gap: 6px;
+
+    span,
+    strong {
+      padding-right: 8px;
+      padding-left: 8px;
+    }
+  }
+
+  .mealNutrients li {
+    grid-template-columns: 47px minmax(0, 1fr) 55px;
+    gap: 7px;
+  }
+}
