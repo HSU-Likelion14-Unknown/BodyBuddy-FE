@@ -10,6 +10,8 @@ import iconChevronDown from '@/assets/onboarding/icon-chevron-down.svg';
 import iconMale from '@/assets/onboarding/icon-male.svg';
 import iconFemale from '@/assets/onboarding/icon-female.svg';
 import iconSearch from '@/assets/onboarding/icon-search.svg';
+import iconCheckEmpty from '@/assets/onboarding/icon-check-empty.svg';
+import iconCheckFilled from '@/assets/onboarding/icon-check-filled.svg';
 import iconCloseSmall from '@/assets/onboarding/icon-close-small.svg';
 
 // Splash
@@ -28,6 +30,8 @@ export {
   iconMale,
   iconFemale,
   iconSearch,
+  iconCheckEmpty,
+  iconCheckFilled,
   iconCloseSmall,
   splashEllipseBg,
   splashCharacter,

@@ -22,35 +22,9 @@
 
 /* 필드 완성 체크 표시 */
 .check {
-  display: inline-block;
   width: 12px;
   height: 12px;
-  border-radius: 50%;
-  border: none;
-  background-color: #d9d9d9;
-  position: relative;
   flex-shrink: 0;
-  transition: background-color 0.2s ease;
-
-  &::after {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -60%) rotate(45deg);
-    width: 3px;
-    height: 5px;
-    border-right: 1.5px solid $color-sub;
-    border-bottom: 1.5px solid $color-sub;
-  }
-}
-
-.checkFilled {
-  background-color: $color-primary;
-
-  &::after {
-    border-color: $color-black;
-  }
 }
 
 /* ── 텍스트 인풋 ── */

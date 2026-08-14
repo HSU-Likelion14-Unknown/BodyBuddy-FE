@@ -6,6 +6,8 @@ import {
   iconChevronDown,
   iconMale,
   iconFemale,
+  iconCheckEmpty,
+  iconCheckFilled,
 } from '@/assets';
 import OnboardingLayout from './components/OnboardingLayout';
 import YearPicker from '@/components/common/YearPicker/YearPicker';
@@ -72,8 +74,10 @@ export default function OnboardingPage1() {
         <div className={styles.field}>
           <label className={styles.fieldLabel}>
             닉네임
-            <span
-              className={`${styles.check} ${isNicknameValid ? styles.checkFilled : ''}`}
+            <img
+              src={isNicknameValid ? iconCheckFilled : iconCheckEmpty}
+              alt=""
+              className={styles.check}
             />
             {nicknameError && (
               <span className={styles.errorText}>{nicknameError}</span>
@@ -92,8 +96,10 @@ export default function OnboardingPage1() {
         <div className={styles.field}>
           <label className={styles.fieldLabel}>
             출생연도
-            <span
-              className={`${styles.check} ${birthYear ? styles.checkFilled : ''}`}
+            <img
+              src={birthYear ? iconCheckFilled : iconCheckEmpty}
+              alt=""
+              className={styles.check}
             />
           </label>
           <button
@@ -114,7 +120,7 @@ export default function OnboardingPage1() {
         <div className={styles.field}>
           <label className={styles.fieldLabel}>
             성별
-            <span className={`${styles.check} ${styles.checkFilled}`} />
+            <img src={iconCheckFilled} alt="" className={styles.check} />
           </label>
           <div className={styles.genderRow}>
             {GENDER_OPTIONS.map(({ value, label, icon }) => (
