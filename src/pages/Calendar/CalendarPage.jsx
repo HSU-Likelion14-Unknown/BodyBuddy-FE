@@ -31,6 +31,70 @@ const DOT_DATA = {
   '2026-08-15': ['record'],
 };
 
+// TODO: 실제 API 연동 시 교체
+const MONTHLY_STATS = {
+  nickname: '00',
+  nutrients: [
+    { name: '단백질', consumed: 180, goal: 650, color: '#8cb3f6' },
+    { name: '탄수화물', consumed: 1700, goal: 3000, color: '#ffa449' },
+    { name: '지방', consumed: 260, goal: 650, color: '#f29cd8' },
+  ],
+  kcal: 660,
+  recommendFollowed: 11,
+  recommendTotal: 15,
+};
+
+function DotMatrix({ consumed, goal, color }) {
+  const total = 42; // 6행 × 7열
+  const filled = Math.round((consumed / goal) * total);
+  return (
+    // scaleY(-1)로 아래 → 위 방향 채우기
+    <div className={styles.dotMatrix}>
+      {Array.from({ length: total }, (_, i) => (
+        <span
+          key={i}
+          className={styles.matrixDot}
+          style={{ backgroundColor: i < filled ? color : '#ffebd8' }}
+        />
+      ))}
+    </div>
+  );
+}
+
+function MonthlyNutritionCard() {
+  const { nickname, nutrients, kcal, recommendFollowed, recommendTotal } =
+    MONTHLY_STATS;
+  const pct = Math.round((recommendFollowed / recommendTotal) * 100);
+
+  return (
+    <div className={styles.nutritionCard}>
+      <p className={styles.nutritionTitle}>월간 영양 평균</p>
+      <div className={styles.nutritionBody}>
+        <div className={styles.nutrientList}>
+          {nutrients.map(({ name, consumed, goal, color }) => (
+            <div key={name} className={styles.nutrientItem}>
+              <DotMatrix consumed={consumed} goal={goal} color={color} />
+              <span className={styles.nutrientName}>{name}</span>
+            </div>
+          ))}
+        </div>
+        <div className={styles.kcalCircle}>
+          <span className={styles.kcalNumber}>{kcal}</span>
+          <span className={styles.kcalLabel}>Kcal</span>
+        </div>
+      </div>
+      <p className={styles.nutritionFooter}>
+        {nickname}님의 추천 챙긴 횟수
+        <br />
+        <span className={styles.footerCount}>
+          {recommendFollowed} / {recommendTotal}회
+        </span>{' '}
+        <span className={styles.footerPct}>( {pct}% )</span>
+      </p>
+    </div>
+  );
+}
+
 const DOT_CLASS = {
   record: styles.dotRecord,
   recommended: styles.dotRecommended,
@@ -180,6 +244,8 @@ export default function CalendarPage() {
           추천 미챙김
         </span>
       </div>
+
+      <MonthlyNutritionCard />
 
       {showPicker && (
         <MonthPickerModal
