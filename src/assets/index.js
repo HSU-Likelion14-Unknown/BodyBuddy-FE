@@ -20,6 +20,9 @@ import iconCheckEmpty from '@/assets/onboarding/icon-check-empty.svg';
 import iconCheckFilled from '@/assets/onboarding/icon-check-filled.svg';
 import iconCloseSmall from '@/assets/onboarding/icon-close-small.svg';
 
+// Calendar
+import iconBell from '@/assets/calendar/icon-bell.svg';
+
 // Splash
 import splashEllipseBg from '@/assets/splash/ellipse-bg.svg';
 import splashCharacter from '@/assets/splash/character.png';
@@ -28,6 +31,7 @@ import splashIconCamera from '@/assets/splash/icon-camera.svg';
 import splashIconChart from '@/assets/splash/icon-chart.svg';
 
 export {
+  iconBell,
   onboardingCharacter1,
   onboardingCharacter2,
   onboardingCharacter3,
@@ -44,8 +48,8 @@ export {
   splashIconBulb,
   splashIconCamera,
   splashIconChart,
-  mealPlaceholder, 
-  perfectDecoration, 
-  perfectResult, 
-  resultMascot
+  mealPlaceholder,
+  perfectDecoration,
+  perfectResult,
+  resultMascot,
 };

@@ -1,0 +1,211 @@
+@use '../../styles/variables' as *;
+@use '../../styles/function' as *;
+
+.page {
+  min-height: 100%;
+  background-color: $color-white;
+  display: flex;
+  flex-direction: column;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 20px 0 12px;
+}
+
+.iconBtn {
+  background: none;
+  border: none;
+  padding: 4px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  color: $color-black;
+}
+
+.monthNav {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 20px 20px 44px;
+}
+
+.monthLabel {
+  font-size: rem(20px);
+  font-weight: $font-weight-semibold;
+  color: $color-black;
+}
+
+.chevronDown {
+  width: 12px;
+  height: 6px;
+  margin-left: 3px;
+}
+
+.calendarWrap {
+  padding: 0 20px;
+
+  :global {
+    .react-calendar {
+      width: 100%;
+      border: none;
+      background: transparent;
+      font-family: inherit;
+    }
+
+    // 요일 헤더
+    .react-calendar__month-view__weekdays {
+      text-align: center;
+      text-transform: none;
+      font-size: rem(13px);
+      font-weight: $font-weight-medium;
+      margin-bottom: 4px;
+    }
+
+    .react-calendar__month-view__weekdays__weekday {
+      padding: 8px 0;
+
+      abbr {
+        text-decoration: none;
+        color: $color-gray5;
+      }
+
+      &:first-child abbr {
+        color: #e44b4b;
+      }
+    }
+
+    // 날짜 타일
+    .react-calendar__tile {
+      max-width: 100%;
+      padding: 6px 0;
+      background: none;
+      font-family: inherit;
+      font-size: rem(14px);
+      font-weight: $font-weight-medium;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+
+      abbr {
+        width: 30px;
+        height: 30px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: $color-black;
+      }
+    }
+
+    // react-calendar 기본 주말 색상 초기화
+    .react-calendar__month-view__days__day--weekend {
+      color: inherit;
+    }
+
+    // 일요일 (7열 기준 1번째)
+    .react-calendar__month-view__days__day:nth-child(7n + 1) abbr {
+      color: #e44b4b;
+    }
+
+    // 이전/다음 달 날짜 (회색으로 통일)
+    .react-calendar__month-view__days__day--neighboringMonth abbr {
+      color: $color-gray4 !important;
+    }
+
+    // 오늘 - 숫자만 주황색
+    .react-calendar__tile--now {
+      background: none;
+
+      abbr {
+        background-color: transparent;
+        color: $color-primary;
+      }
+    }
+
+    // 선택된 날짜 - 원 제거
+    .react-calendar__tile--active {
+      background: none !important;
+
+      abbr {
+        background-color: transparent !important;
+        color: $color-black !important;
+      }
+    }
+  }
+}
+
+// 월 선택 모달
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pickerCard {
+  background: $color-white;
+  border-radius: 16px;
+  padding: 24px 20px;
+  width: 280px;
+}
+
+.pickerYearRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.pickerYear {
+  font-size: rem(18px);
+  font-weight: $font-weight-semibold;
+  color: $color-black;
+}
+
+.pickerArrow {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: rem(24px);
+  color: $color-gray5;
+  padding: 4px 12px;
+  line-height: 1;
+
+  &:hover {
+    color: $color-black;
+  }
+}
+
+.pickerMonthGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+
+.pickerMonthBtn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 10px 0;
+  border-radius: 8px;
+  font-size: rem(14px);
+  font-weight: $font-weight-medium;
+  color: $color-black;
+
+  &:hover {
+    background-color: $color-gray3;
+  }
+}
+
+.pickerMonthActive {
+  background-color: $color-primary !important;
+  color: $color-white !important;
+}

@@ -8,6 +8,7 @@ import SplashPage from './pages/Splash/SplashPage';
 import OnboardingPage1 from './pages/Onboarding/OnboardingPage1';
 import OnboardingPage2 from './pages/Onboarding/OnboardingPage2';
 import OnboardingPage3 from './pages/Onboarding/OnboardingPage3';
+import CalendarPage from './pages/Calendar/CalendarPage';
 
 function App() {
   return (
@@ -23,7 +24,7 @@ function App() {
             path="/meals/recommendation"
             element={<MealRecommendationPage />}
           />
-          <Route path="/calendar" element={<></>} />
+          <Route path="/calendar" element={<CalendarPage />} />
           <Route path="/mypage" element={<></>} />
           <Route path="/" element={<SplashPage />} />
           <Route path="/onboarding/1" element={<OnboardingPage1 />} />
