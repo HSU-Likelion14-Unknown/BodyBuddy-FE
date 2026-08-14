@@ -22,13 +22,16 @@ export default function OnboardingLayout({
   const [fillWidth, setFillWidth] = useState((prevStep / TOTAL_STEPS) * 100);
 
   useEffect(() => {
+    let id2;
     const id1 = requestAnimationFrame(() => {
-      const id2 = requestAnimationFrame(() => {
+      id2 = requestAnimationFrame(() => {
         setFillWidth((step / TOTAL_STEPS) * 100);
       });
-      return () => cancelAnimationFrame(id2);
     });
-    return () => cancelAnimationFrame(id1);
+    return () => {
+      cancelAnimationFrame(id1);
+      cancelAnimationFrame(id2);
+    };
   }, [step]);
 
   return (
