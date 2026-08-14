@@ -1,0 +1,150 @@
+@use '../../../styles/variables' as *;
+@use '../../../styles/function' as *;
+
+.page {
+  position: relative;
+  width: 100%;
+  height: 100dvh;
+  background-color: $color-white;
+  overflow: hidden;
+}
+
+/* ── 진행 바 ── */
+.progressSection {
+  position: absolute;
+  top: 74px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 169px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.progressText {
+  font-size: rem(12px);
+  font-weight: $font-weight-semibold;
+  color: $color-black;
+  line-height: 1;
+}
+
+.progressBar {
+  width: 100%;
+  height: 4px;
+  background-color: $color-gray3;
+  border-radius: 100px;
+  overflow: hidden;
+}
+
+.progressFill {
+  height: 100%;
+  background-color: $color-primary;
+  border-radius: 100px;
+  transition: width 0.3s ease;
+}
+
+/* ── 뒤로가기 버튼 ── */
+.backBtn {
+  position: absolute;
+  top: 84px;
+  left: 67px;
+  width: 29px;
+  height: 29px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid $color-gray3;
+  border-radius: 14px;
+  background-color: $color-white;
+  opacity: 0.7;
+  cursor: pointer;
+
+  img {
+    width: 18px;
+    height: 18px;
+  }
+}
+
+/* ── 캐릭터 이미지 ── */
+.characterWrap {
+  position: absolute;
+  top: 149px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 140px;
+  height: 120px;
+  pointer-events: none;
+}
+
+.character {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+/* ── 타이틀 ── */
+.title {
+  position: absolute;
+  top: 294px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 347px;
+  font-size: rem(20px);
+  font-weight: $font-weight-semibold;
+  color: $color-brown5;
+  text-align: center;
+  line-height: 24px;
+  letter-spacing: -0.5px;
+}
+
+/* ── 서브타이틀 ── */
+.subtitle {
+  position: absolute;
+  top: 348px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: rem(12px);
+  font-weight: $font-weight-medium;
+  color: #958f84;
+  text-align: center;
+  white-space: nowrap;
+}
+
+/* ── 폼 콘텐츠 영역 ── */
+.content {
+  position: absolute;
+  top: 376px;
+  left: 20px;
+  right: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.contentWithSubtitle {
+  top: 400px;
+}
+
+/* ── 다음으로 버튼 ── */
+.nextBtn {
+  position: absolute;
+  top: 744px;
+  left: 20px;
+  right: 20px;
+  padding: 12px;
+  border-radius: 10px;
+  border: none;
+  font-size: rem(18px);
+  font-weight: $font-weight-semibold;
+  color: $color-white;
+  background-color: #d9d9d9;
+  letter-spacing: -0.45px;
+  cursor: not-allowed;
+  transition: background-color 0.2s ease;
+}
+
+.nextBtnActive {
+  background-color: $color-primary;
+  cursor: pointer;
+}

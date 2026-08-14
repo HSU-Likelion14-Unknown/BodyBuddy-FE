@@ -1,0 +1,123 @@
+@use '../../styles/variables' as *;
+@use '../../styles/function' as *;
+
+/* ── 알레르기 그리드 ── */
+.allergenGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px 17px;
+}
+
+.allergenBtn {
+  padding: 6px 0;
+  background-color: #f5f5f5;
+  border: none;
+  border-radius: 5px;
+  font-size: rem(14px);
+  font-weight: $font-weight-medium;
+  color: $color-gray5;
+  letter-spacing: -0.35px;
+  line-height: 27px;
+  cursor: pointer;
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease;
+}
+
+.allergenBtnActive {
+  background-color: $color-primary;
+  color: $color-white;
+  font-weight: $font-weight-semibold;
+}
+
+/* ── 직접 입력 영역 ── */
+.inputSection {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.searchWrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 12px;
+  background-color: #f5f5f5;
+  border: 1px solid transparent;
+  border-radius: 5px;
+  transition: border-color 0.2s ease;
+
+  &:focus-within {
+    border-color: $color-primary;
+  }
+}
+
+.searchIcon {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+}
+
+.searchInput {
+  width: 197px;
+  background: transparent;
+  border: none;
+  outline: none;
+  font-size: rem(14px);
+  font-weight: $font-weight-medium;
+  color: $color-black;
+  letter-spacing: -0.35px;
+  line-height: 27px;
+  caret-color: $color-primary;
+
+  &::placeholder {
+    color: #999;
+  }
+}
+
+/* ── 태그 행 (가로 스크롤) ── */
+.tagRow {
+  display: flex;
+  flex-direction: row;
+  gap: 8px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+.tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 17px;
+  background-color: #ffe4b8;
+  border-radius: 5px;
+  flex-shrink: 0;
+  font-size: rem(14px);
+  font-weight: $font-weight-medium;
+  color: $color-gray5;
+  letter-spacing: -0.35px;
+  white-space: nowrap;
+}
+
+.tagClose {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  cursor: pointer;
+  flex-shrink: 0;
+  padding: 0;
+}
+
+.tagCloseIcon {
+  width: 26px;
+  height: 26px;
+  display: block;
+}

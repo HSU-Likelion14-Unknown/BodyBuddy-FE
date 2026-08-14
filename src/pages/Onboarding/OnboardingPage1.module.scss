@@ -1,0 +1,146 @@
+@use '../../styles/variables' as *;
+@use '../../styles/function' as *;
+
+/* ── 공통 필드 ── */
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.fieldLabel {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: rem(14px);
+  font-weight: $font-weight-medium;
+  color: $color-black;
+  line-height: 27px;
+  letter-spacing: -0.35px;
+  cursor: default;
+}
+
+/* 필드 완성 체크 표시 */
+.check {
+  width: 12px;
+  height: 12px;
+  flex-shrink: 0;
+}
+
+/* ── 텍스트 인풋 ── */
+.input {
+  width: 100%;
+  padding: 10px 12px;
+  font-size: rem(14px);
+  font-weight: $font-weight-medium;
+  color: $color-black;
+  background-color: $color-white;
+  border: 1px solid transparent;
+  border-radius: 5px;
+  letter-spacing: -0.35px;
+  outline: none;
+  transition: border-color 0.2s ease;
+  caret-color: $color-primary;
+
+  &::placeholder {
+    color: #999;
+  }
+
+  &:focus {
+    border-color: $color-primary;
+  }
+}
+
+.inputActive {
+  border-color: $color-primary;
+}
+
+.inputError {
+  border-color: #e61111;
+  caret-color: #e61111;
+
+  &:focus {
+    border-color: #e61111;
+  }
+}
+
+.errorText {
+  font-size: rem(11px);
+  color: #e61111;
+  letter-spacing: -0.3px;
+}
+
+/* ── 연도 선택 ── */
+.yearTrigger {
+  width: 100%;
+  padding: 10px 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: $color-white;
+  border: 1px solid transparent;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: border-color 0.2s ease;
+}
+
+.yearTriggerActive {
+  border-color: $color-primary;
+}
+
+.yearPlaceholder {
+  font-size: rem(14px);
+  font-weight: $font-weight-medium;
+  color: #999;
+  letter-spacing: -0.35px;
+}
+
+.yearValue {
+  font-size: rem(14px);
+  font-weight: $font-weight-medium;
+  color: $color-black;
+  letter-spacing: -0.35px;
+}
+
+.chevron {
+  width: 12px;
+  height: 6px;
+  flex-shrink: 0;
+}
+
+/* ── 성별 버튼 ── */
+.genderRow {
+  display: flex;
+  gap: 16px;
+}
+
+.genderBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 10px 10px;
+  width: 76px;
+  background-color: #f5f5f5;
+  border-radius: 5px;
+  border: none;
+  font-size: rem(14px);
+  font-weight: $font-weight-medium;
+  color: #999;
+  letter-spacing: -0.35px;
+  cursor: pointer;
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease;
+}
+
+.genderBtnActive {
+  background-color: $color-primary;
+  color: $color-white;
+}
+
+.genderIcon {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+}
