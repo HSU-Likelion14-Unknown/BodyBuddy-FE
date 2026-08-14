@@ -6,9 +6,10 @@ import OnboardingLayout from './components/OnboardingLayout';
 
 export default function OnboardingPage3() {
   const navigate = useNavigate();
-  const [isNone, setIsNone] = useState(true);
+  const saved = JSON.parse(localStorage.getItem('onboarding_step3') || 'null');
+  const [isNone, setIsNone] = useState(saved ? saved.noDisliked : true);
   const [inputValue, setInputValue] = useState('');
-  const [customTags, setCustomTags] = useState([]);
+  const [customTags, setCustomTags] = useState(saved?.dislikedFoods || []);
 
   const isNextEnabled = isNone || customTags.length > 0;
 
@@ -42,6 +43,14 @@ export default function OnboardingPage3() {
     if (e.key === 'Enter' && !e.nativeEvent.isComposing) addTag(inputValue);
   };
 
+  const handleBack = () => {
+    localStorage.setItem(
+      'onboarding_step3',
+      JSON.stringify({ noDisliked: isNone, dislikedFoods: customTags }),
+    );
+    navigate(-1);
+  };
+
   const handleNext = () => {
     // TODO: POST /api/users/disliked-foods
     localStorage.setItem('hasOnboarded', 'true');
@@ -68,6 +77,7 @@ export default function OnboardingPage3() {
       }
       subtitle="복수 선택 가능"
       isNextEnabled={isNextEnabled}
+      onBack={handleBack}
       onNext={handleNext}
     >
       <div className={styles.pageContent}>

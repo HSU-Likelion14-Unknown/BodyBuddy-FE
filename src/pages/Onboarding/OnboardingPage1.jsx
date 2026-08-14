@@ -22,10 +22,11 @@ const GENDER_OPTIONS = [
 export default function OnboardingPage1() {
   const navigate = useNavigate();
 
-  const [nickname, setNickname] = useState('');
+  const saved = JSON.parse(localStorage.getItem('onboarding_step1') || 'null');
+  const [nickname, setNickname] = useState(saved?.nickname || '');
   const [nicknameError, setNicknameError] = useState('');
-  const [birthYear, setBirthYear] = useState(null);
-  const [gender, setGender] = useState('male');
+  const [birthYear, setBirthYear] = useState(saved?.birthYear || null);
+  const [gender, setGender] = useState(saved?.gender || 'male');
   const [showYearPicker, setShowYearPicker] = useState(false);
   const [showToast, setShowToast] = useState(false);
 

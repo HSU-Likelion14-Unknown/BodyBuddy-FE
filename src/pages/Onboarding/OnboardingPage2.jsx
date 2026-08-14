@@ -16,9 +16,13 @@ const ALLERGEN_OPTIONS = [
 
 export default function OnboardingPage2() {
   const navigate = useNavigate();
-  const [selected, setSelected] = useState(new Set(['none']));
+  const saved = JSON.parse(localStorage.getItem('onboarding_step2') || 'null');
+  const [selected, setSelected] = useState(() => {
+    if (saved?.allergens?.length) return new Set(saved.allergens);
+    return new Set(['none']);
+  });
   const [inputValue, setInputValue] = useState('');
-  const [customTags, setCustomTags] = useState([]);
+  const [customTags, setCustomTags] = useState(saved?.customAllergens || []);
 
   const isNextEnabled = selected.size > 0 || customTags.length > 0;
 
@@ -65,6 +69,14 @@ export default function OnboardingPage2() {
     if (e.key === 'Enter' && !e.nativeEvent.isComposing) addTag(inputValue);
   };
 
+  const handleBack = () => {
+    localStorage.setItem(
+      'onboarding_step2',
+      JSON.stringify({ allergens: [...selected], customAllergens: customTags }),
+    );
+    navigate(-1);
+  };
+
   const handleNext = () => {
     // TODO: POST /api/users/allergies
     localStorage.setItem(
@@ -90,6 +102,7 @@ export default function OnboardingPage2() {
       }
       subtitle="복수 선택 가능"
       isNextEnabled={isNextEnabled}
+      onBack={handleBack}
       onNext={handleNext}
     >
       {/* 알레르기 선택 그리드 */}
