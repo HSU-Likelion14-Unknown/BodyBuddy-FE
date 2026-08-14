@@ -1,0 +1,153 @@
+@use '../../styles/variables' as *;
+@use '../../styles/function' as *;
+
+/* ── 전체 래퍼 (OnboardingLayout gap 무시하고 직접 제어) ── */
+.pageContent {
+  display: flex;
+  flex-direction: column;
+  height: 328px; /* content top(400) ~ button top(744) - 16px 여백 */
+  overflow: hidden;
+}
+
+/* ── 없어요. 버튼 ── */
+.noneSection {
+  display: flex;
+  justify-content: center;
+  padding-top: 18px;
+}
+
+.noneBtn {
+  width: 168px;
+  padding: 6px 0;
+  background-color: #f5f5f5;
+  border: none;
+  border-radius: 5px;
+  font-size: rem(14px);
+  font-weight: $font-weight-medium;
+  color: $color-gray5;
+  letter-spacing: -0.35px;
+  line-height: 27px;
+  cursor: pointer;
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease;
+}
+
+.noneBtnActive {
+  background-color: $color-primary;
+  color: $color-white;
+  font-weight: $font-weight-semibold;
+}
+
+/* ── or 구분자 ── */
+.orDivider {
+  margin-top: 10px;
+  margin-bottom: 0;
+  font-size: rem(12px);
+  font-weight: $font-weight-medium;
+  color: #958f84;
+  text-align: center;
+  line-height: 13px;
+}
+
+/* ── 직접 입력 영역 ── */
+.inputSection {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 10px;
+  flex: 1;
+  min-height: 0;
+}
+
+.searchWrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 12px;
+  background-color: #f5f5f5;
+  border: 1px solid transparent;
+  border-radius: 5px;
+  flex-shrink: 0;
+  transition: border-color 0.2s ease;
+
+  &:focus-within {
+    border-color: $color-primary;
+  }
+}
+
+.searchIcon {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+}
+
+.searchInput {
+  width: 197px;
+  background: transparent;
+  border: none;
+  outline: none;
+  font-size: rem(14px);
+  font-weight: $font-weight-medium;
+  color: $color-black;
+  letter-spacing: -0.35px;
+  line-height: 27px;
+  caret-color: $color-primary;
+
+  &::placeholder {
+    color: #999;
+  }
+
+  &:focus::placeholder {
+    color: transparent;
+  }
+}
+
+/* ── 태그 영역 (wrap + 세로 스크롤) ── */
+.tagRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-content: flex-start;
+  gap: 8px;
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+.tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 17px;
+  background-color: #ffe4b8;
+  border-radius: 5px;
+  flex-shrink: 0;
+  font-size: rem(14px);
+  font-weight: $font-weight-medium;
+  color: $color-gray5;
+  letter-spacing: -0.35px;
+  white-space: nowrap;
+}
+
+.tagClose {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  cursor: pointer;
+  flex-shrink: 0;
+  padding: 0;
+}
+
+.tagCloseIcon {
+  width: 26px;
+  height: 26px;
+  display: block;
+}
