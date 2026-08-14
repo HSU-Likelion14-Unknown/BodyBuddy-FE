@@ -74,6 +74,7 @@ export default function OnboardingPage2() {
       'onboarding_step2',
       JSON.stringify({ allergens: [...selected], customAllergens: customTags }),
     );
+    localStorage.setItem('onboarding_prev_step', '2');
     navigate(-1);
   };
 
@@ -86,6 +87,7 @@ export default function OnboardingPage2() {
         customAllergens: customTags,
       }),
     );
+    localStorage.setItem('onboarding_prev_step', '2');
     navigate('/onboarding/3');
   };
 

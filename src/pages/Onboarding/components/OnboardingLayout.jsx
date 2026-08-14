@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styles from './OnboardingLayout.module.scss';
 import { iconBack } from '@/assets';
@@ -16,6 +17,20 @@ export default function OnboardingLayout({
 }) {
   const navigate = useNavigate();
 
+  const prevStep =
+    parseInt(localStorage.getItem('onboarding_prev_step') || '0', 10) || 0;
+  const [fillWidth, setFillWidth] = useState((prevStep / TOTAL_STEPS) * 100);
+
+  useEffect(() => {
+    const id1 = requestAnimationFrame(() => {
+      const id2 = requestAnimationFrame(() => {
+        setFillWidth((step / TOTAL_STEPS) * 100);
+      });
+      return () => cancelAnimationFrame(id2);
+    });
+    return () => cancelAnimationFrame(id1);
+  }, [step]);
+
   return (
     <div className={styles.page}>
       <div className={styles.progressSection}>
@@ -25,7 +40,7 @@ export default function OnboardingLayout({
         <div className={styles.progressBar}>
           <div
             className={styles.progressFill}
-            style={{ width: `${(step / TOTAL_STEPS) * 100}%` }}
+            style={{ width: `${fillWidth}%` }}
           />
         </div>
       </div>

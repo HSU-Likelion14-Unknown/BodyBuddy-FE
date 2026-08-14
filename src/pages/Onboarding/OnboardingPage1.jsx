@@ -53,6 +53,7 @@ export default function OnboardingPage1() {
       'onboarding_step1',
       JSON.stringify({ nickname: nickname.trim(), birthYear, gender }),
     );
+    localStorage.setItem('onboarding_prev_step', '1');
     navigate('/onboarding/2');
   };
 

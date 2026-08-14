@@ -48,6 +48,7 @@ export default function OnboardingPage3() {
       'onboarding_step3',
       JSON.stringify({ noDisliked: isNone, dislikedFoods: customTags }),
     );
+    localStorage.setItem('onboarding_prev_step', '3');
     navigate(-1);
   };
 
