@@ -139,6 +139,60 @@
   }
 }
 
+// 날짜 dot
+.dotRow {
+  display: flex;
+  gap: 3px;
+  justify-content: flex-start;
+  min-height: 7px;
+  margin-top: 2px;
+  width: 100%;
+  padding-left: 15px;
+}
+
+.neighboringTile .dotRow {
+  opacity: 0.35;
+}
+
+.dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.legendDot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.dotRecord {
+  background-color: $color-primary-accent;
+}
+.dotRecommended {
+  background-color: #4dc631;
+}
+.dotMissed {
+  background-color: $color-gray-disabled;
+}
+
+// 범례
+.legend {
+  display: flex;
+  gap: 14px;
+  padding: 16px 20px 0;
+}
+
+.legendItem {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: rem(12px);
+  color: $color-gray5;
+}
+
 // 월 선택 모달
 .overlay {
   position: fixed;

@@ -6,6 +6,37 @@ import styles from './CalendarPage.module.scss';
 import { iconBell, iconChevronDown } from '@/assets';
 import { BsChevronLeft } from 'react-icons/bs';
 
+const formatDateKey = (date) => {
+  const y = date.getFullYear();
+  const m = String(date.getMonth() + 1).padStart(2, '0');
+  const d = String(date.getDate()).padStart(2, '0');
+  return `${y}-${m}-${d}`;
+};
+
+// TODO: 실제 API 연동 시 교체
+const DOT_DATA = {
+  '2026-07-10': ['record'],
+  '2026-07-15': ['recommended'],
+  '2026-07-20': ['record', 'missed'],
+  '2026-07-26': ['record'],
+  '2026-07-28': ['record', 'recommended'],
+  '2026-07-31': ['missed'],
+  '2026-08-01': ['record'],
+  '2026-08-02': ['record', 'recommended', 'missed'],
+  '2026-08-04': ['record', 'missed'],
+  '2026-08-07': ['recommended'],
+  '2026-08-10': ['record', 'missed'],
+  '2026-08-12': ['record', 'recommended'],
+  '2026-08-14': ['missed'],
+  '2026-08-15': ['record'],
+};
+
+const DOT_CLASS = {
+  record: styles.dotRecord,
+  recommended: styles.dotRecommended,
+  missed: styles.dotMissed,
+};
+
 function MonthPickerModal({ viewDate, onSelect, onClose }) {
   const [pickerYear, setPickerYear] = useState(viewDate.getFullYear());
 
@@ -112,7 +143,42 @@ export default function CalendarPage() {
           formatShortWeekday={(locale, date) =>
             ['일', '월', '화', '수', '목', '금', '토'][date.getDay()]
           }
+          tileClassName={({ date, view, activeStartDate }) => {
+            if (view !== 'month') return null;
+            return date.getMonth() !== activeStartDate.getMonth()
+              ? styles.neighboringTile
+              : null;
+          }}
+          tileContent={({ date, view }) => {
+            if (view !== 'month') return null;
+            const dots = DOT_DATA[formatDateKey(date)];
+            return (
+              <div className={styles.dotRow}>
+                {dots?.map((type, i) => (
+                  <span
+                    key={i}
+                    className={`${styles.dot} ${DOT_CLASS[type]}`}
+                  />
+                ))}
+              </div>
+            );
+          }}
         />
+      </div>
+
+      <div className={styles.legend}>
+        <span className={styles.legendItem}>
+          <span className={`${styles.legendDot} ${styles.dotRecord}`} />
+          기록 있음
+        </span>
+        <span className={styles.legendItem}>
+          <span className={`${styles.legendDot} ${styles.dotRecommended}`} />
+          추천 챙김
+        </span>
+        <span className={styles.legendItem}>
+          <span className={`${styles.legendDot} ${styles.dotMissed}`} />
+          추천 미챙김
+        </span>
       </div>
 
       {showPicker && (
