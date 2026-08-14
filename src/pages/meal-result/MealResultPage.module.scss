@@ -51,7 +51,8 @@
   position: relative;
   z-index: 2;
   width: min(100%, 344px);
-  margin: 0 auto 70px;
+  min-height: 273px;
+  margin: 0 auto 24px;
 }
 
 .mealImage,
