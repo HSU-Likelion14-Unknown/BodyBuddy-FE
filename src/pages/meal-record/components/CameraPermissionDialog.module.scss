@@ -1,0 +1,88 @@
+@use '@/styles/variables' as *;
+@use '@/styles/function' as *;
+
+.dialogOverlay {
+  @include flex;
+
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  width: 100%;
+  max-width: 430px;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: rgba($color-black, 0.4);
+}
+
+.permissionDialog {
+  width: 354px;
+  max-width: 100%;
+  overflow: hidden;
+  padding-bottom: 5px;
+  background-color: $color-white;
+  border-radius: 20px;
+}
+
+.dialogContent {
+  @include flex(column, center, flex-start, 3px);
+
+  width: 100%;
+  padding-top: 21px;
+  text-align: center;
+
+  h2 {
+    width: 100%;
+    height: 69px;
+    color: $color-text;
+    font-size: 22px;
+    font-weight: $font-weight-semibold;
+    line-height: 29px;
+    letter-spacing: -0.55px;
+
+    strong {
+      color: $color-primary-accent;
+      font: inherit;
+    }
+  }
+
+  p {
+    width: 100%;
+    height: 49px;
+    color: $color-gray5;
+    font-size: $font-size-16;
+    font-weight: $font-weight-medium;
+    line-height: 21px;
+    letter-spacing: -0.4px;
+  }
+}
+
+.dialogActions {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  margin-top: 9px;
+}
+
+.retryButton,
+.cancelButton {
+  width: 100%;
+  color: $color-system-blue;
+  font-size: 20px;
+  font-weight: $font-weight-medium;
+  line-height: 28px;
+  letter-spacing: -0.5px;
+  background: transparent;
+  border: 0;
+  appearance: none;
+  cursor: pointer;
+}
+
+.retryButton {
+  height: 49px;
+  border-top: 1px solid $color-gray-disabled;
+  border-bottom: 1px solid $color-gray-disabled;
+}
+
+.cancelButton {
+  height: 48px;
+}

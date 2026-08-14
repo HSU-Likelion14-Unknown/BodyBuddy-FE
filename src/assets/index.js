@@ -1,6 +1,12 @@
 // 아이콘 및 이미지 파일들을 한 곳에서 관리하기 위한 인덱스 파일(Barrel export)
 // 이미지 추가하면 여기서 임포트하고 내보내기
 
+// meals
+import mealPlaceholder from './meal-result/meal-placeholder.jpeg';
+import perfectDecoration from './meal-recommendation/perfect-decoration.svg';
+import perfectResult from './meal-recommendation/perfect-result.svg';
+import resultMascot from './meal-result/result-mascot.svg';
+
 // Onboarding
 import onboardingCharacter1 from '@/assets/onboarding/onboarding1.png';
 import onboardingCharacter2 from '@/assets/onboarding/onboarding2.png';
@@ -38,4 +44,8 @@ export {
   splashIconBulb,
   splashIconCamera,
   splashIconChart,
+  mealPlaceholder, 
+  perfectDecoration, 
+  perfectResult, 
+  resultMascot
 };

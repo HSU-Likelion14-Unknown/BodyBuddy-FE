@@ -1,0 +1,131 @@
+@use '@/styles/variables' as *;
+@use '@/styles/function' as *;
+
+.container {
+  position: relative;
+  min-height: 100dvh;
+  padding: 84px 19px 130px;
+  overflow-x: hidden;
+  background-color: $color-white;
+}
+
+.mascot {
+  position: absolute;
+  top: 49px;
+  right: 33px;
+  z-index: 1;
+  width: 133px;
+  height: 131px;
+  object-fit: contain;
+  pointer-events: none;
+}
+
+.headerContent {
+  position: relative;
+  z-index: 2;
+  width: min(100%, 344px);
+  height: 46px;
+  margin: 0 auto 20px;
+
+  h1 {
+    color: $color-brown4;
+    font-size: 18px;
+    font-weight: $font-weight-semibold;
+    line-height: 22px;
+    letter-spacing: -0.45px;
+  }
+
+  p {
+    overflow: hidden;
+    color: $color-brown2;
+    font-size: 12px;
+    font-weight: $font-weight-medium;
+    line-height: 24px;
+    letter-spacing: -0.3px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
+.foodContent {
+  position: relative;
+  z-index: 2;
+  width: min(100%, 344px);
+  min-height: 273px;
+  margin: 0 auto 24px;
+}
+
+.mealImage,
+.descriptionContent {
+  display: block;
+  width: min(100%, 344px);
+  height: 129px;
+  margin: 0 auto;
+  border: 1px solid $color-primary-accent;
+  border-radius: 10px;
+}
+
+.mealImage {
+  object-fit: cover;
+  object-position: center;
+}
+
+.descriptionContent {
+  @include flex(column, flex-start, center, 8px);
+
+  padding: 18px;
+  color: $color-gray5;
+  background-color: $color-primary-light;
+
+  span {
+    color: $color-primary-deep;
+    font-size: 12px;
+    font-weight: $font-weight-semibold;
+  }
+
+  p {
+    display: -webkit-box;
+    overflow: hidden;
+    font-size: 14px;
+    font-weight: $font-weight-medium;
+    line-height: 20px;
+    white-space: pre-wrap;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+  }
+}
+
+.actionContent {
+  @include flex(column, stretch, flex-start, 14px);
+
+  width: min(100%, 351px);
+  margin: 23px auto 0;
+}
+
+.recommendButton,
+.recordButton {
+  width: 100%;
+  height: 45px;
+  color: $color-white;
+  font-size: 18px;
+  font-weight: $font-weight-semibold;
+  line-height: 21px;
+  letter-spacing: -0.45px;
+  border: 0;
+  border-radius: 10px;
+  box-shadow: 0 5px 10px rgba(113, 71, 3, 0.14);
+
+  &:disabled {
+    color: $color-white;
+    cursor: default;
+    opacity: 1;
+  }
+}
+
+.recommendButton {
+  background-color: $color-primary-accent;
+}
+
+.recordButton {
+  background-color: $color-primary;
+}
