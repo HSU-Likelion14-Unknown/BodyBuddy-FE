@@ -206,14 +206,12 @@
   font-size: rem(14px);
   font-weight: $font-weight-semibold;
   color: $color-gray5;
-  margin: 0 0 10px;
 }
 
 .nutritionBody {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 12px;
 }
 
 .nutrientList {
@@ -279,7 +277,6 @@
   font-size: rem(11px);
   font-weight: $font-weight-medium;
   color: $color-brown2;
-  margin: 0;
   line-height: 1.7;
 }
 
