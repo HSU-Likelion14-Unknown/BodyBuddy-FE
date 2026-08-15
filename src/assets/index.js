@@ -27,6 +27,21 @@ import splashIconBulb from '@/assets/splash/icon-bulb.svg';
 import splashIconCamera from '@/assets/splash/icon-camera.svg';
 import splashIconChart from '@/assets/splash/icon-chart.svg';
 
+// Share room
+import shareRoomCover from '@/assets/share-room/room-header.png';
+import shareRoomOwnerAvatar from '@/assets/share-room/avatar-me.png';
+import shareRoomFriendAvatar from '@/assets/share-room/avatar-friend-2.png';
+import shareRoomMalatang from '@/assets/share-room/meal-malatang.png';
+import shareRoomBibimbap from '@/assets/share-room/meal-bibimbap.png';
+import shareRoomCucumberGimbap from '@/assets/share-room/meal-cucumber-gimbap.png';
+import shareRoomInviteDecoration from '@/assets/share-room/invite-decoration-exact.svg';
+import shareRoomBackIcon from '@/assets/share-room/icon-back.svg';
+import shareRoomMoreIcon from '@/assets/share-room/icon-more.svg';
+import shareRoomAddIcon from '@/assets/share-room/icon-add-brown.svg';
+import shareRoomAddWhiteIcon from '@/assets/share-room/icon-add-white.svg';
+import shareRoomLogoutIcon from '@/assets/share-room/icon-logout.svg';
+import shareRoomPhotoIcon from '@/assets/share-room/icon-photo.svg';
+
 export {
   onboardingCharacter1,
   onboardingCharacter2,
@@ -44,8 +59,21 @@ export {
   splashIconBulb,
   splashIconCamera,
   splashIconChart,
-  mealPlaceholder, 
-  perfectDecoration, 
-  perfectResult, 
-  resultMascot
+  mealPlaceholder,
+  perfectDecoration,
+  perfectResult,
+  resultMascot,
+  shareRoomCover,
+  shareRoomOwnerAvatar,
+  shareRoomFriendAvatar,
+  shareRoomMalatang,
+  shareRoomBibimbap,
+  shareRoomCucumberGimbap,
+  shareRoomInviteDecoration,
+  shareRoomBackIcon,
+  shareRoomMoreIcon,
+  shareRoomAddIcon,
+  shareRoomAddWhiteIcon,
+  shareRoomLogoutIcon,
+  shareRoomPhotoIcon,
 };
