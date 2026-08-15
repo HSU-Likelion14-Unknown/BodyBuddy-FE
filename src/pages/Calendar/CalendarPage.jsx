@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
@@ -184,14 +184,24 @@ function NutritionBar({ label, consumed, goal }) {
   );
 }
 
-function DateDetailCard({ date }) {
+function DateDetailCard({ date, datePhotos, onPhotoChange }) {
   const dateKey = formatDateKey(date);
   const records = MEAL_RECORDS[dateKey] || [];
   const [activeTab, setActiveTab] = useState(0);
+  const fileInputRef = useRef(null);
 
   const month = date.getMonth() + 1;
   const day = date.getDate();
   const record = records[activeTab] ?? null;
+
+  const handlePhotoChange = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => onPhotoChange(activeTab, String(reader.result));
+    reader.readAsDataURL(file);
+    e.target.value = '';
+  };
 
   return (
     <div className={styles.detailCard}>
@@ -255,13 +265,24 @@ function DateDetailCard({ date }) {
           <div className={styles.photoArea}>
             <div className={styles.photoWrapper}>
               <img
-                src={record.photo ?? mealPlaceholder}
+                src={datePhotos[activeTab] ?? record.photo ?? mealPlaceholder}
                 alt="식사 사진"
                 className={styles.foodPhoto}
               />
-              <button className={styles.editBtn} aria-label="수정">
+              <button
+                className={styles.editBtn}
+                aria-label="수정"
+                onClick={() => fileInputRef.current?.click()}
+              >
                 <MdEdit size={12} />
               </button>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                hidden
+                onChange={handlePhotoChange}
+              />
             </div>
           </div>
         </>
@@ -347,6 +368,14 @@ export default function CalendarPage() {
   const [viewDate, setViewDate] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState(null);
   const [showPicker, setShowPicker] = useState(false);
+  const [allLocalPhotos, setAllLocalPhotos] = useState({});
+
+  const handlePhotoChange = (dateKey, tabIndex, dataUrl) => {
+    setAllLocalPhotos((prev) => ({
+      ...prev,
+      [dateKey]: { ...(prev[dateKey] ?? {}), [tabIndex]: dataUrl },
+    }));
+  };
 
   const year = viewDate.getFullYear();
   const month = String(viewDate.getMonth() + 1).padStart(2, '0');
@@ -433,6 +462,10 @@ export default function CalendarPage() {
           <DateDetailCard
             key={formatDateKey(selectedDate)}
             date={selectedDate}
+            datePhotos={allLocalPhotos[formatDateKey(selectedDate)] ?? {}}
+            onPhotoChange={(tabIndex, dataUrl) =>
+              handlePhotoChange(formatDateKey(selectedDate), tabIndex, dataUrl)
+            }
           />
         </>
       )}
