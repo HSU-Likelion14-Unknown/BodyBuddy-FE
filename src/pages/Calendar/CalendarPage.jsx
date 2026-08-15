@@ -3,8 +3,14 @@ import { useNavigate } from 'react-router-dom';
 import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
 import styles from './CalendarPage.module.scss';
-import { iconBell, iconChevronDown } from '@/assets';
+import {
+  iconBell,
+  iconChevronDown,
+  mealPlaceholder,
+  iconForkKnife,
+} from '@/assets';
 import { BsChevronLeft } from 'react-icons/bs';
+import { MdEdit } from 'react-icons/md';
 
 const formatDateKey = (date) => {
   const y = date.getFullYear();
@@ -29,6 +35,74 @@ const DOT_DATA = {
   '2026-08-12': ['record', 'recommended'],
   '2026-08-14': ['missed'],
   '2026-08-15': ['record'],
+};
+
+// TODO: 실제 API 연동 시 교체
+const MEAL_RECORDS = {
+  '2026-08-15': [
+    {
+      foods: ['마라탕'],
+      kcal: 450,
+      protein: { consumed: 48, goal: 65 },
+      carbs: { consumed: 284, goal: 300 },
+      fat: { consumed: 51, goal: 65 },
+      recommendation: '연어 구이',
+    },
+  ],
+  '2026-08-12': [
+    {
+      foods: ['샐러드', '닭가슴살'],
+      kcal: 320,
+      protein: { consumed: 40, goal: 65 },
+      carbs: { consumed: 180, goal: 300 },
+      fat: { consumed: 18, goal: 65 },
+      recommendation: '삼겹살',
+    },
+    {
+      foods: ['비빔밥', '환장국', '깍두기'],
+      kcal: 620,
+      protein: { consumed: 54, goal: 65 },
+      carbs: { consumed: 264, goal: 300 },
+      fat: { consumed: 36, goal: 65 },
+      recommendation: null,
+    },
+  ],
+  '2026-08-02': [
+    {
+      foods: ['돼지국밥'],
+      kcal: 580,
+      protein: { consumed: 50, goal: 65 },
+      carbs: { consumed: 240, goal: 300 },
+      fat: { consumed: 45, goal: 65 },
+      recommendation: '야채 샐러드',
+    },
+    {
+      foods: ['김치찌개', '공기밥'],
+      kcal: 520,
+      protein: { consumed: 35, goal: 65 },
+      carbs: { consumed: 280, goal: 300 },
+      fat: { consumed: 28, goal: 65 },
+      recommendation: '닭가슴살',
+    },
+    {
+      foods: ['치킨', '맥주'],
+      kcal: 890,
+      protein: { consumed: 60, goal: 65 },
+      carbs: { consumed: 295, goal: 300 },
+      fat: { consumed: 62, goal: 65 },
+      recommendation: null,
+    },
+  ],
+  '2026-08-04': [
+    {
+      foods: ['토스트', '커피'],
+      kcal: 280,
+      protein: { consumed: 15, goal: 65 },
+      carbs: { consumed: 160, goal: 300 },
+      fat: { consumed: 12, goal: 65 },
+      recommendation: '닭볶음탕',
+    },
+  ],
 };
 
 // TODO: 실제 API 연동 시 교체
@@ -91,6 +165,109 @@ function MonthlyNutritionCard() {
         </span>{' '}
         <span className={styles.footerPct}>( {pct}% )</span>
       </p>
+    </div>
+  );
+}
+
+function NutritionBar({ label, consumed, goal }) {
+  const pct = Math.min((consumed / goal) * 100, 100);
+  return (
+    <div className={styles.barRow}>
+      <span className={styles.barLabel}>{label}</span>
+      <div className={styles.barTrack}>
+        <div className={styles.barFill} style={{ width: `${pct}%` }} />
+      </div>
+      <span className={styles.barValue}>
+        {consumed}g / {goal}g
+      </span>
+    </div>
+  );
+}
+
+function DateDetailCard({ date }) {
+  const dateKey = formatDateKey(date);
+  const records = MEAL_RECORDS[dateKey] || [];
+  const [activeTab, setActiveTab] = useState(0);
+
+  const month = date.getMonth() + 1;
+  const day = date.getDate();
+  const record = records[activeTab] ?? null;
+
+  return (
+    <div className={styles.detailCard}>
+      <div className={styles.detailHeader}>
+        <span className={styles.detailDate}>
+          {month}월 {day}일
+        </span>
+        <div className={styles.tabList}>
+          {[0, 1, 2].map((i) => (
+            <button
+              key={i}
+              className={`${styles.tabBtn} ${activeTab === i && i < records.length ? styles.tabActive : ''}`}
+              onClick={() => i < records.length && setActiveTab(i)}
+              disabled={i >= records.length}
+            >
+              기록 {i + 1}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {record ? (
+        <>
+          <div className={styles.foodTags}>
+            {record.foods.map((food) => (
+              <span key={food} className={styles.foodTag}>
+                {food}
+              </span>
+            ))}
+            <span className={styles.kcalTag}>{record.kcal} Kcal</span>
+          </div>
+
+          <div className={styles.nutritionBars}>
+            <NutritionBar
+              label="단백질"
+              consumed={record.protein.consumed}
+              goal={record.protein.goal}
+            />
+            <NutritionBar
+              label="탄수화물"
+              consumed={record.carbs.consumed}
+              goal={record.carbs.goal}
+            />
+            <NutritionBar
+              label="지방"
+              consumed={record.fat.consumed}
+              goal={record.fat.goal}
+            />
+          </div>
+
+          <div className={styles.recommendBanner}>
+            <span className={styles.recommendLabel}>
+              <img src={iconForkKnife} alt="" className={styles.forkIcon} />
+              바디버디의 한끼 추천
+            </span>
+            <p className={styles.recommendText}>
+              {record.recommendation ?? '영양소 밸런스가 완벽해요!'}
+            </p>
+          </div>
+
+          <div className={styles.photoArea}>
+            <div className={styles.photoWrapper}>
+              <img
+                src={record.photo ?? mealPlaceholder}
+                alt="식사 사진"
+                className={styles.foodPhoto}
+              />
+              <button className={styles.editBtn} aria-label="수정">
+                <MdEdit size={12} />
+              </button>
+            </div>
+          </div>
+        </>
+      ) : (
+        <p className={styles.noRecord}>기록이 없습니다</p>
+      )}
     </div>
   );
 }
@@ -246,6 +423,19 @@ export default function CalendarPage() {
       </div>
 
       <MonthlyNutritionCard />
+
+      {selectedDate && (
+        <>
+          <div
+            className={styles.cardOverlay}
+            onClick={() => setSelectedDate(null)}
+          />
+          <DateDetailCard
+            key={formatDateKey(selectedDate)}
+            date={selectedDate}
+          />
+        </>
+      )}
 
       {showPicker && (
         <MonthPickerModal

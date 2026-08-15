@@ -22,6 +22,7 @@ import iconCloseSmall from '@/assets/onboarding/icon-close-small.svg';
 
 // Calendar
 import iconBell from '@/assets/calendar/icon-bell.svg';
+import iconForkKnife from '@/assets/calendar/icon-fork-knife.svg';
 
 // Splash
 import splashEllipseBg from '@/assets/splash/ellipse-bg.svg';
@@ -52,4 +53,5 @@ export {
   perfectDecoration,
   perfectResult,
   resultMascot,
+  iconForkKnife,
 };
