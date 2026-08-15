@@ -1,0 +1,109 @@
+@use '../../styles/variables' as *;
+@use '../../styles/function' as *;
+
+.page {
+  position: relative;
+  width: 100%;
+  min-height: max(100dvh, 768px);
+  background-color: $color-white;
+}
+
+.content {
+  position: absolute;
+  top: 133px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 369px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+}
+
+.imageAndText {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 25px;
+  width: 100%;
+}
+
+.errorImage {
+  width: 122px;
+  height: 133px;
+  object-fit: contain;
+}
+
+.textGroup {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  text-align: center;
+}
+
+.title {
+  font-size: rem(20px);
+  font-weight: $font-weight-semibold;
+  color: $color-brown5;
+  line-height: 24px;
+  letter-spacing: -0.5px;
+  width: 200px;
+}
+
+.subtitle {
+  font-size: rem(12px);
+  font-weight: $font-weight-medium;
+  color: $color-gray-medium;
+  line-height: 24px;
+  letter-spacing: -0.3px;
+}
+
+.tipList {
+  list-style: disc;
+  padding-left: 20px;
+  width: 188px;
+  align-self: center;
+
+  li {
+    font-size: rem(13px);
+    font-weight: $font-weight-medium;
+    color: $color-gray5;
+    line-height: 24px;
+    letter-spacing: -0.325px;
+  }
+}
+
+.retakeBtn {
+  position: absolute;
+  top: 554px;
+  left: 20px;
+  right: 20px;
+  padding: 12px;
+  border-radius: 10px;
+  border: none;
+  background-color: $color-primary-accent;
+  color: $color-white;
+  font-size: rem(18px);
+  font-weight: $font-weight-semibold;
+  letter-spacing: -0.45px;
+  cursor: pointer;
+  box-shadow: 0px 5px 10px rgba(113, 71, 3, 0.14);
+}
+
+.manualBtn {
+  position: absolute;
+  top: 613px;
+  left: 20px;
+  right: 20px;
+  padding: 12px;
+  border-radius: 10px;
+  border: none;
+  background-color: #ffce80;
+  color: $color-brown3;
+  font-size: rem(18px);
+  font-weight: $font-weight-semibold;
+  letter-spacing: -0.45px;
+  cursor: pointer;
+  box-shadow: 0px 5px 10px rgba(113, 71, 3, 0.14);
+}
