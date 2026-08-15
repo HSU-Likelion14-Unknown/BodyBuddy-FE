@@ -26,7 +26,7 @@
 /* ── 배경 타원 ── */
 .ellipseBg {
   position: absolute;
-  top: 187px;
+  top: 143px;
   left: 50%;
   transform: translateX(-50%);
   width: 266px;
@@ -45,7 +45,7 @@
 /* ── 로고 ── */
 .logoSection {
   position: absolute;
-  top: 229px;
+  top: 185px;
   left: 50%;
   transform: translateX(-50%);
   display: flex;
@@ -74,7 +74,7 @@
 /* ── 그라디언트 ── */
 .gradientShape {
   position: absolute;
-  top: 404px;
+  top: 360px;
   left: -15px;
   width: 384px;
   height: 89px;
@@ -89,7 +89,7 @@
 /* ── 캐릭터 ── */
 .character {
   position: absolute;
-  top: 315px;
+  top: 271px;
   left: 50%;
   transform: translateX(-50%);
   width: 179px;
@@ -102,7 +102,7 @@
 /* ── 기능 소개 ── */
 .features {
   position: absolute;
-  top: 533px;
+  top: 489px;
   left: 50%;
   transform: translateX(-50%);
   display: flex;
@@ -148,7 +148,7 @@
 /* ── 로딩 인디케이터 ── */
 .loading {
   position: absolute;
-  top: 712px;
+  bottom: 40px;
   left: 50%;
   transform: translateX(-50%);
   display: flex;

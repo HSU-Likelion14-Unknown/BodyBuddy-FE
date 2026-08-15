@@ -20,6 +20,10 @@ import iconCheckEmpty from '@/assets/onboarding/icon-check-empty.svg';
 import iconCheckFilled from '@/assets/onboarding/icon-check-filled.svg';
 import iconCloseSmall from '@/assets/onboarding/icon-close-small.svg';
 
+// Calendar
+import iconBell from '@/assets/calendar/icon-bell.svg';
+import iconForkKnife from '@/assets/calendar/icon-fork-knife.svg';
+
 // Splash
 import splashEllipseBg from '@/assets/splash/ellipse-bg.svg';
 import splashCharacter from '@/assets/splash/character.png';
@@ -47,6 +51,7 @@ import shareRoomLogoutIcon from '@/assets/share-room/icon-logout.svg';
 import shareRoomPhotoIcon from '@/assets/share-room/icon-photo.svg';
 
 export {
+  iconBell,
   onboardingCharacter1,
   onboardingCharacter2,
   onboardingCharacter3,
@@ -82,4 +87,5 @@ export {
   shareRoomAddWhiteIcon,
   shareRoomLogoutIcon,
   shareRoomPhotoIcon,
+  iconForkKnife,
 };
