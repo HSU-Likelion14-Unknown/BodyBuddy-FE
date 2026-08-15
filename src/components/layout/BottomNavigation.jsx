@@ -6,7 +6,12 @@ import { BsPersonFill } from 'react-icons/bs';
 import { NavLink, useLocation } from 'react-router-dom';
 
 const NAV_ITEMS = [
-  { to: '/home', label: '홈', icon: <RiHome6Fill /> },
+  {
+    to: '/home',
+    activePath: '/share-room',
+    label: '홈',
+    icon: <RiHome6Fill />,
+  },
   {
     to: '/meals/new',
     activePath: '/meals',

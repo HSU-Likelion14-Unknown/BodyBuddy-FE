@@ -1,0 +1,148 @@
+@use '@/styles/variables' as *;
+@use '@/styles/function' as *;
+
+.overlay {
+  @include flex;
+
+  position: fixed;
+  inset: 0 auto 0 50%;
+  z-index: 300;
+  width: 100%;
+  max-width: 430px;
+  padding: 20px;
+  background-color: rgba($color-black, 0.42);
+  transform: translateX(-50%);
+  animation: overlayFadeIn 0.2s ease-out;
+}
+
+.dialog {
+  position: relative;
+  width: 100%;
+  padding: 28px 20px 20px;
+  background-color: $color-white;
+  border-radius: 20px;
+  box-shadow: 0 14px 36px rgba($color-black, 0.18);
+  animation: dialogFadeIn 0.2s ease-out;
+}
+
+.closeButton {
+  @include flex;
+
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  width: 32px;
+  height: 32px;
+  color: $color-gray-medium;
+  background: transparent;
+  border: 0;
+  border-radius: 50%;
+  cursor: pointer;
+
+  svg {
+    width: 23px;
+    height: 23px;
+  }
+}
+
+.titleContent {
+  padding-right: 24px;
+
+  h2 {
+    color: $color-brown4;
+    font-size: $font-size-21;
+    font-weight: $font-weight-semibold;
+    letter-spacing: -0.5px;
+  }
+
+  p {
+    margin-top: 9px;
+    color: $color-gray5;
+    font-size: $font-size-12;
+    font-weight: $font-weight-medium;
+    line-height: 18px;
+  }
+}
+
+.linkContent {
+  @include flex(row, center, space-between, 8px);
+
+  margin-top: 22px;
+
+  input {
+    flex: 1;
+    width: 0;
+    min-width: 0;
+    height: 44px;
+    padding: 0 12px;
+    overflow: hidden;
+    color: $color-gray5;
+    font-size: $font-size-11;
+    font-weight: $font-weight-medium;
+    text-overflow: ellipsis;
+    background-color: $color-gray2;
+    border: 0;
+    border-radius: 9px;
+    outline: 0;
+  }
+
+  button {
+    @include flex(row, center, center, 4px);
+
+    flex: 0 0 83px;
+    height: 44px;
+    color: $color-primary-deep;
+    font-size: $font-size-12;
+    font-weight: $font-weight-semibold;
+    background-color: $color-primary-soft;
+    border: 0;
+    border-radius: 9px;
+    cursor: pointer;
+
+    svg {
+      width: 17px;
+      height: 17px;
+    }
+  }
+}
+
+.expiration {
+  margin: 8px 2px 0;
+  color: $color-gray-medium;
+  font-size: $font-size-11;
+  font-weight: $font-weight-medium;
+}
+
+.shareButton {
+  @include flex(row, center, center, 7px);
+
+  width: 100%;
+  height: 46px;
+  margin-top: 20px;
+  color: $color-white;
+  font-size: $font-size-16;
+  font-weight: $font-weight-semibold;
+  background-color: $color-primary-accent;
+  border: 0;
+  border-radius: 10px;
+  box-shadow: 0 5px 10px rgba(113, 71, 3, 0.14);
+  cursor: pointer;
+
+  svg {
+    width: 19px;
+    height: 19px;
+  }
+}
+
+@keyframes overlayFadeIn {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes dialogFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.98);
+  }
+}
