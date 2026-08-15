@@ -1,0 +1,290 @@
+@use '@/styles/variables' as *;
+@use '@/styles/function' as *;
+
+.card {
+  width: 100%;
+  padding: 16px 25px;
+  color: $color-text;
+  background-color: $color-primary-light;
+  border-radius: 10px;
+}
+
+.memberHeader {
+  @include flex(row, center, flex-start, 18px);
+  min-height: 41px;
+}
+
+.empty .memberHeader {
+  align-items: flex-start;
+}
+
+.avatar {
+  width: 41px;
+  height: 41px;
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+.memberContent {
+  min-width: 0;
+
+  h2 {
+    @include flex(row, center, flex-start);
+    height: 17px;
+    font-size: 14px;
+    font-weight: $font-weight-semibold;
+    letter-spacing: -0.35px;
+  }
+}
+
+.recordTabs {
+  @include flex(row, center, flex-start, 12px);
+
+  margin-top: 3px;
+
+  button {
+    @include flex;
+
+    height: 21px;
+    padding: 0;
+    color: $color-brown2;
+    font-size: 12px;
+    font-weight: $font-weight-medium;
+    background: transparent;
+    border: 0;
+    border-bottom: 1px solid transparent;
+    cursor: pointer;
+
+    &.active {
+      color: $color-primary-accent;
+      font-weight: $font-weight-semibold;
+      border-bottom-color: $color-primary-accent;
+    }
+  }
+}
+
+.noResponse {
+  @include flex;
+
+  width: 100%;
+  height: 118px;
+  margin-top: 10px;
+  color: $color-gray5;
+  font-size: 13px;
+  font-weight: $font-weight-semibold;
+  background-color: $color-gray4;
+  border-radius: 10px;
+}
+
+.recordButton {
+  @include flex(row, center, center, 6px);
+
+  width: 117px;
+  height: 29px;
+  margin-top: 10px;
+  color: $color-brown4;
+  font-size: 13px;
+  font-weight: $font-weight-semibold;
+  background-color: $color-primary-soft;
+  border: 0;
+  border-radius: 100px;
+  cursor: pointer;
+
+  img {
+    width: 7px;
+    height: 7px;
+  }
+}
+
+.recorded {
+  min-height: 313px;
+}
+
+.mealImageContent {
+  position: relative;
+  width: 100%;
+  height: 147px;
+  margin-top: 10px;
+  overflow: hidden;
+  border-radius: 5px;
+
+  > img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  > span {
+    @include flex;
+
+    position: absolute;
+    bottom: 8px;
+    left: 22px;
+    height: 29px;
+    padding: 0 10px;
+    color: $color-white;
+    font-size: 11px;
+    font-weight: $font-weight-medium;
+    background-color: rgba(255, 148, 42, 0.8);
+    border-radius: 100px;
+    box-shadow: 0 4px 8px rgba(104, 77, 50, 0.7);
+    backdrop-filter: blur(2px);
+  }
+}
+
+.foodList,
+.reactionList {
+  @include flex(row, center, flex-start, 8px);
+
+  flex-wrap: wrap;
+
+  > span,
+  > button {
+    @include flex(row, center, center);
+
+    height: 29px;
+    padding: 0 14px;
+    color: $color-gray5;
+    font-size: 11px;
+    font-weight: $font-weight-medium;
+    border: 0;
+    border-radius: 100px;
+  }
+}
+
+.addReactionButton {
+  @include flex(row, center, center, 6px);
+
+  span {
+    @include flex;
+
+    width: 12px;
+    height: 12px;
+
+    img {
+      width: 7px;
+      height: 7px;
+    }
+  }
+
+  &.compact {
+    width: 32px;
+    height: 32px;
+    padding: 0;
+  }
+}
+
+.foodList {
+  margin-top: 10px;
+
+  span {
+    background-color: $color-primary-soft;
+  }
+}
+
+.reactionList {
+  margin-top: 8px;
+
+  button {
+    background-color: #ffe4b8;
+    outline: 0;
+    cursor: pointer;
+    transition:
+      color 0.2s ease,
+      background-color 0.2s ease;
+
+    &:focus-visible {
+      outline: 2px solid $color-primary-accent;
+      outline-offset: 2px;
+    }
+  }
+
+  > .reactionButton {
+    flex: 0 0 60px;
+    width: 60px;
+    height: 32px;
+    padding: 0 9px;
+    gap: 4px;
+    animation: reactionChipIn 0.15s ease-out;
+  }
+
+  button.selected {
+    color: $color-white;
+    background-color: $color-primary-accent;
+  }
+}
+
+.reactionEmoji {
+  @include flex;
+
+  flex: 0 0 18px;
+  width: 18px;
+  height: 18px;
+  font-size: 14px;
+  transform: translateY(-1px);
+}
+
+.reactionCount {
+  @include flex;
+
+  flex: 0 0 16px;
+  width: 16px;
+  height: 18px;
+  font-size: 12px;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
+.reactionPicker {
+  @include flex(row, center, center, 6px);
+
+  flex-wrap: wrap;
+  width: 100%;
+  margin-top: 8px;
+  padding: 6px 8px;
+  background-color: $color-white;
+  border-radius: 100px;
+  box-shadow: 0 3px 10px rgba(113, 71, 3, 0.12);
+  transform-origin: top center;
+  animation: reactionPickerIn 0.15s ease-out;
+
+  button {
+    @include flex;
+
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    font-size: 18px;
+    background-color: transparent;
+    border: 0;
+    border-radius: 50%;
+    outline: 0;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+
+    &.selected {
+      background-color: $color-primary-soft;
+    }
+
+    &:focus-visible {
+      outline: 2px solid $color-primary-accent;
+    }
+  }
+}
+
+@keyframes reactionPickerIn {
+  from {
+    opacity: 0;
+    transform: translateY(-3px) scale(0.98);
+  }
+}
+
+@keyframes reactionChipIn {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+}

@@ -1,0 +1,279 @@
+@use '@/styles/variables' as *;
+@use '@/styles/function' as *;
+
+.roomSection {
+  position: relative;
+  width: calc(100% - 34px);
+  max-width: 359px;
+  margin-top: 43px;
+  margin-left: 21px;
+
+  h1 {
+    @include flex(row, center, flex-start);
+
+    height: 23px;
+    color: $color-brown5;
+    font-size: 14px;
+    font-weight: $font-weight-semibold;
+    letter-spacing: -0.35px;
+  }
+}
+
+.mascot {
+  position: absolute;
+  top: -61px;
+  right: 1px;
+  z-index: 1;
+  width: 88px;
+  height: 93px;
+  object-fit: contain;
+  pointer-events: none;
+}
+
+.roomList {
+  display: grid;
+  width: 100%;
+  height: 96px;
+  margin-top: 8px;
+  overflow-x: auto;
+  grid-auto-columns: 80px;
+  grid-auto-flow: column;
+  gap: 13px;
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+.roomCard {
+  position: relative;
+  width: 80px;
+  height: 96px;
+  padding: 0;
+  overflow: hidden;
+  color: $color-white;
+  text-align: left;
+  background-color: $color-gray3;
+  border: 0;
+  border-radius: 5px;
+  outline: 0;
+  cursor: pointer;
+
+  &:focus-visible {
+    outline: 2px solid $color-primary-accent;
+    outline-offset: 2px;
+  }
+}
+
+.roomCover,
+.roomGradient {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.roomCover {
+  object-fit: cover;
+}
+
+.roomGradient {
+  background: linear-gradient(
+    180deg,
+    rgba($color-black, 0) 35%,
+    rgba(104, 77, 50, 0.75) 100%
+  );
+}
+
+.memberProfiles {
+  @include flex(row, center, flex-start);
+
+  position: absolute;
+  bottom: 26px;
+  left: 5px;
+}
+
+.memberProfile {
+  width: 15px;
+  height: 15px;
+  margin-left: -7px;
+  border: 1px solid rgba($color-white, 0.85);
+  border-radius: 50%;
+
+  &:first-child {
+    margin-left: 0;
+  }
+}
+
+.roomName {
+  @include flex(row, center, flex-start);
+
+  position: absolute;
+  right: 5px;
+  bottom: 5px;
+  left: 5px;
+  height: 15px;
+  overflow: hidden;
+  font-size: 11px;
+  font-weight: $font-weight-semibold;
+  letter-spacing: -0.275px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.emptyContent {
+  @include flex(column, center, center, 2px);
+
+  width: calc(100% - 8px);
+  height: 96px;
+  margin-top: 8px;
+  color: $color-gray-medium;
+  text-align: center;
+  background-color: $color-gray2;
+  border-radius: 5px;
+
+  strong,
+  span {
+    font-size: 11px;
+    font-weight: $font-weight-medium;
+    letter-spacing: -0.275px;
+  }
+}
+
+.openCreateButton {
+  @include flex(row, center, center, 6px);
+
+  width: 113px;
+  height: 29px;
+  margin-top: 12px;
+  padding: 0 10px;
+  color: $color-white;
+  font-size: 11px;
+  font-weight: $font-weight-medium;
+  letter-spacing: -0.275px;
+  background-color: $color-primary-accent;
+  border: 0;
+  border-radius: 100px;
+  cursor: pointer;
+
+  img {
+    width: 15px;
+    height: 15px;
+  }
+}
+
+.overlay {
+  @include flex(row, flex-end, center);
+
+  position: fixed;
+  inset: 0 auto 0 50%;
+  z-index: 300;
+  width: 100%;
+  max-width: 430px;
+  padding: 20px 20px 159px;
+  background-color: rgba($color-black, 0.4);
+  transform: translateX(-50%);
+  animation: overlayFadeIn 0.2s ease-out;
+}
+
+.dialog {
+  width: 267px;
+  height: 190px;
+  padding: 20px 22px 19px;
+  text-align: center;
+  background-color: $color-white;
+  border-radius: 10px;
+  box-shadow: 0 4px 4px rgba(113, 71, 3, 0.14);
+  animation: dialogFadeIn 0.2s ease-out;
+
+  h2,
+  p,
+  label {
+    @include flex;
+  }
+
+  h2 {
+    height: 17px;
+    color: $color-gray5;
+    font-size: 14px;
+    font-weight: $font-weight-medium;
+    letter-spacing: -0.35px;
+  }
+
+  p {
+    height: 13px;
+    margin-top: 3px;
+    color: $color-gray-medium;
+    font-size: 11px;
+    font-weight: $font-weight-medium;
+    letter-spacing: -0.275px;
+  }
+
+  form {
+    margin-top: 20px;
+  }
+
+  label {
+    height: 14px;
+    color: $color-brown4;
+    font-size: 12px;
+    font-weight: $font-weight-medium;
+    letter-spacing: -0.3px;
+  }
+
+  input {
+    width: 100%;
+    height: 28px;
+    margin-top: 14px;
+    padding: 10px 0 3px;
+    color: $color-brown4;
+    font-size: 12px;
+    font-weight: $font-weight-medium;
+    letter-spacing: -0.3px;
+    text-align: center;
+    background-color: transparent;
+    border: 0;
+    border-bottom: 1px solid $color-brown2;
+    border-radius: 0;
+    outline: 0;
+  }
+
+  button {
+    @include flex;
+
+    width: 79px;
+    height: 26px;
+    margin: 16px auto 0;
+    color: $color-white;
+    font-size: 11px;
+    font-weight: $font-weight-semibold;
+    letter-spacing: -0.275px;
+    background-color: $color-primary-accent;
+    border: 0;
+    border-radius: 100px;
+    cursor: pointer;
+    transition:
+      color 0.2s ease,
+      background-color 0.2s ease;
+
+    &:disabled {
+      color: $color-gray-medium;
+      background-color: $color-gray-disabled;
+      cursor: default;
+    }
+  }
+}
+
+@keyframes overlayFadeIn {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes dialogFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.98);
+  }
+}

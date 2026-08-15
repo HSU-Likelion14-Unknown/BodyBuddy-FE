@@ -11,6 +11,10 @@ import OnboardingPage3 from './pages/Onboarding/OnboardingPage3';
 import NetworkErrorPage from './pages/Error/NetworkErrorPage';
 import RecognitionNetworkErrorPage from './pages/Error/RecognitionNetworkErrorPage';
 import RecognitionResultErrorPage from './pages/Error/RecognitionResultErrorPage';
+import HomePage from './pages/home/HomePage';
+import ShareRoomInvitePage from './pages/share-room/ShareRoomInvitePage';
+import ShareRoomPage from './pages/share-room/ShareRoomPage';
+import CalendarPage from './pages/Calendar/CalendarPage';
 
 function App() {
   return (
@@ -18,7 +22,12 @@ function App() {
       <Routes>
         {/* 모바일 레이아웃 설정 */}
         <Route element={<Layout />}>
-          <Route path="/home" element={<></>} />
+          <Route path="/home" element={<HomePage />} />
+          <Route
+            path="/share-room/invite/:code"
+            element={<ShareRoomInvitePage />}
+          />
+          <Route path="/share-room/:roomId" element={<ShareRoomPage />} />
           <Route path="/meals/new" element={<MealRecordPage />} />
           <Route path="/meals/analyzing" element={<MealAnalysisPage />} />
           <Route path="/meals/result" element={<MealResultPage />} />
@@ -26,7 +35,7 @@ function App() {
             path="/meals/recommendation"
             element={<MealRecommendationPage />}
           />
-          <Route path="/calendar" element={<></>} />
+          <Route path="/calendar" element={<CalendarPage />} />
           <Route path="/mypage" element={<></>} />
           <Route path="/" element={<SplashPage />} />
           <Route path="/onboarding/1" element={<OnboardingPage1 />} />

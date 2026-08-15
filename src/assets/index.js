@@ -20,6 +20,10 @@ import iconCheckEmpty from '@/assets/onboarding/icon-check-empty.svg';
 import iconCheckFilled from '@/assets/onboarding/icon-check-filled.svg';
 import iconCloseSmall from '@/assets/onboarding/icon-close-small.svg';
 
+// Calendar
+import iconBell from '@/assets/calendar/icon-bell.svg';
+import iconForkKnife from '@/assets/calendar/icon-fork-knife.svg';
+
 // Splash
 import splashEllipseBg from '@/assets/splash/ellipse-bg.svg';
 import splashCharacter from '@/assets/splash/character.png';
@@ -27,7 +31,27 @@ import splashIconBulb from '@/assets/splash/icon-bulb.svg';
 import splashIconCamera from '@/assets/splash/icon-camera.svg';
 import splashIconChart from '@/assets/splash/icon-chart.svg';
 
+// Home
+import homeRoomAddIcon from '@/assets/home/icon-add.png';
+import homeShareRoomMascot from '@/assets/home/share-room-mascot.svg';
+
+// Share room
+import shareRoomCover from '@/assets/share-room/room-header.png';
+import shareRoomOwnerAvatar from '@/assets/share-room/avatar-me.png';
+import shareRoomFriendAvatar from '@/assets/share-room/avatar-friend-2.png';
+import shareRoomMalatang from '@/assets/share-room/meal-malatang.png';
+import shareRoomBibimbap from '@/assets/share-room/meal-bibimbap.png';
+import shareRoomCucumberGimbap from '@/assets/share-room/meal-cucumber-gimbap.png';
+import shareRoomInviteDecoration from '@/assets/share-room/invite-decoration-exact.svg';
+import shareRoomBackIcon from '@/assets/share-room/icon-back.svg';
+import shareRoomMoreIcon from '@/assets/share-room/icon-more.svg';
+import shareRoomAddIcon from '@/assets/share-room/icon-add-brown.svg';
+import shareRoomAddWhiteIcon from '@/assets/share-room/icon-add-white.svg';
+import shareRoomLogoutIcon from '@/assets/share-room/icon-logout.svg';
+import shareRoomPhotoIcon from '@/assets/share-room/icon-photo.svg';
+
 export {
+  iconBell,
   onboardingCharacter1,
   onboardingCharacter2,
   onboardingCharacter3,
@@ -44,8 +68,24 @@ export {
   splashIconBulb,
   splashIconCamera,
   splashIconChart,
-  mealPlaceholder, 
-  perfectDecoration, 
-  perfectResult, 
-  resultMascot
+  homeRoomAddIcon,
+  homeShareRoomMascot,
+  mealPlaceholder,
+  perfectDecoration,
+  perfectResult,
+  resultMascot,
+  shareRoomCover,
+  shareRoomOwnerAvatar,
+  shareRoomFriendAvatar,
+  shareRoomMalatang,
+  shareRoomBibimbap,
+  shareRoomCucumberGimbap,
+  shareRoomInviteDecoration,
+  shareRoomBackIcon,
+  shareRoomMoreIcon,
+  shareRoomAddIcon,
+  shareRoomAddWhiteIcon,
+  shareRoomLogoutIcon,
+  shareRoomPhotoIcon,
+  iconForkKnife,
 };
