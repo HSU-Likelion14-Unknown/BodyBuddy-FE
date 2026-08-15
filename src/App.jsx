@@ -8,6 +8,7 @@ import SplashPage from './pages/Splash/SplashPage';
 import OnboardingPage1 from './pages/Onboarding/OnboardingPage1';
 import OnboardingPage2 from './pages/Onboarding/OnboardingPage2';
 import OnboardingPage3 from './pages/Onboarding/OnboardingPage3';
+import NetworkErrorPage from './pages/Error/NetworkErrorPage';
 
 function App() {
   return (
@@ -29,6 +30,7 @@ function App() {
           <Route path="/onboarding/1" element={<OnboardingPage1 />} />
           <Route path="/onboarding/2" element={<OnboardingPage2 />} />
           <Route path="/onboarding/3" element={<OnboardingPage3 />} />
+          <Route path="/error/network" element={<NetworkErrorPage />} />
         </Route>
       </Routes>
     </BrowserRouter>

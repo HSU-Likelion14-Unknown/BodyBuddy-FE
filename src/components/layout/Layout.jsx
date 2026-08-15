@@ -7,7 +7,8 @@ export const Layout = () => {
   const isBottomNavigationHidden =
     pathname === '/' ||
     pathname === '/onboarding' ||
-    pathname.startsWith('/onboarding/');
+    pathname.startsWith('/onboarding/') ||
+    pathname.startsWith('/error/');
 
   return (
     <div
