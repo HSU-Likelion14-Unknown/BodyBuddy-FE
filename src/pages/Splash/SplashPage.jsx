@@ -19,7 +19,7 @@ export default function SplashPage() {
     // 온보딩 여부 확인
     const timer = setTimeout(() => {
       navigate(hasOnboarded ? '/home' : '/onboarding/1');
-    }, 30000000); // 일단 임시적으로 3초로 지정
+    }, 3000);
 
     return () => clearTimeout(timer);
   }, [navigate]);
