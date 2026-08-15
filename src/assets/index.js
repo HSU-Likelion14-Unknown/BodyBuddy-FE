@@ -27,6 +27,10 @@ import splashIconBulb from '@/assets/splash/icon-bulb.svg';
 import splashIconCamera from '@/assets/splash/icon-camera.svg';
 import splashIconChart from '@/assets/splash/icon-chart.svg';
 
+// Home
+import homeRoomAddIcon from '@/assets/home/icon-add.png';
+import homeShareRoomMascot from '@/assets/home/share-room-mascot.svg';
+
 // Share room
 import shareRoomCover from '@/assets/share-room/room-header.png';
 import shareRoomOwnerAvatar from '@/assets/share-room/avatar-me.png';
@@ -59,6 +63,8 @@ export {
   splashIconBulb,
   splashIconCamera,
   splashIconChart,
+  homeRoomAddIcon,
+  homeShareRoomMascot,
   mealPlaceholder,
   perfectDecoration,
   perfectResult,
