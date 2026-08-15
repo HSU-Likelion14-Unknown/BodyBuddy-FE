@@ -148,7 +148,7 @@
 /* ── 로딩 인디케이터 ── */
 .loading {
   position: absolute;
-  top: 712px;
+  bottom: 40px;
   left: 50%;
   transform: translateX(-50%);
   display: flex;
