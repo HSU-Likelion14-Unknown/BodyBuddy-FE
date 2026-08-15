@@ -9,6 +9,7 @@ import OnboardingPage1 from './pages/Onboarding/OnboardingPage1';
 import OnboardingPage2 from './pages/Onboarding/OnboardingPage2';
 import OnboardingPage3 from './pages/Onboarding/OnboardingPage3';
 import NetworkErrorPage from './pages/Error/NetworkErrorPage';
+import RecognitionNetworkErrorPage from './pages/Error/RecognitionNetworkErrorPage';
 
 function App() {
   return (
@@ -31,6 +32,10 @@ function App() {
           <Route path="/onboarding/2" element={<OnboardingPage2 />} />
           <Route path="/onboarding/3" element={<OnboardingPage3 />} />
           <Route path="/error/network" element={<NetworkErrorPage />} />
+          <Route
+            path="/error/recognition-network"
+            element={<RecognitionNetworkErrorPage />}
+          />
         </Route>
       </Routes>
     </BrowserRouter>

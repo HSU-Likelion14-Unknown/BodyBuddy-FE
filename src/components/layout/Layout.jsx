@@ -8,7 +8,7 @@ export const Layout = () => {
     pathname === '/' ||
     pathname === '/onboarding' ||
     pathname.startsWith('/onboarding/') ||
-    pathname.startsWith('/error/');
+    pathname === '/error/network';
 
   return (
     <div
