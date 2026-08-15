@@ -1,0 +1,84 @@
+@use '@/styles/variables' as *;
+@use '@/styles/function' as *;
+
+.container {
+  @include flex(column, center, center);
+
+  min-height: calc(100dvh - 90px);
+  padding: 40px 30px 80px;
+  color: $color-brown4;
+  text-align: center;
+  background:
+    radial-gradient(
+      circle at 50% 35%,
+      rgba($color-primary, 0.2),
+      transparent 32%
+    ),
+    $color-white;
+
+  h1 {
+    margin-top: 24px;
+    font-size: $font-size-21;
+    font-weight: $font-weight-semibold;
+    line-height: 30px;
+    letter-spacing: -0.5px;
+  }
+
+  > p {
+    margin-top: 10px;
+    color: $color-gray5;
+    font-size: $font-size-13;
+    font-weight: $font-weight-medium;
+    line-height: 20px;
+  }
+}
+
+.iconContent {
+  @include flex;
+
+  width: 82px;
+  height: 82px;
+  color: $color-white;
+  background-color: $color-primary-accent;
+  border-radius: 28px;
+  box-shadow: 0 10px 25px rgba(113, 71, 3, 0.18);
+
+  svg {
+    width: 44px;
+    height: 44px;
+  }
+}
+
+.loadingDots {
+  @include flex(row, center, center, 7px);
+
+  margin-top: 28px;
+
+  span {
+    width: 8px;
+    height: 8px;
+    background-color: $color-primary-accent;
+    border-radius: 50%;
+    animation: bounce 1.2s infinite ease-in-out;
+
+    &:nth-child(2) {
+      animation-delay: 0.15s;
+    }
+
+    &:nth-child(3) {
+      animation-delay: 0.3s;
+    }
+  }
+}
+
+@keyframes bounce {
+  0%,
+  60%,
+  100% {
+    transform: translateY(0);
+  }
+
+  30% {
+    transform: translateY(-7px);
+  }
+}
