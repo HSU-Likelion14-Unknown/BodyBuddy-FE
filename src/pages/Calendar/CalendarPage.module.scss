@@ -119,6 +119,12 @@
       color: $color-gray4 !important;
     }
 
+    // 이전/다음 달 일요일
+    .react-calendar__month-view__days__day--neighboringMonth:nth-child(7n + 1)
+      abbr {
+      color: #f29cd8 !important;
+    }
+
     // 오늘 - 숫자만 주황색
     .react-calendar__tile--now {
       background: none;
