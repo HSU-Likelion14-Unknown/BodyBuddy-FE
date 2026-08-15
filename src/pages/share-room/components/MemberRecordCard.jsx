@@ -151,11 +151,11 @@ export default function MemberRecordCard({ member }) {
                 <button
                   key={reaction.id}
                   type="button"
-                  className={
+                  className={`${styles.reactionButton} ${
                     selectedReactionState.selectedReactionId === reaction.id
                       ? styles.selected
                       : ''
-                  }
+                  }`}
                   title={`${reaction.label} 반응 ${
                     selectedReactionState.selectedReactionId === reaction.id
                       ? '취소'
@@ -163,7 +163,8 @@ export default function MemberRecordCard({ member }) {
                   }`}
                   onClick={() => leaveReaction(reaction)}
                 >
-                  {reaction.emoji} {reaction.count}
+                  <span className={styles.reactionEmoji}>{reaction.emoji}</span>
+                  <span className={styles.reactionCount}>{reaction.count}</span>
                 </button>
               ))}
 

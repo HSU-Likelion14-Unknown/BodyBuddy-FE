@@ -171,7 +171,8 @@
   }
 
   &.compact {
-    width: 29px;
+    width: 32px;
+    height: 32px;
     padding: 0;
   }
 }
@@ -191,6 +192,9 @@
     background-color: #ffe4b8;
     outline: 0;
     cursor: pointer;
+    transition:
+      color 0.2s ease,
+      background-color 0.2s ease;
 
     &:focus-visible {
       outline: 2px solid $color-primary-accent;
@@ -198,10 +202,40 @@
     }
   }
 
+  > .reactionButton {
+    flex: 0 0 60px;
+    width: 60px;
+    height: 32px;
+    padding: 0 9px;
+    gap: 4px;
+    animation: reactionChipIn 0.15s ease-out;
+  }
+
   button.selected {
     color: $color-white;
     background-color: $color-primary-accent;
   }
+}
+
+.reactionEmoji {
+  @include flex;
+
+  flex: 0 0 18px;
+  width: 18px;
+  height: 18px;
+  font-size: 14px;
+  transform: translateY(-1px);
+}
+
+.reactionCount {
+  @include flex;
+
+  flex: 0 0 16px;
+  width: 16px;
+  height: 18px;
+  font-size: 12px;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
 }
 
 .reactionPicker {
@@ -214,6 +248,8 @@
   background-color: $color-white;
   border-radius: 100px;
   box-shadow: 0 3px 10px rgba(113, 71, 3, 0.12);
+  transform-origin: top center;
+  animation: reactionPickerIn 0.15s ease-out;
 
   button {
     @include flex;
@@ -227,6 +263,7 @@
     border-radius: 50%;
     outline: 0;
     cursor: pointer;
+    transition: background-color 0.2s ease;
 
     &.selected {
       background-color: $color-primary-soft;
@@ -235,5 +272,19 @@
     &:focus-visible {
       outline: 2px solid $color-primary-accent;
     }
+  }
+}
+
+@keyframes reactionPickerIn {
+  from {
+    opacity: 0;
+    transform: translateY(-3px) scale(0.98);
+  }
+}
+
+@keyframes reactionChipIn {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
   }
 }

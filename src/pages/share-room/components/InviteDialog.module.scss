@@ -12,6 +12,7 @@
   padding: 20px;
   background-color: rgba($color-black, 0.42);
   transform: translateX(-50%);
+  animation: overlayFadeIn 0.2s ease-out;
 }
 
 .dialog {
@@ -21,6 +22,7 @@
   background-color: $color-white;
   border-radius: 20px;
   box-shadow: 0 14px 36px rgba($color-black, 0.18);
+  animation: dialogFadeIn 0.2s ease-out;
 }
 
 .closeButton {
@@ -129,5 +131,18 @@
   svg {
     width: 19px;
     height: 19px;
+  }
+}
+
+@keyframes overlayFadeIn {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes dialogFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.98);
   }
 }
