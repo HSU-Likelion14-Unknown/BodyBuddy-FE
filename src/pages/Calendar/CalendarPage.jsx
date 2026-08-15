@@ -105,9 +105,13 @@ const MEAL_RECORDS = {
   ],
 };
 
+const savedOnboarding = JSON.parse(
+  localStorage.getItem('onboarding_step1') || 'null',
+);
+
 // TODO: 실제 API 연동 시 교체
 const MONTHLY_STATS = {
-  nickname: '00',
+  nickname: savedOnboarding?.nickname ?? '00',
   nutrients: [
     { name: '단백질', consumed: 180, goal: 650, color: '#8cb3f6' },
     { name: '탄수화물', consumed: 1700, goal: 3000, color: '#ffa449' },
