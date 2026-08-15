@@ -1,0 +1,253 @@
+@use '@/styles/variables' as *;
+@use '@/styles/function' as *;
+
+.container {
+  --room-gutter: 20px;
+
+  min-height: 100dvh;
+  padding-bottom: 122px;
+  color: $color-text;
+  background-color: $color-white;
+}
+
+.recordsView {
+  padding-bottom: 133px;
+}
+
+// Room cover
+.coverHeader {
+  position: relative;
+  height: 194px;
+  overflow: visible;
+  background-color: $color-gray4;
+
+  h1 {
+    @include flex(row, center, flex-start);
+
+    position: absolute;
+    bottom: 23px;
+    right: calc(var(--room-gutter) + 36px);
+    left: var(--room-gutter);
+    z-index: 2;
+    width: auto;
+    height: 24px;
+    overflow: hidden;
+    font-size: 20px;
+    font-weight: $font-weight-semibold;
+    letter-spacing: -0.5px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
+.coverImage,
+.coverGradient {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.coverImage {
+  object-fit: cover;
+  object-position: center 45%;
+}
+
+.coverGradient {
+  background: linear-gradient(
+    180deg,
+    rgba(254, 254, 254, 0) 0%,
+    rgba(203, 198, 191, 0.54) 100%
+  );
+}
+
+.backButton,
+.moreButton {
+  @include flex;
+
+  position: absolute;
+  top: 16px;
+  z-index: 4;
+  padding: 0;
+  border: 0;
+  outline: 0;
+  cursor: pointer;
+}
+
+.backButton {
+  left: var(--room-gutter);
+  width: 24px;
+  height: 24px;
+  background-color: $color-primary-accent;
+  border-radius: 50%;
+  box-shadow: 0 4px 4px rgba(113, 71, 3, 0.14);
+
+  img {
+    width: 11.5px;
+    height: 9px;
+    transform: rotate(180deg);
+  }
+}
+
+.moreButton {
+  right: var(--room-gutter);
+  width: 24px;
+  height: 24px;
+  background: transparent;
+
+  img {
+    width: 3.4px;
+    height: 13.4px;
+  }
+}
+
+// Room menu
+.menuBackdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 2;
+  background: transparent;
+  border: 0;
+}
+
+.roomMenu {
+  @include flex(column, center, center, 10px);
+
+  position: absolute;
+  top: 44px;
+  right: var(--room-gutter);
+  z-index: 5;
+  width: 207px;
+  height: 90px;
+  padding: 10px;
+  background-color: $color-white;
+  border-radius: 5px;
+  box-shadow: 0 4px 4px rgba(113, 71, 3, 0.14);
+}
+
+.menuGroup {
+  @include flex(column, flex-start, flex-start, 7px);
+
+  width: 187px;
+
+  button {
+    @include flex(row, center, flex-start, 2px);
+
+    width: auto;
+    height: auto;
+    padding: 0;
+    color: $color-brown4;
+    font-size: 11px;
+    font-weight: $font-weight-medium;
+    letter-spacing: -0.275px;
+    background: transparent;
+    border: 0;
+    cursor: pointer;
+  }
+}
+
+.menuDivider {
+  width: 100%;
+  height: 0;
+  border-top: 1px solid $color-gray-disabled;
+}
+
+.menuIcon {
+  @include flex;
+
+  flex: 0 0 12px;
+  width: 12px;
+  height: 12px;
+
+  img {
+    max-width: 100%;
+    max-height: 100%;
+  }
+}
+
+// Member cards
+.memberList {
+  @include flex(column, stretch, flex-start, 36px);
+
+  width: calc(100% - (var(--room-gutter) * 2));
+  margin: 32px auto 0;
+}
+
+// Initial invite state
+.inviteContent {
+  @include flex(column, center, flex-start);
+
+  position: relative;
+  width: 100%;
+  min-height: 171px;
+  margin-top: 41px;
+  text-align: center;
+
+  > img {
+    position: absolute;
+    top: -52px;
+    left: 50%;
+    width: min(391px, 100%);
+    height: auto;
+    pointer-events: none;
+    transform: translateX(-50%);
+  }
+
+  > button {
+    @include flex(row, center, center, 6px);
+
+    position: relative;
+    width: 203px;
+    height: 35px;
+    margin-top: 22px;
+    color: $color-white;
+    font-size: 13px;
+    font-weight: $font-weight-semibold;
+    background-color: #ffad34;
+    border: 0;
+    border-radius: 100px;
+    box-shadow: 0 1px 4px rgba(113, 71, 3, 0.14);
+    cursor: pointer;
+  }
+}
+
+.inviteButtonIcon {
+  @include flex;
+
+  width: 12px;
+  height: 12px;
+
+  img {
+    width: 7px;
+    height: 7px;
+  }
+}
+
+.coverInput {
+  display: none;
+}
+
+.inviteMessage {
+  position: relative;
+  margin-top: 32px;
+
+  strong,
+  span {
+    @include flex;
+
+    height: 20px;
+  }
+
+  strong {
+    color: $color-brown4;
+    font-size: 16px;
+    font-weight: $font-weight-semibold;
+  }
+
+  span {
+    margin-top: 1px;
+    color: $color-gray5;
+    font-size: 13px;
+    font-weight: $font-weight-medium;
+  }
+}
