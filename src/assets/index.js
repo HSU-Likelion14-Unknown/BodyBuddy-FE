@@ -50,6 +50,11 @@ import shareRoomAddWhiteIcon from '@/assets/share-room/icon-add-white.svg';
 import shareRoomLogoutIcon from '@/assets/share-room/icon-logout.svg';
 import shareRoomPhotoIcon from '@/assets/share-room/icon-photo.svg';
 
+// Mypage
+import profileChracter from '@/assets/mypage/profile-character.png';
+import mypageIconAllergy from '@/assets/mypage/icon-allergy.svg';
+import mypageIconDislike from '@/assets/mypage/icon-dislike.svg';
+
 export {
   iconBell,
   onboardingCharacter1,
@@ -88,4 +93,7 @@ export {
   shareRoomLogoutIcon,
   shareRoomPhotoIcon,
   iconForkKnife,
+  profileChracter,
+  mypageIconAllergy,
+  mypageIconDislike,
 };

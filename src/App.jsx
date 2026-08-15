@@ -12,6 +12,7 @@ import HomePage from './pages/home/HomePage';
 import ShareRoomInvitePage from './pages/share-room/ShareRoomInvitePage';
 import ShareRoomPage from './pages/share-room/ShareRoomPage';
 import CalendarPage from './pages/Calendar/CalendarPage';
+import MyPage from './pages/MyPage/MyPage';
 
 function App() {
   return (
@@ -33,7 +34,7 @@ function App() {
             element={<MealRecommendationPage />}
           />
           <Route path="/calendar" element={<CalendarPage />} />
-          <Route path="/mypage" element={<></>} />
+          <Route path="/mypage" element={<MyPage />} />
           <Route path="/" element={<SplashPage />} />
           <Route path="/onboarding/1" element={<OnboardingPage1 />} />
           <Route path="/onboarding/2" element={<OnboardingPage2 />} />

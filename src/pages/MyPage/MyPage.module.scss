@@ -1,0 +1,241 @@
+@use '../../styles/variables' as *;
+@use '../../styles/function' as *;
+
+.page {
+  min-height: 100dvh;
+  background-color: $color-white;
+  padding-top: 53px;
+  padding-bottom: 90px;
+}
+
+/* ── 프로필 섹션 ── */
+.profileSection {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.avatarArea {
+  position: relative;
+  width: 107px;
+  height: 102px;
+}
+
+.avatarBg {
+  position: absolute;
+  inset: 0;
+  background-color: $color-primary;
+  border-radius: 35px;
+}
+
+.avatarImg {
+  position: absolute;
+  width: 94px;
+  height: 98px;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  object-fit: cover;
+  border-radius: 0 0 25px 28px;
+}
+
+.nickname {
+  margin-top: 19px;
+  font-size: rem(24px);
+  font-weight: $font-weight-semibold;
+  color: $color-brown4;
+  letter-spacing: -0.6px;
+  line-height: 1;
+}
+
+.userInfo {
+  margin-top: 6px;
+  font-size: rem(12px);
+  font-weight: $font-weight-medium;
+  color: $color-gray-medium;
+  letter-spacing: -0.3px;
+  word-spacing: 22px;
+}
+
+.editBtn {
+  margin-top: 12px;
+  padding: 10px 10px;
+  background-color: $color-primary-light;
+  border-radius: 100px;
+  border: none;
+  font-size: rem(11px);
+  font-weight: $font-weight-medium;
+  color: $color-gray5;
+  letter-spacing: -0.275px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.editIcon {
+  width: 12px;
+  height: 12px;
+  flex-shrink: 0;
+}
+
+/* ── 알레르기 & 비선호 카드 ── */
+.infoCard {
+  display: flex;
+  align-items: center;
+  margin: 20px 20px 0;
+  background-color: $color-primary-accent;
+  border-radius: 10px;
+  padding: 14px 0;
+}
+
+.infoHalf {
+  flex: 1;
+  padding: 0 18px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+
+  &:first-child {
+    padding-right: 8px;
+  }
+
+  &:last-child {
+    padding-left: 8px;
+  }
+}
+
+.infoDivider {
+  width: 1px;
+  height: 60px;
+  background-color: #ffe4b8;
+  flex-shrink: 0;
+}
+
+.infoLabelRow {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.infoIcon {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+}
+
+.infoLabel {
+  font-size: rem(11px);
+  font-weight: $font-weight-medium;
+  color: $color-primary-light;
+  letter-spacing: -0.275px;
+}
+
+.tagList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.tag {
+  background-color: $color-primary-soft;
+  color: #614326;
+  font-size: rem(11px);
+  font-weight: $font-weight-medium;
+  border-radius: 100px;
+  padding: 10px 14px;
+  letter-spacing: -0.275px;
+}
+
+/* ── 설정 섹션 ── */
+.settingsSection {
+  margin-top: 28px;
+  padding: 0 20px;
+}
+
+.sectionHeader {
+  font-size: rem(14px);
+  font-weight: $font-weight-semibold;
+  color: $color-gray-medium;
+  letter-spacing: -0.35px;
+}
+
+.settingRow {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+}
+
+.settingRowCompact {
+  padding-top: 8px;
+}
+
+.settingLabel {
+  font-size: rem(16px);
+  font-weight: $font-weight-medium;
+  color: $color-black;
+  letter-spacing: -0.4px;
+}
+
+.divider {
+  border: none;
+  border-top: 1px solid $color-gray3;
+  margin: 0;
+}
+
+.chevron {
+  font-size: 34px;
+  color: $color-gray4;
+  flex-shrink: 0;
+}
+
+/* ── 토글 ── */
+.toggle {
+  position: relative;
+  display: inline-block;
+  cursor: pointer;
+
+  input {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+  }
+}
+
+.toggleTrack {
+  display: block;
+  position: relative;
+  width: 55px;
+  height: 35px;
+  border-radius: 100px;
+  background-color: $color-gray4;
+  transition: background-color 0.2s ease;
+}
+
+.toggleTrackOn {
+  background-color: $color-primary;
+}
+
+.toggleKnob {
+  position: absolute;
+  top: 5px;
+  left: 4px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background-color: $color-white;
+  transition: transform 0.2s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+
+  .toggleTrackOn & {
+    transform: translateX(20px);
+  }
+}
