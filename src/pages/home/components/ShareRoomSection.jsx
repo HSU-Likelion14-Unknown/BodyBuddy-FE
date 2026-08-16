@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { createPortal } from 'react-dom';
 import { useNavigate } from 'react-router-dom';
 import { FiPlus } from 'react-icons/fi';
 import {
@@ -139,32 +140,34 @@ export default function ShareRoomSection() {
         </button>
       </section>
 
-      {isCreateOpen && (
-        <div className={styles.overlay} onMouseDown={closeCreateDialog}>
-          <section
-            className={styles.dialog}
-            onMouseDown={(event) => event.stopPropagation()}
-          >
-            <h2>방 이름을 정해주세요.</h2>
-            <p>1 ~ 10자 사이로 입력해 주세요.</p>
+      {isCreateOpen &&
+        createPortal(
+          <div className={styles.overlay} onMouseDown={closeCreateDialog}>
+            <section
+              className={styles.dialog}
+              onMouseDown={(event) => event.stopPropagation()}
+            >
+              <h2>방 이름을 정해주세요.</h2>
+              <p>1 ~ 10자 사이로 입력해 주세요.</p>
 
-            <form onSubmit={createRoom}>
-              <label htmlFor="share-room-name">방 이름</label>
-              <input
-                id="share-room-name"
-                type="text"
-                value={roomName}
-                maxLength={10}
-                autoFocus
-                onChange={(event) => setRoomName(event.target.value)}
-              />
-              <button type="submit" disabled={!trimmedRoomName}>
-                만들기
-              </button>
-            </form>
-          </section>
-        </div>
-      )}
+              <form onSubmit={createRoom}>
+                <label htmlFor="share-room-name">방 이름</label>
+                <input
+                  id="share-room-name"
+                  type="text"
+                  value={roomName}
+                  maxLength={10}
+                  autoFocus
+                  onChange={(event) => setRoomName(event.target.value)}
+                />
+                <button type="submit" disabled={!trimmedRoomName}>
+                  만들기
+                </button>
+              </form>
+            </section>
+          </div>,
+          document.body,
+        )}
     </>
   );
 }
