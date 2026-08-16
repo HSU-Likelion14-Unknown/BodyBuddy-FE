@@ -68,7 +68,6 @@ export default function MyPageEdit() {
   const [shareRecords, setShareRecords] = useState(initialShareRecords);
   const [allergenInput, setAllergenInput] = useState('');
   const [dislikedInput, setDislikedInput] = useState('');
-  const [showPhotoModal, setShowPhotoModal] = useState(false);
   const [profilePhoto, setProfilePhoto] = useState(null);
   const [saveSuccess, setSaveSuccess] = useState(false);
 
@@ -162,7 +161,6 @@ export default function MyPageEdit() {
     if (file) {
       const url = URL.createObjectURL(file);
       setProfilePhoto(url);
-      setShowPhotoModal(false);
       e.target.value = '';
     }
   };
@@ -194,7 +192,7 @@ export default function MyPageEdit() {
           <button
             type="button"
             className={styles.editBtn}
-            onClick={() => setShowPhotoModal(true)}
+            onClick={() => fileInputRef.current?.click()}
           >
             <MdEdit className={styles.editIcon} />
           </button>
@@ -268,7 +266,8 @@ export default function MyPageEdit() {
                     value={allergenInput}
                     onChange={(e) => setAllergenInput(e.target.value)}
                     onKeyDown={(e) => {
-                      if (e.key === 'Enter' && !e.nativeEvent.isComposing) addCustomAllergen();
+                      if (e.key === 'Enter' && !e.nativeEvent.isComposing)
+                        addCustomAllergen();
                     }}
                   />
                 </div>
@@ -315,7 +314,8 @@ export default function MyPageEdit() {
                     value={dislikedInput}
                     onChange={(e) => setDislikedInput(e.target.value)}
                     onKeyDown={(e) => {
-                      if (e.key === 'Enter' && !e.nativeEvent.isComposing) addDisliked();
+                      if (e.key === 'Enter' && !e.nativeEvent.isComposing)
+                        addDisliked();
                     }}
                   />
                 </div>
@@ -364,42 +364,6 @@ export default function MyPageEdit() {
           {saveSuccess ? '저장되었어요!' : '변경사항 저장'}
         </button>
       </div>
-
-      {showPhotoModal && (
-        <div
-          className={styles.modalOverlay}
-          onClick={() => setShowPhotoModal(false)}
-        >
-          <div
-            className={styles.modalSheet}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <button
-              type="button"
-              className={styles.modalOption}
-              onClick={() => fileInputRef.current?.click()}
-            >
-              사진 보관함에서 선택
-            </button>
-            <hr className={styles.modalDivider} />
-            <button
-              type="button"
-              className={styles.modalOption}
-              onClick={() => fileInputRef.current?.click()}
-            >
-              사진 찍기
-            </button>
-            <hr className={styles.modalDivider} />
-            <button
-              type="button"
-              className={`${styles.modalOption} ${styles.modalCancel}`}
-              onClick={() => setShowPhotoModal(false)}
-            >
-              취소
-            </button>
-          </div>
-        </div>
-      )}
 
       <input
         ref={fileInputRef}
