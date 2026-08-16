@@ -13,6 +13,7 @@ import ShareRoomInvitePage from './pages/share-room/ShareRoomInvitePage';
 import ShareRoomPage from './pages/share-room/ShareRoomPage';
 import CalendarPage from './pages/Calendar/CalendarPage';
 import MyPage from './pages/MyPage/MyPage';
+import MyPageEdit from './pages/MyPage/MyPageEdit';
 
 function App() {
   return (
@@ -35,6 +36,7 @@ function App() {
           />
           <Route path="/calendar" element={<CalendarPage />} />
           <Route path="/mypage" element={<MyPage />} />
+          <Route path="/mypage/edit" element={<MyPageEdit />} />
           <Route path="/" element={<SplashPage />} />
           <Route path="/onboarding/1" element={<OnboardingPage1 />} />
           <Route path="/onboarding/2" element={<OnboardingPage2 />} />
