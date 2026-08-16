@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { FiPlus } from 'react-icons/fi';
 import {
-  homeRoomAddIcon,
   homeShareRoomMascot,
   shareRoomBibimbap,
   shareRoomCover,
@@ -93,7 +93,7 @@ export default function ShareRoomSection() {
     <>
       <section className={styles.roomSection}>
         <img className={styles.mascot} src={homeShareRoomMascot} alt="" />
-        <h1>00님의 친구 공유 방</h1>
+        <h2>00님의 친구 공유 방</h2>
 
         {MOCK_ROOMS.length > 0 ? (
           <div className={styles.roomList}>
@@ -135,7 +135,7 @@ export default function ShareRoomSection() {
           onClick={() => setIsCreateOpen(true)}
         >
           새 친구방 만들기
-          <img src={homeRoomAddIcon} alt="" />
+          <FiPlus />
         </button>
       </section>
 
