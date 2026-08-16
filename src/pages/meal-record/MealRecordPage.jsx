@@ -1,13 +1,14 @@
 import { useState } from 'react';
 import { MdCameraAlt, MdEdit, MdRestaurant } from 'react-icons/md';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import CameraPanel from './components/CameraPanel';
 import ManualInputPanel from './components/ManualInputPanel';
 import styles from './MealRecordPage.module.scss';
 
 export default function MealRecordPage() {
   const navigate = useNavigate();
-  const [mode, setMode] = useState('camera');
+  const { state } = useLocation();
+  const [mode, setMode] = useState(state?.initialMode || 'camera');
   const [manualText, setManualText] = useState('');
 
   const startAnalysis = (meal) => {
@@ -23,10 +24,7 @@ export default function MealRecordPage() {
         <strong>지금은 추천 항목이 없어요!</strong>
       </section>
 
-      <div
-        className={styles.modeTabs}
-        role="tablist"
-      >
+      <div className={styles.modeTabs} role="tablist">
         <button
           type="button"
           role="tab"
