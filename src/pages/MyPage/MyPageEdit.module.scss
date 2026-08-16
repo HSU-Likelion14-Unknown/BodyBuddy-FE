@@ -7,27 +7,6 @@
   padding-bottom: 160px;
 }
 
-.header {
-  height: 44px;
-  display: flex;
-  align-items: center;
-  padding: 0 8px;
-}
-
-.backBtn {
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 8px;
-  display: flex;
-  align-items: center;
-}
-
-.backIcon {
-  font-size: 24px;
-  color: $color-black;
-}
-
 /* ── 프로필 섹션 ── */
 .profileSection {
   display: flex;

@@ -1,6 +1,5 @@
 import { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { IoChevronBack } from 'react-icons/io5';
 import { MdBorderColor, MdEdit } from 'react-icons/md';
 import styles from './MyPageEdit.module.scss';
 import {
@@ -171,16 +170,6 @@ export default function MyPageEdit() {
 
   return (
     <div className={styles.page}>
-      <header className={styles.header}>
-        <button
-          type="button"
-          className={styles.backBtn}
-          onClick={() => navigate(-1)}
-        >
-          <IoChevronBack className={styles.backIcon} />
-        </button>
-      </header>
-
       <section className={styles.profileSection}>
         <div className={styles.avatarArea}>
           <div className={styles.avatarBg} />
