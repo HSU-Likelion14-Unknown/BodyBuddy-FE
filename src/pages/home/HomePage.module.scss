@@ -9,3 +9,346 @@
   color: $color-text;
   background-color: $color-white;
 }
+
+.hero {
+  position: relative;
+  height: 223px;
+  overflow: hidden;
+  color: $color-white;
+  background-color: $color-primary-accent;
+}
+
+.heroContent {
+  position: relative;
+  width: 100%;
+  max-width: 393px;
+  height: 100%;
+  margin: 0 auto;
+
+  h1 {
+    position: absolute;
+    top: 60px;
+    left: 30px;
+    z-index: 1;
+    width: 207px;
+    color: $color-white;
+    font-family: $font-family-en;
+    font-size: 25px;
+    font-weight: $font-weight-regular;
+    line-height: 23px;
+    letter-spacing: 0.75px;
+  }
+
+  > p {
+    position: absolute;
+    top: 115px;
+    left: 30px;
+    z-index: 1;
+    width: 204px;
+    color: $color-primary-soft;
+    font-size: 10px;
+    font-weight: $font-weight-medium;
+    letter-spacing: -0.25px;
+    white-space: nowrap;
+  }
+}
+
+.divider {
+  position: absolute;
+  top: 111px;
+  left: 31px;
+  z-index: 1;
+  width: 205px;
+  height: 1px;
+  background-color: rgba($color-white, 0.7);
+}
+
+.recordButton {
+  @include flex;
+
+  position: absolute;
+  top: 136px;
+  left: 31px;
+  z-index: 2;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  background-color: $color-white;
+  border: 0;
+  border-radius: 50%;
+  box-shadow: 0 4px 4px rgba(113, 71, 3, 0.14);
+  cursor: pointer;
+  transition: transform 0.2s ease;
+
+  svg {
+    width: 12px;
+    height: 12px;
+    color: $color-primary-accent;
+  }
+
+  span {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  &:active {
+    transform: scale(0.94);
+  }
+
+  &:focus-visible {
+    outline: 2px solid $color-brown3;
+    outline-offset: 2px;
+  }
+}
+
+.heroVisual {
+  position: absolute;
+  top: 11px;
+  right: 31px;
+  width: 208px;
+  height: 207px;
+  pointer-events: none;
+  transform-origin: right bottom;
+}
+
+.heroAsset {
+  position: absolute;
+  object-fit: fill;
+  animation: assetFloat var(--float-duration) ease-in-out var(--float-delay)
+    infinite alternate;
+  will-change: transform;
+}
+
+.camera {
+  --float-duration: 4.6s;
+  --float-delay: -1.1s;
+  --float-x: 2px;
+  --float-y: -5px;
+  --rotate-start: -0.4deg;
+  --rotate-end: 0.6deg;
+
+  top: 48.01px;
+  left: 43.91px;
+  width: 119.38px;
+  height: 107.05px;
+  transform-origin: 55% 48%;
+}
+
+.magnesium {
+  --float-duration: 3.2s;
+  --float-delay: -2.4s;
+  --float-x: -2px;
+  --float-y: -6px;
+  --rotate-start: -1deg;
+  --rotate-end: 1.2deg;
+
+  top: 24.97px;
+  left: 162.33px;
+  width: 46.86px;
+  height: 47.95px;
+}
+
+.iron {
+  --float-duration: 3.9s;
+  --float-delay: -1.7s;
+  --float-x: 2px;
+  --float-y: -4px;
+  --rotate-start: 1deg;
+  --rotate-end: -1.4deg;
+
+  top: 140.45px;
+  left: 150.75px;
+  width: 47.27px;
+  height: 48.86px;
+}
+
+.zinc {
+  --float-duration: 3.6s;
+  --float-delay: -3.1s;
+  --float-x: -1px;
+  --float-y: -4px;
+  --rotate-start: -0.8deg;
+  --rotate-end: 1deg;
+
+  top: 172.57px;
+  left: 66.25px;
+  width: 35.08px;
+  height: 35.52px;
+}
+
+.plus {
+  --float-duration: 2.9s;
+  --float-delay: -0.8s;
+  --float-x: 1px;
+  --float-y: -3px;
+  --rotate-start: -1deg;
+  --rotate-end: 2deg;
+
+  top: 158.33px;
+  left: 105.45px;
+  width: 20.45px;
+  height: 20.97px;
+}
+
+.dotTop {
+  --float-duration: 2.6s;
+  --float-delay: -1.9s;
+  --float-x: 2px;
+  --float-y: -3px;
+  --rotate-start: 0deg;
+  --rotate-end: 0deg;
+
+  top: 1.33px;
+  left: 132.27px;
+  width: 14.56px;
+  height: 14.61px;
+}
+
+.dotRight {
+  --float-duration: 3.1s;
+  --float-delay: -2.7s;
+  --float-x: -2px;
+  --float-y: -2px;
+  --rotate-start: 0deg;
+  --rotate-end: 0deg;
+
+  top: 114.38px;
+  left: 191.17px;
+  width: 14.97px;
+  height: 15.52px;
+}
+
+.rays {
+  --float-duration: 2.5s;
+  --float-delay: -1.4s;
+  --float-x: 0px;
+  --float-y: -2px;
+  --rotate-start: -0.5deg;
+  --rotate-end: 0.7deg;
+
+  top: 33.16px;
+  left: 21.36px;
+  width: 34.47px;
+  height: 37.34px;
+}
+
+.curves {
+  --float-duration: 4.2s;
+  --float-delay: -3.6s;
+  --float-x: 2px;
+  --float-y: 1px;
+  --rotate-start: 0deg;
+  --rotate-end: -0.8deg;
+
+  top: 114.08px;
+  left: 1.86px;
+  width: 54.78px;
+  height: 47.34px;
+}
+
+.content {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  margin-top: -15px;
+  padding-top: 42px;
+  background-color: $color-white;
+  border-radius: 15px 15px 0 0;
+}
+
+.recommendation {
+  @include flex(column, center, center, 12px);
+
+  width: calc(100% - 41px);
+  max-width: 352px;
+  height: 114px;
+  margin: 0 auto;
+  padding: 13px 0;
+  color: $color-white;
+  text-align: center;
+  background: linear-gradient(
+    103deg,
+    $color-primary-accent 19%,
+    $color-primary 100%
+  );
+  border-radius: 10px;
+
+  > p {
+    width: 100%;
+    color: $color-primary-soft;
+    font-size: 11px;
+    font-weight: $font-weight-medium;
+    line-height: 19px;
+    letter-spacing: -0.275px;
+  }
+}
+
+.recommendationTitle {
+  @include flex(column);
+
+  span {
+    @include flex(row, center, center, 4px);
+
+    height: 19px;
+    color: $color-gray2;
+    font-size: 12px;
+    font-weight: $font-weight-medium;
+    letter-spacing: -0.3px;
+  }
+
+  svg {
+    width: 10px;
+    height: 10px;
+  }
+
+  h2 {
+    @include flex;
+
+    height: 19px;
+    font-size: 14px;
+    font-weight: $font-weight-semibold;
+    letter-spacing: -0.35px;
+  }
+}
+
+@media (max-width: 359px) {
+  .heroContent {
+    h1,
+    > p {
+      left: 20px;
+    }
+  }
+
+  .divider,
+  .recordButton {
+    left: 21px;
+  }
+
+  .heroVisual {
+    right: 14px;
+    transform: scale(0.94);
+  }
+
+  .recommendation > p {
+    padding: 0 8px;
+    font-size: 10px;
+  }
+}
+
+@keyframes assetFloat {
+  from {
+    transform: translate3d(0, 0, 0) rotate(var(--rotate-start));
+  }
+
+  to {
+    transform: translate3d(var(--float-x), var(--float-y), 0)
+      rotate(var(--rotate-end));
+  }
+}
