@@ -8,7 +8,7 @@
   margin-top: 43px;
   margin-left: 21px;
 
-  h1 {
+  h2 {
     @include flex(row, center, flex-start);
 
     height: 23px;
@@ -16,6 +16,13 @@
     font-size: 14px;
     font-weight: $font-weight-semibold;
     letter-spacing: -0.35px;
+  }
+}
+
+@media (min-width: 394px) {
+  .roomSection {
+    margin-right: auto;
+    margin-left: auto;
   }
 }
 
@@ -157,7 +164,7 @@
   border-radius: 100px;
   cursor: pointer;
 
-  img {
+  svg {
     width: 15px;
     height: 15px;
   }

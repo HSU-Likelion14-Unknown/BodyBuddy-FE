@@ -1,7 +1,8 @@
 import { useState } from 'react';
+import { createPortal } from 'react-dom';
 import { useNavigate } from 'react-router-dom';
+import { FiPlus } from 'react-icons/fi';
 import {
-  homeRoomAddIcon,
   homeShareRoomMascot,
   shareRoomBibimbap,
   shareRoomCover,
@@ -93,7 +94,7 @@ export default function ShareRoomSection() {
     <>
       <section className={styles.roomSection}>
         <img className={styles.mascot} src={homeShareRoomMascot} alt="" />
-        <h1>00님의 친구 공유 방</h1>
+        <h2>00님의 친구 공유 방</h2>
 
         {MOCK_ROOMS.length > 0 ? (
           <div className={styles.roomList}>
@@ -135,36 +136,38 @@ export default function ShareRoomSection() {
           onClick={() => setIsCreateOpen(true)}
         >
           새 친구방 만들기
-          <img src={homeRoomAddIcon} alt="" />
+          <FiPlus />
         </button>
       </section>
 
-      {isCreateOpen && (
-        <div className={styles.overlay} onMouseDown={closeCreateDialog}>
-          <section
-            className={styles.dialog}
-            onMouseDown={(event) => event.stopPropagation()}
-          >
-            <h2>방 이름을 정해주세요.</h2>
-            <p>1 ~ 10자 사이로 입력해 주세요.</p>
+      {isCreateOpen &&
+        createPortal(
+          <div className={styles.overlay} onMouseDown={closeCreateDialog}>
+            <section
+              className={styles.dialog}
+              onMouseDown={(event) => event.stopPropagation()}
+            >
+              <h2>방 이름을 정해주세요.</h2>
+              <p>1 ~ 10자 사이로 입력해 주세요.</p>
 
-            <form onSubmit={createRoom}>
-              <label htmlFor="share-room-name">방 이름</label>
-              <input
-                id="share-room-name"
-                type="text"
-                value={roomName}
-                maxLength={10}
-                autoFocus
-                onChange={(event) => setRoomName(event.target.value)}
-              />
-              <button type="submit" disabled={!trimmedRoomName}>
-                만들기
-              </button>
-            </form>
-          </section>
-        </div>
-      )}
+              <form onSubmit={createRoom}>
+                <label htmlFor="share-room-name">방 이름</label>
+                <input
+                  id="share-room-name"
+                  type="text"
+                  value={roomName}
+                  maxLength={10}
+                  autoFocus
+                  onChange={(event) => setRoomName(event.target.value)}
+                />
+                <button type="submit" disabled={!trimmedRoomName}>
+                  만들기
+                </button>
+              </form>
+            </section>
+          </div>,
+          document.body,
+        )}
     </>
   );
 }

@@ -1,0 +1,180 @@
+@use '@/styles/variables' as *;
+@use '@/styles/function' as *;
+
+.calendarSection {
+  @include flex(column, center, flex-start, 27px);
+
+  box-sizing: border-box;
+  width: calc(100% - 40px);
+  max-width: 353px;
+  height: 180px;
+  margin: 28px auto 0;
+  padding: 20px 0;
+  background-color: $color-primary-light;
+  border-radius: 10px;
+}
+
+.calendarContent {
+  @include flex(column, stretch, flex-start, 22px);
+
+  width: 100%;
+  height: 100px;
+}
+
+.titleRow {
+  @include flex(row, center, center, 4px);
+
+  width: 100%;
+  height: 14px;
+
+  &::before,
+  &::after {
+    width: 124px;
+    height: 1px;
+    background-color: $color-brown2;
+    content: '';
+  }
+
+  h2 {
+    @include flex;
+
+    height: 14px;
+    width: 67px;
+    margin: 0;
+    color: $color-brown3;
+    font-size: 12px;
+    font-weight: $font-weight-medium;
+    letter-spacing: -0.3px;
+    text-align: center;
+    white-space: nowrap;
+  }
+}
+
+.week {
+  @include flex(column, center, flex-start, 10px);
+
+  width: 100%;
+  height: 64px;
+}
+
+.weekdays,
+.dates {
+  display: grid;
+  grid-template-columns: repeat(7, 32px);
+  gap: 15px;
+  justify-content: center;
+  width: 100%;
+}
+
+.weekdays {
+  height: 13px;
+  color: $color-gray5;
+  font-size: 14px;
+  font-weight: $font-weight-medium;
+  text-align: center;
+
+  span {
+    @include flex;
+
+    height: 13px;
+  }
+}
+
+.dates {
+  height: 41px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.dateItem {
+  @include flex(column, center, flex-start, 7px);
+
+  position: relative;
+  width: 32px;
+  height: 41px;
+}
+
+.date {
+  @include flex;
+
+  width: 100%;
+  height: 13px;
+  color: $color-black;
+  font-size: 16px;
+  font-weight: $font-weight-medium;
+  text-align: center;
+}
+
+.dateItem:first-child .date {
+  color: #df392d;
+}
+
+.today .date {
+  color: $color-primary-accent;
+  font-weight: $font-weight-semibold;
+}
+
+.thumbnail {
+  position: relative;
+  width: 32px;
+  height: 21px;
+  overflow: hidden;
+  background-color: $color-gray4;
+  border-radius: 3px;
+}
+
+.today .thumbnail {
+  border: 1px solid $color-primary-accent;
+}
+
+.thumbnailImage {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  pointer-events: none;
+}
+
+.star {
+  @include flex;
+
+  position: absolute;
+  top: 15px;
+  right: -5px;
+  z-index: 1;
+  width: 10px;
+  height: 10px;
+
+  svg {
+    width: 9px;
+    height: 9px;
+    color: $color-primary-accent;
+  }
+}
+
+.calendarLink {
+  @include flex(row, center, center, 0);
+
+  height: 13px;
+  padding: 0;
+  color: $color-brown2;
+  font-size: 11px;
+  font-weight: $font-weight-medium;
+  letter-spacing: -0.275px;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+
+  svg {
+    width: 9px;
+    height: 9px;
+    margin-left: 0;
+  }
+
+  &:focus-visible {
+    outline: 2px solid $color-primary-accent;
+    outline-offset: 3px;
+    border-radius: 2px;
+  }
+}

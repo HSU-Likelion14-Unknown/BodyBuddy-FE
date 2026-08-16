@@ -32,8 +32,21 @@ import splashIconCamera from '@/assets/splash/icon-camera.svg';
 import splashIconChart from '@/assets/splash/icon-chart.svg';
 
 // Home
-import homeRoomAddIcon from '@/assets/home/icon-add.png';
 import homeShareRoomMascot from '@/assets/home/share-room-mascot.svg';
+import homeHeroCamera from '@/assets/home/hero-camera.svg';
+import homeHeroCurves from '@/assets/home/hero-curves.svg';
+import homeHeroDotRight from '@/assets/home/hero-dot-right.svg';
+import homeHeroDotTop from '@/assets/home/hero-dot-top.svg';
+import homeHeroIron from '@/assets/home/hero-iron.svg';
+import homeHeroMagnesium from '@/assets/home/hero-magnesium.svg';
+import homeHeroPlus from '@/assets/home/hero-plus.svg';
+import homeHeroRays from '@/assets/home/hero-rays.svg';
+import homeHeroZinc from '@/assets/home/hero-zinc.svg';
+import homeCalendarMon from '@/assets/home/calendar-mon.png';
+import homeCalendarTue from '@/assets/home/calendar-tue.png';
+import homeCalendarWed from '@/assets/home/calendar-wed.png';
+import homeCalendarFri from '@/assets/home/calendar-fri.png';
+import homeCalendarSat from '@/assets/home/calendar-sat.png';
 
 // Share room
 import shareRoomCover from '@/assets/share-room/room-header.png';
@@ -73,8 +86,21 @@ export {
   splashIconBulb,
   splashIconCamera,
   splashIconChart,
-  homeRoomAddIcon,
   homeShareRoomMascot,
+  homeHeroCamera,
+  homeHeroCurves,
+  homeHeroDotRight,
+  homeHeroDotTop,
+  homeHeroIron,
+  homeHeroMagnesium,
+  homeHeroPlus,
+  homeHeroRays,
+  homeHeroZinc,
+  homeCalendarMon,
+  homeCalendarTue,
+  homeCalendarWed,
+  homeCalendarFri,
+  homeCalendarSat,
   mealPlaceholder,
   perfectDecoration,
   perfectResult,
