@@ -3,14 +3,17 @@
 
 .cameraContent {
   display: flex;
-  flex: 1;
+  flex: 1 1 0;
   flex-direction: column;
+  width: 100%;
   min-height: 0;
+  overflow: hidden;
 }
 
 .cameraPreview {
   position: relative;
-  flex: 1;
+  flex: 1 1 0;
+  width: 100%;
   min-height: 0;
   overflow: hidden;
   background-color: $color-brown5;
@@ -18,6 +21,8 @@
 
 .cameraMedia {
   display: block;
+  position: absolute;
+  inset: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
@@ -77,11 +82,39 @@
   opacity: 1;
   appearance: none;
   backdrop-filter: blur(2px);
+  cursor: pointer;
+
+  &:disabled {
+    cursor: default;
+    opacity: 0.45;
+  }
 
   svg {
     width: 20px;
     height: 20px;
   }
+}
+
+.flashButtonActive {
+  color: $color-primary;
+  background-color: rgba($color-black, 0.58);
+}
+
+.cameraStatus {
+  position: absolute;
+  bottom: 76px;
+  left: 50%;
+  z-index: 1;
+  max-width: calc(100% - 40px);
+  padding: 8px 12px;
+  color: $color-white;
+  font-size: $font-size-12;
+  text-align: center;
+  white-space: nowrap;
+  background-color: rgba($color-black, 0.72);
+  border-radius: 18px;
+  transform: translateX(-50%);
+  pointer-events: none;
 }
 
 .cameraControls {
@@ -125,7 +158,12 @@
   appearance: none;
   cursor: pointer;
 
-  &:active {
+  &:not(:disabled):active {
     transform: scale(0.96);
+  }
+
+  &:disabled {
+    cursor: default;
+    opacity: 0.65;
   }
 }

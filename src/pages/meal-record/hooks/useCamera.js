@@ -6,6 +6,10 @@ export function useCamera(enabled) {
   const [status, setStatus] = useState('idle');
   const [facingMode, setFacingMode] = useState('environment');
   const [retryCount, setRetryCount] = useState(0);
+  const [torchSupported, setTorchSupported] = useState(false);
+  const [torchEnabled, setTorchEnabled] = useState(false);
+  const [isTorchChanging, setIsTorchChanging] = useState(false);
+  const [torchError, setTorchError] = useState('');
 
   const stopCamera = useCallback(() => {
     streamRef.current?.getTracks().forEach((track) => track.stop());
@@ -31,6 +35,10 @@ export function useCamera(enabled) {
       }
 
       setStatus('requesting');
+      setTorchSupported(false);
+      setTorchEnabled(false);
+      setIsTorchChanging(false);
+      setTorchError('');
 
       try {
         const stream = await navigator.mediaDevices.getUserMedia({
@@ -47,16 +55,36 @@ export function useCamera(enabled) {
 
         streamRef.current = stream;
 
+        const videoTrack = stream.getVideoTracks()[0];
+        let torchCapability;
+
+        try {
+          torchCapability = videoTrack?.getCapabilities?.().torch;
+        } catch {
+          torchCapability = undefined;
+        }
+
+        const canToggleTorch = Array.isArray(torchCapability)
+          ? torchCapability.includes(true) && torchCapability.includes(false)
+          : torchCapability === true;
+
+        setTorchSupported(canToggleTorch);
+
         if (videoRef.current) {
           videoRef.current.srcObject = stream;
           await videoRef.current.play().catch(() => {});
         }
 
+        if (cancelled || streamRef.current !== stream) return;
+
         setStatus('ready');
       } catch (error) {
         if (cancelled) return;
 
-        if (error.name === 'NotAllowedError' || error.name === 'SecurityError') {
+        if (
+          error.name === 'NotAllowedError' ||
+          error.name === 'SecurityError'
+        ) {
           setStatus('denied');
         } else {
           setStatus('error');
@@ -85,10 +113,53 @@ export function useCamera(enabled) {
     return canvas.toDataURL('image/jpeg', 0.9);
   }, []);
 
+  const toggleTorch = useCallback(async () => {
+    const videoTrack = streamRef.current?.getVideoTracks()[0];
+
+    if (
+      !torchSupported ||
+      !videoTrack ||
+      videoTrack.readyState !== 'live' ||
+      isTorchChanging
+    ) {
+      return false;
+    }
+
+    const nextTorchEnabled = !torchEnabled;
+    setIsTorchChanging(true);
+    setTorchError('');
+
+    try {
+      await videoTrack.applyConstraints({
+        advanced: [{ torch: nextTorchEnabled }],
+      });
+
+      if (streamRef.current?.getVideoTracks()[0] !== videoTrack) return false;
+
+      setTorchEnabled(nextTorchEnabled);
+      return true;
+    } catch {
+      if (streamRef.current?.getVideoTracks()[0] === videoTrack) {
+        setTorchError('이 기기에서는 플래시를 전환할 수 없어요.');
+      }
+
+      return false;
+    } finally {
+      if (streamRef.current?.getVideoTracks()[0] === videoTrack) {
+        setIsTorchChanging(false);
+      }
+    }
+  }, [isTorchChanging, torchEnabled, torchSupported]);
+
   return {
     videoRef,
     status,
+    torchSupported: enabled && torchSupported,
+    torchEnabled: enabled && torchEnabled,
+    isTorchChanging: enabled && isTorchChanging,
+    torchError: enabled ? torchError : '',
     capturePhoto,
+    toggleTorch,
     retryCamera: () => setRetryCount((count) => count + 1),
     switchCamera: () =>
       setFacingMode((currentMode) =>

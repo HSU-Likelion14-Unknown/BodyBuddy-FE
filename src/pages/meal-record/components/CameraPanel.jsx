@@ -2,6 +2,7 @@ import { useRef, useState } from 'react';
 import {
   MdCameraswitch,
   MdFlashOff,
+  MdFlashOn,
   MdOutlinePhotoLibrary,
 } from 'react-icons/md';
 import { useCamera } from '../hooks/useCamera';
@@ -16,7 +17,12 @@ export default function CameraPanel({ onAnalyze }) {
   const {
     videoRef,
     status: cameraStatus,
+    torchSupported,
+    torchEnabled,
+    isTorchChanging,
+    torchError,
     capturePhoto,
+    toggleTorch,
     retryCamera,
     switchCamera,
   } = useCamera(!previewImage);
@@ -81,11 +87,33 @@ export default function CameraPanel({ onAnalyze }) {
           <div className={styles.cameraGrid} />
           <button
             type="button"
-            className={styles.flashButton}
-            disabled
+            className={`${styles.flashButton} ${
+              torchEnabled ? styles.flashButtonActive : ''
+            }`}
+            aria-label={
+              cameraStatus === 'ready' && !torchSupported
+                ? '이 카메라는 플래시를 지원하지 않아요'
+                : torchEnabled
+                  ? '플래시 끄기'
+                  : '플래시 켜기'
+            }
+            aria-pressed={torchEnabled}
+            disabled={
+              cameraStatus !== 'ready' ||
+              !torchSupported ||
+              isTorchChanging ||
+              Boolean(previewImage)
+            }
+            onClick={toggleTorch}
           >
-            <MdFlashOff />
+            {torchEnabled ? <MdFlashOn /> : <MdFlashOff />}
           </button>
+
+          {torchError && (
+            <p className={styles.cameraStatus} role="status">
+              {torchError}
+            </p>
+          )}
         </div>
 
         <div className={styles.cameraControls}>
@@ -107,13 +135,20 @@ export default function CameraPanel({ onAnalyze }) {
           <button
             type="button"
             className={styles.shutterButton}
+            disabled={
+              isTorchChanging || (!previewImage && cameraStatus !== 'ready')
+            }
             onClick={handleShutterClick}
           />
 
           <button
             type="button"
             className={styles.controlButton}
-            disabled={cameraStatus !== 'ready' || Boolean(previewImage)}
+            disabled={
+              cameraStatus !== 'ready' ||
+              isTorchChanging ||
+              Boolean(previewImage)
+            }
             onClick={switchCamera}
           >
             <MdCameraswitch />
