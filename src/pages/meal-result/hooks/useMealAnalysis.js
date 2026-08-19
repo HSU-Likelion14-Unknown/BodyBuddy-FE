@@ -2,6 +2,10 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { isNetworkError } from '@/api/error';
 import { getMeal, getRecognitionCandidates } from '@/api/meals';
+import {
+  getRecentRecommendation,
+  isRecommendedFood,
+} from '@/utils/recentRecommendation';
 
 // 분석이 일찍 끝나도 이 시간만큼은 분석 화면을 유지한다 (진행 애니메이션 길이와 동일)
 const ANALYSIS_MIN_DURATION = 12_000;
@@ -13,14 +17,20 @@ function toFoods(payload) {
   const items = payload?.candidates ?? payload?.recognizedItems ?? [];
 
   return items
-    .map((item, index) => ({
-      id: `recognized-${item.candidateId ?? item.foodId ?? index}`,
-      foodId: item.foodId ?? null,
-      name: item.aiFoodName ?? item.foodName,
-      amount: 1,
-      unit: '인분',
-      source: 'recognized',
-    }))
+    .map((item, index) => {
+      const name = item.aiFoodName ?? item.foodName;
+
+      return {
+        id: `recognized-${item.candidateId ?? item.foodId ?? index}`,
+        foodId: item.foodId ?? null,
+        name,
+        amount: 1,
+        unit: '인분',
+        source: isRecommendedFood(name, getRecentRecommendation())
+          ? 'recommendation'
+          : 'recognized',
+      };
+    })
     .filter((food) => food.name);
 }
 

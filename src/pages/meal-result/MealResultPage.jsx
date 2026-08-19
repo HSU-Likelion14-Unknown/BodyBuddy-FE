@@ -6,6 +6,10 @@ import {
   confirmMeal,
   createMealRecommendation,
 } from '@/api/meals';
+import {
+  getRecentRecommendation,
+  isRecommendedFood,
+} from '@/utils/recentRecommendation';
 import { mealPlaceholder, resultMascot } from '@/assets';
 import MealAnalysisPage from '../meal-analysis/MealAnalysisPage';
 import RecognizedFoodCard from './components/RecognizedFoodCard';
@@ -46,7 +50,9 @@ export default function MealResultPage() {
         name,
         amount: 1,
         unit: '인분',
-        source: 'manual',
+        source: isRecommendedFood(name, getRecentRecommendation())
+          ? 'recommendation'
+          : 'manual',
       },
     ]);
   };
@@ -143,9 +149,18 @@ export default function MealResultPage() {
           disabled={Boolean(pendingAction) || !foods.length}
           onClick={() => submitMeal('recommendation')}
         >
-          {pendingAction === 'recommendation'
-            ? '추천을 준비하고 있어요...'
-            : '추천 받을래요'}
+          {pendingAction === 'recommendation' ? (
+            <>
+              추천을 준비하고 있어요
+              <span className={styles.loadingDots}>
+                <span />
+                <span />
+                <span />
+              </span>
+            </>
+          ) : (
+            '추천 받을래요'
+          )}
         </button>
         <button
           type="button"
@@ -153,9 +168,18 @@ export default function MealResultPage() {
           disabled={Boolean(pendingAction) || !foods.length}
           onClick={() => submitMeal('complete')}
         >
-          {pendingAction === 'complete'
-            ? '기록하고 있어요...'
-            : '추천 없이 기록만 할게요'}
+          {pendingAction === 'complete' ? (
+            <>
+              기록하고 있어요
+              <span className={styles.loadingDots}>
+                <span />
+                <span />
+                <span />
+              </span>
+            </>
+          ) : (
+            '추천 없이 기록만 할게요'
+          )}
         </button>
       </div>
     </main>

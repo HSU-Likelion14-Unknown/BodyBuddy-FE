@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getApiErrorMessage } from '@/api/error';
 import { completeMeal, decideRecommendation } from '@/api/meals';
+import { saveRecentRecommendation } from '@/utils/recentRecommendation';
 
 // 추천 선택, 건너뛰기, 기록 완료를 처리하고 캘린더로 이동
 export function useRecommendationDecision(recommendationResult, mealId) {
@@ -17,6 +18,12 @@ export function useRecommendationDecision(recommendationResult, mealId) {
       await task();
       navigate('/calendar', { replace: true });
     } catch (error) {
+      // 이미 결정이 저장된 요청은 재시도로 보고 캘린더로 이동
+      if (error.response?.data?.code === 'RECOMMENDATION_ALREADY_DECIDED') {
+        navigate('/calendar', { replace: true });
+        return;
+      }
+
       setErrorMessage(getApiErrorMessage(error, fallbackMessage));
     } finally {
       setIsSubmitting(false);
@@ -36,14 +43,20 @@ export function useRecommendationDecision(recommendationResult, mealId) {
       return;
     }
 
-    await run(
-      () =>
-        decideRecommendation(recommendationResult.recommendationId, {
-          decision,
-          ingredientId: decision === 'SELECTED' ? ingredientId : null,
-        }),
-      '추천 선택을 저장하지 못했어요.',
-    );
+    await run(async () => {
+      await decideRecommendation(recommendationResult.recommendationId, {
+        decision,
+        ingredientId: decision === 'SELECTED' ? ingredientId : null,
+      });
+
+      // 다음 끼니 기록 화면에서 안내하려고 선택한 재료 보관
+      if (decision === 'SELECTED') {
+        saveRecentRecommendation({
+          ingredientName: ingredient.ingredientName,
+          dishNames: ingredient.dishes?.map((dish) => dish.dishName) ?? [],
+        });
+      }
+    }, '추천 선택을 저장하지 못했어요.');
   };
 
   const completeRecord = async () => {

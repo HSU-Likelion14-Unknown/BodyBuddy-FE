@@ -3,6 +3,7 @@ import { MdCameraAlt, MdEdit, MdRestaurant } from 'react-icons/md';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { getApiErrorMessage } from '@/api/error';
 import { createImageMeal, createTextMeal } from '@/api/meals';
+import { getRecentRecommendation } from '@/utils/recentRecommendation';
 import CameraPanel from './components/CameraPanel';
 import ManualInputPanel from './components/ManualInputPanel';
 import styles from './MealRecordPage.module.scss';
@@ -25,6 +26,7 @@ export default function MealRecordPage() {
   const [mode, setMode] = useState(state?.initialMode || 'camera');
   const [manualText, setManualText] = useState(state?.manualText || '');
   const [errorMessage, setErrorMessage] = useState('');
+  const recentRecommendation = getRecentRecommendation();
 
   const startAnalysis = async (meal) => {
     setErrorMessage('');
@@ -56,7 +58,11 @@ export default function MealRecordPage() {
         <span className={styles.suggestionLabel}>
           <MdRestaurant /> 최근 추천 음식
         </span>
-        <strong>지금은 추천 항목이 없어요!</strong>
+        <strong>
+          {recentRecommendation
+            ? recentRecommendation.ingredientName
+            : '지금은 추천 항목이 없어요!'}
+        </strong>
       </section>
 
       <div className={styles.modeTabs} role="tablist">
