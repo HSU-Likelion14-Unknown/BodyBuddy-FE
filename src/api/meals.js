@@ -48,6 +48,14 @@ export const createMealRecommendation = async (mealId) => {
   return response.data;
 };
 
+// POST 추천 재생성 — 기존 재료를 겹치지 않는 새 재료로 교체
+export const refreshRecommendation = async (recommendationId) => {
+  const response = await api.post(
+    `/recommendations/${recommendationId}/refresh`,
+  );
+  return response.data;
+};
+
 // POST 추천 선택 또는 건너뛰기
 export const decideRecommendation = async (recommendationId, payload) => {
   const response = await api.post(

@@ -4,6 +4,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { mealPlaceholder, perfectDecoration, perfectResult } from '@/assets';
 import RecommendationCard from './components/RecommendationCard';
 import { useRecommendationDecision } from './hooks/useRecommendationDecision';
+import { useRecommendationRefresh } from './hooks/useRecommendationRefresh';
 import { formatAmount, getNutrientSummary, toCard } from './recommendationView';
 import styles from './MealRecommendationPage.module.scss';
 
@@ -11,14 +12,16 @@ export default function MealRecommendationPage() {
   const { state } = useLocation();
   const navigate = useNavigate();
   const [activeIndex, setActiveIndex] = useState(0);
-  // 1개로 시작해 '다른 추천 보기'마다 하나씩 공개 (서버 최대 3개)
-  const [revealedCount, setRevealedCount] = useState(1);
+  const {
+    recommendation: recommendationResult,
+    remainingCount,
+    isRefreshing,
+    errorMessage: refreshError,
+    refresh,
+  } = useRecommendationRefresh(state?.recommendation);
 
-  const recommendationResult = state?.recommendation;
   const ingredients = recommendationResult?.ingredients ?? [];
-  const revealedIngredients = ingredients.slice(0, revealedCount);
-  const activeIngredient = revealedIngredients[activeIndex];
-  const remainingChanges = ingredients.length - revealedCount;
+  const activeIngredient = ingredients[activeIndex];
   const isNoCandidate = recommendationResult?.status === 'NO_CANDIDATE';
   const isCreated = recommendationResult?.status === 'CREATED';
   // NO_CANDIDATE 사유 구분 — BALANCED_MEAL만 "완벽한 식사",
@@ -35,19 +38,18 @@ export default function MealRecommendationPage() {
 
   const showPrevious = () => {
     setActiveIndex((index) =>
-      index === 0 ? revealedIngredients.length - 1 : index - 1,
+      index === 0 ? ingredients.length - 1 : index - 1,
     );
   };
 
   const showNext = () => {
-    setActiveIndex((index) => (index + 1) % revealedIngredients.length);
+    setActiveIndex((index) => (index + 1) % ingredients.length);
   };
 
-  const revealAnother = () => {
-    if (remainingChanges <= 0) return;
+  const showAnotherRecommendation = async () => {
+    const refreshed = await refresh();
 
-    setActiveIndex(revealedCount);
-    setRevealedCount((count) => count + 1);
+    if (refreshed) setActiveIndex(0);
   };
 
   return (
@@ -118,9 +120,9 @@ export default function MealRecommendationPage() {
         />
       )}
 
-      {errorMessage && (
+      {(errorMessage || refreshError) && (
         <p className={styles.errorMessage} role="alert">
-          {errorMessage}
+          {errorMessage || refreshError}
         </p>
       )}
 
@@ -161,8 +163,7 @@ export default function MealRecommendationPage() {
             <div className={styles.sectionHeader}>
               <h2>다음 끼니에 추가하면 좋을 음식</h2>
               <span>
-                <strong>{activeIndex + 1}</strong> /{' '}
-                {revealedIngredients.length}
+                <strong>{activeIndex + 1}</strong> / {ingredients.length}
               </span>
             </div>
 
@@ -170,7 +171,7 @@ export default function MealRecommendationPage() {
               recommendation={recommendation}
               onPrevious={showPrevious}
               onNext={showNext}
-              canNavigate={revealedIngredients.length > 1}
+              canNavigate={ingredients.length > 1}
             />
           </section>
 
@@ -178,11 +179,22 @@ export default function MealRecommendationPage() {
             <button
               type="button"
               className={styles.otherButton}
-              disabled={isSubmitting || remainingChanges <= 0}
-              onClick={revealAnother}
+              disabled={isSubmitting || isRefreshing || remainingCount <= 0}
+              onClick={showAnotherRecommendation}
             >
-              다른 추천 보기
-              <span>{remainingChanges}번 남음</span>
+              {isRefreshing ? (
+                <>
+                  추천을 바꾸는 중
+                  <span className={styles.loadingDots}>
+                    <span />
+                    <span />
+                    <span />
+                  </span>
+                </>
+              ) : (
+                '다른 추천 보기'
+              )}
+              <span>{remainingCount}번 남음</span>
             </button>
             <button
               type="button"
@@ -198,7 +210,18 @@ export default function MealRecommendationPage() {
               disabled={isSubmitting}
               onClick={() => submitDecision('SELECTED', activeIngredient)}
             >
-              {isSubmitting ? '저장 중...' : '추가할게요'}
+              {isSubmitting ? (
+                <>
+                  저장 중
+                  <span className={styles.loadingDots}>
+                    <span />
+                    <span />
+                    <span />
+                  </span>
+                </>
+              ) : (
+                '추가할게요'
+              )}
             </button>
           </div>
         </>
