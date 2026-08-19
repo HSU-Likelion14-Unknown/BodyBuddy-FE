@@ -120,6 +120,7 @@ export default function CameraPanel({ onAnalyze }) {
           <button
             type="button"
             className={styles.controlButton}
+            disabled={Boolean(previewImage)}
             onClick={() => fileInputRef.current?.click()}
           >
             <MdOutlinePhotoLibrary />

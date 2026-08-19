@@ -2,7 +2,12 @@ import { useState } from 'react';
 import { MdAdd, MdClose, MdRestaurant } from 'react-icons/md';
 import styles from './RecognizedFoodCard.module.scss';
 
-export default function RecognizedFoodCard({ foods, onAdd, onRemove }) {
+export default function RecognizedFoodCard({
+  foods,
+  onAdd,
+  onRemove,
+  disabled = false,
+}) {
   const [foodName, setFoodName] = useState('');
   const hasRecommendedFood = foods.some(
     (food) => food.source === 'recommendation',
@@ -44,6 +49,7 @@ export default function RecognizedFoodCard({ foods, onAdd, onRemove }) {
               type="button"
               className={styles.deleteButton}
               title={`${food.name} 삭제`}
+              disabled={disabled}
               onClick={() => onRemove(food.id)}
             >
               <MdClose />
@@ -57,13 +63,14 @@ export default function RecognizedFoodCard({ foods, onAdd, onRemove }) {
           className={styles.foodInput}
           value={foodName}
           placeholder="음식 직접 추가"
+          disabled={disabled}
           onChange={(event) => setFoodName(event.target.value)}
         />
         <button
           type="submit"
           className={styles.addButton}
           title="음식 추가"
-          disabled={!foodName.trim()}
+          disabled={disabled || !foodName.trim()}
         >
           <MdAdd />
         </button>

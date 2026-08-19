@@ -102,6 +102,14 @@
   margin: 23px auto 0;
 }
 
+.errorMessage {
+  color: #c0392b;
+  font-size: 12px;
+  font-weight: $font-weight-medium;
+  line-height: 18px;
+  text-align: center;
+}
+
 .recommendButton,
 .recordButton {
   width: 100%;
