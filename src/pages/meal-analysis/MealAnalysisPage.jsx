@@ -1,15 +1,10 @@
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import AnalysisPreview from './components/AnalysisPreview';
 import styles from './MealAnalysisPage.module.scss';
 
 export default function MealAnalysisPage() {
   const { state } = useLocation();
-  const navigate = useNavigate();
   const nickname = state?.nickname || '00';
-
-  const handleAnalysisComplete = () => {
-    navigate('/meals/result', { replace: true, state });
-  };
 
   return (
     <main className={styles.container}>
@@ -29,7 +24,7 @@ export default function MealAnalysisPage() {
 
         <div className={styles.progressContent}>
           <div className={styles.progressBar} role="progressbar">
-            <span onAnimationEnd={handleAnalysisComplete} />
+            <span />
           </div>
 
           <div className={styles.progressText}>

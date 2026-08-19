@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { mealPlaceholder, resultMascot } from '@/assets';
+import MealAnalysisPage from '../meal-analysis/MealAnalysisPage';
 import RecognizedFoodCard from './components/RecognizedFoodCard';
 import styles from './MealResultPage.module.scss';
 
@@ -12,9 +13,16 @@ const MOCK_FOODS = [
 export default function MealResultPage() {
   const { state } = useLocation();
   const navigate = useNavigate();
+  const [pageStatus] = useState(
+    Array.isArray(state?.foods) ? 'result' : 'analyzing',
+  );
   const [foods, setFoods] = useState(() =>
     Array.isArray(state?.foods) ? state.foods : MOCK_FOODS,
   );
+
+  if (pageStatus === 'analyzing') {
+    return <MealAnalysisPage />;
+  }
 
   const addFood = (name) => {
     setFoods((currentFoods) => [
