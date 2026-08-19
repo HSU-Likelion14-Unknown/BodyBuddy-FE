@@ -1,5 +1,7 @@
 import { useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { putOnboarding } from '@/api/user';
+import { setOnboardingCompletedAt } from '@/api/userStorage';
 import styles from './OnboardingPage3.module.scss';
 import { onboardingCharacter3, iconSearch, iconCloseSmall } from '@/assets';
 import OnboardingLayout from './components/OnboardingLayout';
@@ -10,8 +12,9 @@ export default function OnboardingPage3() {
   const [isNone, setIsNone] = useState(saved ? saved.noDisliked : true);
   const [inputValue, setInputValue] = useState('');
   const [customTags, setCustomTags] = useState(saved?.dislikedFoods || []);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const isNextEnabled = isNone || customTags.length > 0;
+  const isNextEnabled = (isNone || customTags.length > 0) && !isSubmitting;
 
   const handleNoneClick = () => {
     if (!isNone) {
@@ -52,17 +55,37 @@ export default function OnboardingPage3() {
     navigate(-1);
   };
 
-  const handleNext = () => {
-    // TODO: POST /api/users/disliked-foods
-    localStorage.setItem('hasOnboarded', 'true');
+  const handleNext = async () => {
+    if (isSubmitting) return;
+    setIsSubmitting(true);
+
     localStorage.setItem(
       'onboarding_step3',
-      JSON.stringify({
-        noDisliked: isNone,
-        dislikedFoods: customTags,
-      }),
+      JSON.stringify({ noDisliked: isNone, dislikedFoods: customTags }),
     );
-    navigate('/home');
+
+    const step1 = JSON.parse(localStorage.getItem('onboarding_step1') || '{}');
+    const step2 = JSON.parse(localStorage.getItem('onboarding_step2') || '{}');
+
+    try {
+      const result = await putOnboarding({
+        nickname: step1.nickname,
+        birthYear: step1.birthYear ?? null,
+        gender: step1.gender ?? 'none',
+        allergens: step2.allergens ?? [],
+        customAllergens: step2.customAllergens ?? [],
+        dislikedFoods: isNone ? [] : customTags,
+      });
+
+      if (result.onboardingCompletedAt) {
+        setOnboardingCompletedAt(result.onboardingCompletedAt);
+      }
+
+      navigate('/home');
+    } catch (e) {
+      console.error('온보딩 저장 실패:', e);
+      setIsSubmitting(false);
+    }
   };
 
   return (
