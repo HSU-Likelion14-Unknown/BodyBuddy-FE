@@ -1,6 +1,12 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styles from './SplashPage.module.scss';
+import { postAnonymous } from '@/api/auth';
+import { getAccessKey, setAccessKey } from '@/api/tokenStorage';
+import {
+  getOnboardingCompletedAt,
+  setOnboardingCompletedAt,
+} from '@/api/userStorage';
 
 import {
   splashEllipseBg,
@@ -12,16 +18,36 @@ import {
 
 export default function SplashPage() {
   const navigate = useNavigate();
+  const initialized = useRef(false);
 
   useEffect(() => {
-    const hasOnboarded = localStorage.getItem('hasOnboarded');
+    if (initialized.current) return;
+    initialized.current = true;
 
-    // 온보딩 여부 확인
-    const timer = setTimeout(() => {
-      navigate(hasOnboarded ? '/home' : '/onboarding/1');
-    }, 3000);
+    const delay = new Promise((resolve) => setTimeout(resolve, 3000));
 
-    return () => clearTimeout(timer);
+    const init = async () => {
+      let onboardingCompletedAt = null;
+      try {
+        if (!getAccessKey()) {
+          const data = await postAnonymous();
+          setAccessKey(data.accessKey);
+          if (data.onboardingCompletedAt) {
+            setOnboardingCompletedAt(data.onboardingCompletedAt);
+          }
+          onboardingCompletedAt = data.onboardingCompletedAt;
+        } else {
+          onboardingCompletedAt = getOnboardingCompletedAt();
+        }
+      } catch {
+        // 실패 시 온보딩으로
+      }
+
+      await delay;
+      navigate(onboardingCompletedAt ? '/home' : '/onboarding/1');
+    };
+
+    init();
   }, [navigate]);
 
   return (
