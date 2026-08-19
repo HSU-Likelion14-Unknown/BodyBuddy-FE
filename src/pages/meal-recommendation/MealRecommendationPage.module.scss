@@ -59,6 +59,11 @@ $color-primary-pale: #ffe4b8;
   border-radius: 10px;
   box-shadow: 0 5px 10px rgba(113, 71, 3, 0.14);
   cursor: pointer;
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: default;
+  }
 }
 
 .calendarButton {
@@ -70,6 +75,11 @@ $color-primary-pale: #ffe4b8;
   background-color: transparent;
   border: 0;
   cursor: pointer;
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: default;
+  }
 
   span {
     padding-bottom: 1px;
@@ -256,6 +266,41 @@ $color-primary-pale: #ffe4b8;
   background-color: $color-primary-accent;
 }
 
+.otherButton:disabled,
+.addButton:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.errorMessage {
+  width: min(100%, 351px);
+  margin: 14px auto 0;
+  color: #c84434;
+  font-size: 13px;
+  line-height: 19px;
+  text-align: center;
+}
+
+.emptyState {
+  @include flex(column, center, center, 14px);
+
+  width: min(100%, 351px);
+  margin: 80px auto 0;
+  color: $color-brown3;
+  font-size: 14px;
+
+  button {
+    height: 42px;
+    padding: 0 24px;
+    color: $color-white;
+    font-weight: $font-weight-semibold;
+    background-color: $color-primary-accent;
+    border: 0;
+    border-radius: 10px;
+    cursor: pointer;
+  }
+}
+
 @media (max-width: 374px) {
   .container {
     padding-right: 16px;
@@ -276,4 +321,45 @@ $color-primary-pale: #ffe4b8;
     grid-template-columns: 47px minmax(0, 1fr) 55px;
     gap: 7px;
   }
+}
+
+/* ── 추천 건너뛰기 — 주 버튼과 구분되는 텍스트 버튼 ── */
+.skipButton {
+  width: 100%;
+  margin-top: 2px;
+  padding: 6px 0;
+  color: $color-brown3;
+  font-size: 13px;
+  font-weight: $font-weight-medium;
+  line-height: 19px;
+  text-decoration: underline;
+  background: none;
+  border: 0;
+  cursor: pointer;
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: default;
+  }
+}
+
+/* ── 추천 없이 기록만 남기는 결과 화면 ── */
+.resultTitle {
+  width: min(100%, 354px);
+  margin: 0 auto 18px;
+  color: $color-brown5;
+  font-size: 18px;
+  font-weight: $font-weight-bold;
+  line-height: 26px;
+  text-align: center;
+}
+
+.mealImage {
+  display: block;
+  width: min(100%, 354px);
+  height: 200px;
+  margin: 18px auto 0;
+  object-fit: cover;
+  object-position: center;
+  border-radius: 10px;
 }
