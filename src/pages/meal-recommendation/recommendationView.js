@@ -35,16 +35,16 @@ export function getNutrientSummary(recommendation) {
   }));
 }
 
-// nutrients: [{ name: 'IRON', percent: 92 }]
+// nutrientCoverages: [{ nutrient: 'IRON', coveragePercent: 92 }]
 function toNutrients(ingredient) {
-  const source = ingredient?.nutrients;
+  const source = ingredient?.nutrientCoverages;
 
   if (!Array.isArray(source)) return [];
 
   return source
     .map((item) => ({
-      name: NUTRIENTS[item.name]?.name ?? item.name,
-      percent: Number(item.percent),
+      name: NUTRIENTS[item.nutrient]?.name ?? item.nutrient,
+      percent: Math.round(Number(item.coveragePercent)),
     }))
     .filter((item) => item.name && Number.isFinite(item.percent));
 }
