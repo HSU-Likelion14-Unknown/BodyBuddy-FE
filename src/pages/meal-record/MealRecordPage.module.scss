@@ -96,3 +96,13 @@
   background-color: $color-primary-accent;
   box-shadow: 0 4px 4px rgba(113, 71, 3, 0.14);
 }
+
+.errorMessage {
+  width: min(calc(100% - 38px), 351px);
+  margin: 12px auto 0;
+  color: #c0392b;
+  font-size: 12px;
+  font-weight: $font-weight-medium;
+  line-height: 18px;
+  text-align: center;
+}

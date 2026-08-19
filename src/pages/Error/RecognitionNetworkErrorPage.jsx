@@ -8,7 +8,10 @@ export default function RecognitionNetworkErrorPage() {
 
   const handleRetry = () => {
     if (state?.from) {
-      navigate(state.from, { replace: true });
+      navigate(state.from, {
+        replace: true,
+        state: state.requestState,
+      });
     } else {
       navigate(-1);
     }

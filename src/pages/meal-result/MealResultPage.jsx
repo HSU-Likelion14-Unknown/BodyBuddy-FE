@@ -1,25 +1,59 @@
 import { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { getApiErrorMessage } from '@/api/error';
+import {
+  completeMeal,
+  confirmMeal,
+  createMealRecommendation,
+} from '@/api/meals';
+import {
+  getRecentRecommendation,
+  isRecommendedFood,
+} from '@/utils/recentRecommendation';
 import { mealPlaceholder, resultMascot } from '@/assets';
+import MealAnalysisPage from '../meal-analysis/MealAnalysisPage';
 import RecognizedFoodCard from './components/RecognizedFoodCard';
+import { useMealAnalysis } from './hooks/useMealAnalysis';
 import styles from './MealResultPage.module.scss';
 
-const MOCK_FOODS = [
-  { id: 'eel-rice', name: '장어 덮밥', source: 'recognized' },
-  { id: 'soup', name: '장국', source: 'recognized' },
-];
+function toMealItems(foods) {
+  return foods.map((food) => ({
+    foodId: food.foodId ?? null,
+    foodName: food.name,
+    amount: food.amount ?? 1,
+    unit: food.unit ?? '인분',
+  }));
+}
 
 export default function MealResultPage() {
   const { state } = useLocation();
   const navigate = useNavigate();
-  const [foods, setFoods] = useState(() =>
-    Array.isArray(state?.foods) ? state.foods : MOCK_FOODS,
+  const mealId = state?.mealId;
+  const { isAnalyzing, foods, setFoods, eatenAt } = useMealAnalysis(
+    mealId,
+    state,
   );
+  const [isConfirmed, setIsConfirmed] = useState(false);
+  const [pendingAction, setPendingAction] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
+
+  if (isAnalyzing) {
+    return <MealAnalysisPage />;
+  }
 
   const addFood = (name) => {
     setFoods((currentFoods) => [
       ...currentFoods,
-      { id: `manual-${Date.now()}`, name, source: 'manual' },
+      {
+        id: `manual-${Date.now()}`,
+        foodId: null,
+        name,
+        amount: 1,
+        unit: '인분',
+        source: isRecommendedFood(name, getRecentRecommendation())
+          ? 'recommendation'
+          : 'manual',
+      },
     ]);
   };
 
@@ -29,14 +63,44 @@ export default function MealResultPage() {
     );
   };
 
-  const isManualMeal = state?.source === 'manual' && state?.description;
+  const submitMeal = async (action) => {
+    if (!mealId || pendingAction || !foods.length) return;
 
-  const showRecommendation = () => {
-    navigate('/meals/recommendation', {
-      replace: true,
-      state: { ...state, foods },
-    });
+    setPendingAction(action);
+    setErrorMessage('');
+
+    try {
+      if (!isConfirmed) {
+        await confirmMeal(mealId, {
+          items: toMealItems(foods),
+          eatenAt: eatenAt ?? new Date().toISOString(),
+        });
+        setIsConfirmed(true);
+      }
+
+      if (action === 'recommendation') {
+        const recommendation = await createMealRecommendation(mealId);
+        navigate('/meals/recommendation', {
+          replace: true,
+          state: { ...state, foods, recommendation },
+        });
+      } else {
+        await completeMeal(mealId);
+        navigate('/calendar', { replace: true });
+      }
+    } catch (error) {
+      setErrorMessage(
+        getApiErrorMessage(
+          error,
+          '식사 기록을 처리하지 못했어요. 잠시 후 다시 시도해 주세요.',
+        ),
+      );
+    } finally {
+      setPendingAction('');
+    }
   };
+
+  const isManualMeal = state?.source === 'manual' && state?.description;
 
   return (
     <main className={styles.container}>
@@ -56,6 +120,7 @@ export default function MealResultPage() {
           foods={foods}
           onAdd={addFood}
           onRemove={removeFood}
+          disabled={isConfirmed}
         />
       </div>
 
@@ -73,23 +138,48 @@ export default function MealResultPage() {
       )}
 
       <div className={styles.actionContent}>
+        {errorMessage && (
+          <p className={styles.errorMessage} role="alert">
+            {errorMessage}
+          </p>
+        )}
         <button
           type="button"
           className={styles.recommendButton}
-          disabled={state?.recommendationAccepted}
-          onClick={showRecommendation}
+          disabled={Boolean(pendingAction) || !foods.length}
+          onClick={() => submitMeal('recommendation')}
         >
-          {state?.recommendationAccepted ? '추천 실천 완료' : '추천 받을래요'}
+          {pendingAction === 'recommendation' ? (
+            <>
+              추천을 준비하고 있어요
+              <span className={styles.loadingDots}>
+                <span />
+                <span />
+                <span />
+              </span>
+            </>
+          ) : (
+            '추천 받을래요'
+          )}
         </button>
         <button
           type="button"
           className={styles.recordButton}
-          title="저장 API 연결 후 사용할 수 있어요"
-          disabled
+          disabled={Boolean(pendingAction) || !foods.length}
+          onClick={() => submitMeal('complete')}
         >
-          {state?.recommendationAccepted
-            ? '이대로 기록할래요'
-            : '추천 없이 기록만 할게요'}
+          {pendingAction === 'complete' ? (
+            <>
+              기록하고 있어요
+              <span className={styles.loadingDots}>
+                <span />
+                <span />
+                <span />
+              </span>
+            </>
+          ) : (
+            '추천 없이 기록만 할게요'
+          )}
         </button>
       </div>
     </main>
