@@ -10,8 +10,8 @@ import {
   iconCheckFilled,
 } from '@/assets';
 import OnboardingLayout from './components/OnboardingLayout';
-import YearPicker from '@/components/common/YearPicker/YearPicker';
-import Toast from '@/components/common/Toast/Toast';
+import YearPicker from './components/YearPicker';
+import Toast from './components/Toast';
 
 const GENDER_OPTIONS = [
   { value: 'male', label: '남성', icon: iconMale },
