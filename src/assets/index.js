@@ -42,11 +42,6 @@ import homeHeroMagnesium from '@/assets/home/hero-magnesium.svg';
 import homeHeroPlus from '@/assets/home/hero-plus.svg';
 import homeHeroRays from '@/assets/home/hero-rays.svg';
 import homeHeroZinc from '@/assets/home/hero-zinc.svg';
-import homeCalendarMon from '@/assets/home/calendar-mon.png';
-import homeCalendarTue from '@/assets/home/calendar-tue.png';
-import homeCalendarWed from '@/assets/home/calendar-wed.png';
-import homeCalendarFri from '@/assets/home/calendar-fri.png';
-import homeCalendarSat from '@/assets/home/calendar-sat.png';
 
 // Share room
 import shareRoomMalatang from '@/assets/share-room/meal-malatang.png';
@@ -93,11 +88,6 @@ export {
   homeHeroPlus,
   homeHeroRays,
   homeHeroZinc,
-  homeCalendarMon,
-  homeCalendarTue,
-  homeCalendarWed,
-  homeCalendarFri,
-  homeCalendarSat,
   mealPlaceholder,
   perfectDecoration,
   perfectResult,
