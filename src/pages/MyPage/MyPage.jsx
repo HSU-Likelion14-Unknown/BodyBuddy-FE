@@ -178,6 +178,13 @@ export default function MyPage() {
         </button>
         <hr className={styles.divider} />
       </section>
+
+      <footer className={styles.dataSource}>
+        <p className={styles.dataSourceLabel}>영양성분 데이터 출처</p>
+        <p>식품영양성분 데이터베이스</p>
+        <p lang="en">Korean Food Composition Database system(K-FCDB)</p>
+      </footer>
+
       {showDeleteSheet && (
         <>
           <div
