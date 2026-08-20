@@ -282,6 +282,101 @@
   display: none;
 }
 
+.leaveDialogOverlay {
+  @include flex;
+
+  position: fixed;
+  inset: 0 auto 0 50%;
+  z-index: 300;
+  width: 100%;
+  max-width: 430px;
+  padding: 20px;
+  background-color: rgba($color-black, 0.42);
+  transform: translateX(-50%);
+  animation: leaveOverlayFadeIn 0.2s ease-out;
+}
+
+.leaveDialog {
+  width: 100%;
+  padding: 26px 20px 20px;
+  text-align: center;
+  background-color: $color-white;
+  border-radius: 20px;
+  box-shadow: 0 14px 36px rgba($color-black, 0.18);
+  outline: 0;
+  animation: leaveDialogFadeIn 0.2s ease-out;
+
+  h2 {
+    margin-top: 12px;
+    color: $color-brown4;
+    font-size: $font-size-21;
+    font-weight: $font-weight-semibold;
+    line-height: 28px;
+    letter-spacing: -0.5px;
+  }
+
+  p {
+    margin-top: 9px;
+    color: $color-gray5;
+    font-size: $font-size-12;
+    font-weight: $font-weight-medium;
+    line-height: 18px;
+  }
+}
+
+.leaveDialogIcon {
+  @include flex;
+
+  width: 42px;
+  height: 42px;
+  margin: 0 auto;
+  background-color: $color-primary-soft;
+  border-radius: 50%;
+
+  img {
+    width: 18px;
+    height: 18px;
+  }
+}
+
+.leaveDialogActions {
+  @include flex(row, center, center, 10px);
+
+  margin-top: 22px;
+
+  button {
+    @include flex;
+
+    width: 100%;
+    height: 46px;
+    font-size: $font-size-14;
+    font-weight: $font-weight-semibold;
+    border: 0;
+    border-radius: 10px;
+    cursor: pointer;
+
+    &:disabled {
+      opacity: 0.55;
+      cursor: default;
+    }
+
+    &:focus-visible {
+      outline: 2px solid $color-primary-accent;
+      outline-offset: 2px;
+    }
+  }
+}
+
+.leaveCancelButton {
+  color: $color-brown4;
+  background-color: $color-gray2;
+}
+
+.leaveConfirmButton {
+  color: $color-white;
+  background-color: #ff4d4d;
+}
+
 .inviteMessage {
   position: relative;
   margin-top: 32px;
@@ -311,6 +406,19 @@
   from {
     opacity: 0;
     transform: translateY(-4px) scale(0.98);
+  }
+}
+
+@keyframes leaveOverlayFadeIn {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes leaveDialogFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.98);
   }
 }
 
