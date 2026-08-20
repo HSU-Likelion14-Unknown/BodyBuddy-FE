@@ -2,6 +2,7 @@ import { useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { putOnboarding } from '@/api/user';
 import { setOnboardingCompletedAt } from '@/api/userStorage';
+import { getPendingInvite } from '@/utils/pendingInvite';
 import styles from './OnboardingPage3.module.scss';
 import { onboardingCharacter3, iconSearch, iconCloseSmall } from '@/assets';
 import OnboardingLayout from './components/OnboardingLayout';
@@ -52,6 +53,12 @@ export default function OnboardingPage3() {
       JSON.stringify({ noDisliked: isNone, dislikedFoods: customTags }),
     );
     localStorage.setItem('onboarding_prev_step', '3');
+
+    if (getPendingInvite()?.onboardingStartedAt) {
+      navigate('/onboarding/2', { replace: true });
+      return;
+    }
+
     navigate(-1);
   };
 
@@ -81,7 +88,19 @@ export default function OnboardingPage3() {
         setOnboardingCompletedAt(result.onboardingCompletedAt);
       }
 
-      navigate('/home');
+      const pendingInvite = getPendingInvite();
+
+      if (pendingInvite?.code && pendingInvite.onboardingStartedAt) {
+        navigate(
+          `/share-room/invite/${encodeURIComponent(pendingInvite.code)}`,
+          {
+            replace: true,
+            state: { joinAfterOnboarding: pendingInvite.code },
+          },
+        );
+      } else {
+        navigate('/home', { replace: true });
+      }
     } catch (e) {
       console.error('온보딩 저장 실패:', e);
       setIsSubmitting(false);

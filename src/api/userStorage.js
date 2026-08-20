@@ -7,3 +7,7 @@ export function getOnboardingCompletedAt() {
 export function setOnboardingCompletedAt(value) {
   localStorage.setItem(ONBOARDING_COMPLETED_KEY, value);
 }
+
+export function clearOnboardingCompletedAt() {
+  localStorage.removeItem(ONBOARDING_COMPLETED_KEY);
+}

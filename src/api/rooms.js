@@ -36,8 +36,17 @@ export const getMyRooms = async ({ signal } = {}) => {
 };
 
 // POST 초대 코드로 공유방 참여
-export const joinRoom = async (code) => {
-  const response = await api.post('/rooms/join', { code });
+export const joinRoom = async (code, { requestKey } = {}) => {
+  const response = await api.post(
+    '/rooms/join',
+    { code },
+    {
+      requiresOnboarding: true,
+      ...(requestKey
+        ? { headers: { 'Idempotency-Key': requestKey } }
+        : {}),
+    },
+  );
   return unwrap(response);
 };
 

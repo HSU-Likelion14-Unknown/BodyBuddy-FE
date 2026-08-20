@@ -12,6 +12,7 @@ import {
 import OnboardingLayout from './components/OnboardingLayout';
 import YearPicker from './components/YearPicker';
 import Toast from './components/Toast';
+import { getPendingInvite } from '@/utils/pendingInvite';
 
 const GENDER_OPTIONS = [
   { value: 'male', label: '남성', icon: iconMale },
@@ -54,7 +55,23 @@ export default function OnboardingPage1() {
       JSON.stringify({ nickname: nickname.trim(), birthYear, gender }),
     );
     localStorage.setItem('onboarding_prev_step', '1');
-    navigate('/onboarding/2');
+    navigate('/onboarding/2', {
+      replace: Boolean(getPendingInvite()?.onboardingStartedAt),
+    });
+  };
+
+  const handleBack = () => {
+    const pendingInvite = getPendingInvite();
+
+    if (pendingInvite?.onboardingStartedAt) {
+      navigate(
+        `/share-room/invite/${encodeURIComponent(pendingInvite.code)}`,
+        { replace: true },
+      );
+      return;
+    }
+
+    navigate(-1);
   };
 
   return (
@@ -70,6 +87,7 @@ export default function OnboardingPage1() {
           </>
         }
         isNextEnabled={isNextEnabled}
+        onBack={handleBack}
         onNext={handleNext}
       >
         {/* 닉네임 */}

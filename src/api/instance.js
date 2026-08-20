@@ -1,6 +1,10 @@
 import axios from 'axios';
 import { postAnonymous } from './auth';
 import { clearAccessKey, getAccessKey, setAccessKey } from './tokenStorage';
+import {
+  clearOnboardingCompletedAt,
+  setOnboardingCompletedAt,
+} from './userStorage';
 
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL,
@@ -43,6 +47,18 @@ api.interceptors.response.use(undefined, async (error) => {
     clearAccessKey();
     const session = await postAnonymous();
     setAccessKey(session.accessKey);
+
+    if (session.onboardingCompletedAt) {
+      setOnboardingCompletedAt(session.onboardingCompletedAt);
+    } else {
+      clearOnboardingCompletedAt();
+
+      if (config.requiresOnboarding) {
+        const onboardingError = new Error('ONBOARDING_REQUIRED');
+        onboardingError.code = 'ONBOARDING_REQUIRED';
+        return Promise.reject(onboardingError);
+      }
+    }
   } catch {
     return Promise.reject(error);
   }
