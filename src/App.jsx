@@ -1,5 +1,9 @@
-import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import { Layout } from './components/layout/Layout';
+import {
+  OnboardingRoute,
+  ProtectedRoute,
+} from './components/layout/RouteGuard';
 import MealRecommendationPage from './pages/meal-recommendation/MealRecommendationPage';
 import MealRecordPage from './pages/meal-record/MealRecordPage';
 import MealResultPage from './pages/meal-result/MealResultPage';
@@ -23,34 +27,45 @@ function App() {
       <Routes>
         {/* 모바일 레이아웃 설정 */}
         <Route element={<Layout />}>
-          <Route path="/home" element={<HomePage />} />
+          {/* 공개 라우트 */}
+          <Route path="/" element={<SplashPage />} />
           <Route
             path="/share-room/invite/:code"
             element={<ShareRoomInvitePage />}
           />
-          <Route path="/share-room/:roomId" element={<ShareRoomPage />} />
-          <Route path="/meals/new" element={<MealRecordPage />} />
-          <Route path="/meals/result" element={<MealResultPage />} />
-          <Route
-            path="/meals/recommendation"
-            element={<MealRecommendationPage />}
-          />
-          <Route path="/calendar" element={<CalendarPage />} />
-          <Route path="/mypage" element={<MyPage />} />
-          <Route path="/mypage/edit" element={<MyPageEdit />} />
-          <Route path="/" element={<SplashPage />} />
-          <Route path="/onboarding/1" element={<OnboardingPage1 />} />
-          <Route path="/onboarding/2" element={<OnboardingPage2 />} />
-          <Route path="/onboarding/3" element={<OnboardingPage3 />} />
           <Route path="/error/network" element={<NetworkErrorPage />} />
-          <Route
-            path="/error/recognition-network"
-            element={<RecognitionNetworkErrorPage />}
-          />
-          <Route
-            path="/error/recognition-result"
-            element={<RecognitionResultErrorPage />}
-          />
+
+          {/* 온보딩 전용 라우트 */}
+          <Route element={<OnboardingRoute />}>
+            <Route path="/onboarding/1" element={<OnboardingPage1 />} />
+            <Route path="/onboarding/2" element={<OnboardingPage2 />} />
+            <Route path="/onboarding/3" element={<OnboardingPage3 />} />
+          </Route>
+
+          {/* 온보딩 완료 후 접근 가능한 라우트 */}
+          <Route element={<ProtectedRoute />}>
+            <Route path="/home" element={<HomePage />} />
+            <Route path="/share-room/:roomId" element={<ShareRoomPage />} />
+            <Route path="/meals/new" element={<MealRecordPage />} />
+            <Route path="/meals/result" element={<MealResultPage />} />
+            <Route
+              path="/meals/recommendation"
+              element={<MealRecommendationPage />}
+            />
+            <Route path="/calendar" element={<CalendarPage />} />
+            <Route path="/mypage" element={<MyPage />} />
+            <Route path="/mypage/edit" element={<MyPageEdit />} />
+            <Route
+              path="/error/recognition-network"
+              element={<RecognitionNetworkErrorPage />}
+            />
+            <Route
+              path="/error/recognition-result"
+              element={<RecognitionResultErrorPage />}
+            />
+          </Route>
+
+          <Route path="*" element={<Navigate to="/" replace />} />
         </Route>
       </Routes>
     </BrowserRouter>
