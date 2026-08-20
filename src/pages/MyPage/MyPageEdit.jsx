@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import React, { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { patchMe } from '@/api/user';
 import { MdBorderColor, MdEdit } from 'react-icons/md';
@@ -217,19 +217,16 @@ export default function MyPageEdit() {
               </div>
               <div className={styles.pillArea}>
                 {ALLERGEN_OPTIONS.map((opt) => (
-                  <>
+                  <React.Fragment key={opt.key}>
                     <button
-                      key={opt.key}
                       type="button"
                       className={`${styles.pill} ${allergens.includes(opt.key) ? styles.pillSelected : ''}`}
                       onClick={() => toggleAllergen(opt.key)}
                     >
                       {opt.label}
                     </button>
-                    {opt.key === 'nuts' && (
-                      <div key="break" className={styles.pillBreak} />
-                    )}
-                  </>
+                    {opt.key === 'nuts' && <div className={styles.pillBreak} />}
+                  </React.Fragment>
                 ))}
               </div>
               <div className={styles.searchArea}>
