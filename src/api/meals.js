@@ -64,3 +64,16 @@ export const decideRecommendation = async (recommendationId, payload) => {
   );
   return response.data;
 };
+
+// GET 저장된 식사 사진 (인증 필요 — img src로 직접 못 쓰고 blob으로 받는다)
+export const getMealImageBlob = async (photoUrl, { signal } = {}) => {
+  const objectKey = photoUrl.split('/meals/images/')[1];
+
+  if (!objectKey) return null;
+
+  const response = await api.get(`/meals/images/${objectKey}`, {
+    responseType: 'blob',
+    signal,
+  });
+  return response.data;
+};

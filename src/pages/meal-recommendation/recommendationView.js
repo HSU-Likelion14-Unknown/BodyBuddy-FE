@@ -46,7 +46,8 @@ function toNutrients(ingredient) {
       name: NUTRIENTS[item.nutrient]?.name ?? item.nutrient,
       percent: Math.round(Number(item.coveragePercent)),
     }))
-    .filter((item) => item.name && Number.isFinite(item.percent));
+    .filter((item) => item.name && Number.isFinite(item.percent))
+    .slice(0, 3);
 }
 
 // 서버 추천 재료를 카드 표시 형태로 변환

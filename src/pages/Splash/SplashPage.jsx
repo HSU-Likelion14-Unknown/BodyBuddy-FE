@@ -5,6 +5,7 @@ import { postAnonymous } from '@/api/auth';
 import { useNetworkRequest } from '@/hooks/useNetworkRequest';
 import { getAccessKey, setAccessKey } from '@/api/tokenStorage';
 import {
+  clearOnboardingCompletedAt,
   getOnboardingCompletedAt,
   setOnboardingCompletedAt,
 } from '@/api/userStorage';
@@ -33,12 +34,16 @@ export default function SplashPage() {
       try {
         if (!getAccessKey()) {
           const data = await networkRequest(() => postAnonymous());
-          if (data) {
-            setAccessKey(data.accessKey);
-            if (data.onboardingCompletedAt) {
-              setOnboardingCompletedAt(data.onboardingCompletedAt);
-            }
-            onboardingCompletedAt = data.onboardingCompletedAt;
+
+          if (!data) return;
+
+          setAccessKey(data.accessKey);
+          onboardingCompletedAt = data.onboardingCompletedAt ?? null;
+
+          if (onboardingCompletedAt) {
+            setOnboardingCompletedAt(onboardingCompletedAt);
+          } else {
+            clearOnboardingCompletedAt();
           }
         } else {
           onboardingCompletedAt = getOnboardingCompletedAt();

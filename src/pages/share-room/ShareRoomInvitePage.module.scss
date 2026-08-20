@@ -4,8 +4,8 @@
 .container {
   @include flex(column, center, center);
 
-  min-height: calc(100dvh - 90px);
-  padding: 40px 30px 80px;
+  min-height: 100dvh;
+  padding: 40px 30px;
   color: $color-brown4;
   text-align: center;
   background:
@@ -81,4 +81,40 @@
   30% {
     transform: translateY(-7px);
   }
+}
+
+// 참여 실패 안내
+.errorIcon {
+  color: $color-white;
+  background-color: $color-gray-medium;
+}
+
+.actionContent {
+  @include flex(column, stretch, center, 10px);
+
+  width: min(240px, 100%);
+  margin-top: 28px;
+}
+
+.primaryButton,
+.secondaryButton {
+  width: 100%;
+  height: 45px;
+  padding: 0 28px;
+  font-size: $font-size-16;
+  font-weight: $font-weight-semibold;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.primaryButton {
+  color: $color-white;
+  background-color: $color-primary-accent;
+  border: 0;
+}
+
+.secondaryButton {
+  color: $color-gray5;
+  background-color: transparent;
+  border: 1px solid $color-gray4;
 }

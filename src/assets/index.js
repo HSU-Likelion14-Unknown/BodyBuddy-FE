@@ -49,9 +49,6 @@ import homeCalendarFri from '@/assets/home/calendar-fri.png';
 import homeCalendarSat from '@/assets/home/calendar-sat.png';
 
 // Share room
-import shareRoomCover from '@/assets/share-room/room-header.png';
-import shareRoomOwnerAvatar from '@/assets/share-room/avatar-me.png';
-import shareRoomFriendAvatar from '@/assets/share-room/avatar-friend-2.png';
 import shareRoomMalatang from '@/assets/share-room/meal-malatang.png';
 import shareRoomBibimbap from '@/assets/share-room/meal-bibimbap.png';
 import shareRoomCucumberGimbap from '@/assets/share-room/meal-cucumber-gimbap.png';
@@ -105,9 +102,6 @@ export {
   perfectDecoration,
   perfectResult,
   resultMascot,
-  shareRoomCover,
-  shareRoomOwnerAvatar,
-  shareRoomFriendAvatar,
   shareRoomMalatang,
   shareRoomBibimbap,
   shareRoomCucumberGimbap,

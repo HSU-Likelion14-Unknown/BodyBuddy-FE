@@ -1,73 +1,156 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useNavigate } from 'react-router-dom';
 import { FiPlus } from 'react-icons/fi';
+import { homeShareRoomMascot } from '@/assets';
+import { getApiErrorMessage } from '@/api/error';
 import {
-  homeShareRoomMascot,
-  shareRoomBibimbap,
-  shareRoomCover,
-  shareRoomCucumberGimbap,
-  shareRoomMalatang,
-} from '@/assets';
+  createRoom,
+  getMyRooms,
+  getRoomMembers,
+  resolveImageUrl,
+} from '@/api/rooms';
 import styles from './ShareRoomSection.module.scss';
 
-const MOCK_USERS = {
-  owner: { id: 'owner', profileColor: '#f5a9a9' },
-  friend1: { id: 'friend-1', profileColor: '#ffd67a' },
-  friend2: { id: 'friend-2', profileColor: '#9fd8c5' },
-  friend3: { id: 'friend-3', profileColor: '#aaa7e8' },
-  friend4: { id: 'friend-4', profileColor: '#efb7d2' },
-};
+const MEMBER_PREVIEW_LIMIT = 3;
 
-const MOCK_ROOMS = [
-  {
-    id: 'likelion',
-    name: '멋사들 ~',
-    cover: shareRoomMalatang,
-    members: [
-      MOCK_USERS.owner,
-      MOCK_USERS.friend1,
-      MOCK_USERS.friend2,
-      MOCK_USERS.friend3,
-    ],
-  },
-  {
-    id: 'unknown',
-    name: '알수없음조',
-    cover: shareRoomCover,
-    members: [
-      MOCK_USERS.owner,
-      MOCK_USERS.friend1,
-      MOCK_USERS.friend2,
-      MOCK_USERS.friend3,
-      MOCK_USERS.friend4,
-    ],
-  },
-  {
-    id: 'central',
-    name: '중앙팟',
-    cover: shareRoomBibimbap,
-    members: [MOCK_USERS.owner, MOCK_USERS.friend2, MOCK_USERS.friend4],
-  },
-  {
-    id: 'hansung',
-    name: '한성둥둥이가...',
-    cover: shareRoomCucumberGimbap,
-    members: [MOCK_USERS.owner, MOCK_USERS.friend3],
-  },
-];
+function RoomCover({ src }) {
+  const coverUrl = resolveImageUrl(src);
+  const [failedUrl, setFailedUrl] = useState('');
+
+  if (!coverUrl || failedUrl === coverUrl) return null;
+
+  return (
+    <>
+      <img
+        className={styles.roomCover}
+        src={coverUrl}
+        alt=""
+        onError={() => setFailedUrl(coverUrl)}
+      />
+      <span className={styles.roomGradient} />
+    </>
+  );
+}
+
+function MemberProfile({ member }) {
+  const profileUrl = resolveImageUrl(member.profileImageUrl);
+  const [failedUrl, setFailedUrl] = useState('');
+  const nickname =
+    typeof member.nickname === 'string' ? member.nickname.trim() : '';
+  const initial = Array.from(nickname)[0] ?? '?';
+
+  if (!profileUrl || failedUrl === profileUrl) {
+    return <span className={styles.memberProfile}>{initial}</span>;
+  }
+
+  return (
+    <img
+      className={styles.memberProfile}
+      src={profileUrl}
+      alt=""
+      onError={() => setFailedUrl(profileUrl)}
+    />
+  );
+}
+
+function RoomMemberProfiles({ members = [] }) {
+  if (members.length === 0) return null;
+
+  const visibleMembers = members.slice(0, MEMBER_PREVIEW_LIMIT);
+  const remainingCount = members.length - visibleMembers.length;
+
+  return (
+    <span className={styles.memberProfiles} aria-hidden="true">
+      {visibleMembers.map((member, index) => (
+        <MemberProfile
+          key={member.userId ?? `${member.nickname ?? 'member'}-${index}`}
+          member={member}
+        />
+      ))}
+      {remainingCount > 0 && (
+        <span
+          className={`${styles.memberProfile} ${styles.memberOverflow}`}
+        >
+          +{remainingCount}
+        </span>
+      )}
+    </span>
+  );
+}
 
 export default function ShareRoomSection() {
   const navigate = useNavigate();
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [roomName, setRoomName] = useState('');
   const trimmedRoomName = roomName.trim();
+  const [rooms, setRooms] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isCreating, setIsCreating] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
+
+  useEffect(() => {
+    const controller = new AbortController();
+
+    const loadRooms = async () => {
+      try {
+        const data = await getMyRooms({ signal: controller.signal });
+        const nextRooms = data.rooms ?? [];
+
+        if (controller.signal.aborted) return;
+
+        setRooms(nextRooms);
+        setIsLoading(false);
+
+        const memberResults = await Promise.allSettled(
+          nextRooms.map((room) =>
+            getRoomMembers(room.roomId, { signal: controller.signal }),
+          ),
+        );
+
+        if (controller.signal.aborted) return;
+
+        const membersByRoomId = new Map();
+
+        memberResults.forEach((result, index) => {
+          if (result.status !== 'fulfilled') return;
+
+          membersByRoomId.set(
+            String(nextRooms[index].roomId),
+            result.value.members ?? [],
+          );
+        });
+
+        setRooms((currentRooms) =>
+          currentRooms.map((room) => {
+            const roomKey = String(room.roomId);
+
+            return membersByRoomId.has(roomKey)
+              ? { ...room, members: membersByRoomId.get(roomKey) }
+              : room;
+          }),
+        );
+      } catch (error) {
+        if (controller.signal.aborted) return;
+
+        setErrorMessage(
+          getApiErrorMessage(error, '공유방 목록을 불러오지 못했어요.'),
+        );
+      } finally {
+        if (!controller.signal.aborted) setIsLoading(false);
+      }
+    };
+
+    void loadRooms();
+
+    return () => controller.abort();
+  }, []);
 
   const openRoom = (room) => {
-    navigate(`/share-room/${room.id}`, {
+    navigate(`/share-room/${room.roomId}`, {
       state: {
-        roomName: room.name,
-        view: 'records',
+        roomName: room.roomName,
+        coverImageUrl: resolveImageUrl(room.coverImageUrl),
       },
     });
   };
@@ -77,17 +160,25 @@ export default function ShareRoomSection() {
     setRoomName('');
   };
 
-  const createRoom = (event) => {
+  const submitCreateRoom = async (event) => {
     event.preventDefault();
 
-    if (!trimmedRoomName) return;
+    if (!trimmedRoomName || isCreating) return;
 
-    navigate('/share-room/preview', {
-      state: {
-        roomName: trimmedRoomName,
-        view: 'initial',
-      },
-    });
+    setIsCreating(true);
+    setErrorMessage('');
+
+    try {
+      const room = await createRoom({ roomName: trimmedRoomName });
+
+      navigate(`/share-room/${room.roomId}`, {
+        state: { roomName: room.roomName },
+      });
+    } catch (error) {
+      setErrorMessage(getApiErrorMessage(error, '공유방을 만들지 못했어요.'));
+    } finally {
+      setIsCreating(false);
+    }
   };
 
   return (
@@ -96,48 +187,66 @@ export default function ShareRoomSection() {
         <img className={styles.mascot} src={homeShareRoomMascot} alt="" />
         <h2>00님의 친구 공유 방</h2>
 
-        {MOCK_ROOMS.length > 0 ? (
-          <div className={styles.roomList}>
-            {MOCK_ROOMS.map((room) => (
+        {isLoading && <p className={styles.stateMessage}>불러오는 중이에요.</p>}
+
+        {!isLoading && errorMessage && (
+          <p className={styles.stateMessage}>{errorMessage}</p>
+        )}
+
+        {!isLoading && !errorMessage && rooms.length > 0 && (
+          <div
+            className={styles.roomList}
+            data-compact={rooms.length >= 3}
+          >
+            {rooms.map((room) => (
               <button
-                key={room.id}
+                key={room.roomId}
                 type="button"
                 className={styles.roomCard}
-                title={`${room.name} 공유방 들어가기`}
+                title={`${room.roomName} 공유방 들어가기`}
                 onClick={() => openRoom(room)}
               >
-                <img className={styles.roomCover} src={room.cover} alt="" />
-                <span className={styles.roomGradient} />
-
-                <span className={styles.memberProfiles}>
-                  {room.members.map((member) => (
-                    <span
-                      key={member.id}
-                      className={styles.memberProfile}
-                      style={{ backgroundColor: member.profileColor }}
-                    />
-                  ))}
-                </span>
-
-                <span className={styles.roomName}>{room.name}</span>
+                <RoomCover src={room.coverImageUrl} />
+                <RoomMemberProfiles members={room.members} />
+                <span className={styles.roomName}>{room.roomName}</span>
               </button>
             ))}
+
+            <button
+              type="button"
+              className={styles.createRoomCard}
+              title="새 친구방 만들기"
+              onClick={() => setIsCreateOpen(true)}
+            >
+              <span className={styles.createRoomIcon} aria-hidden="true">
+                <FiPlus />
+              </span>
+              <span className={styles.createRoomLabel}>
+                새 친구방
+                <br />
+                만들기
+              </span>
+            </button>
           </div>
-        ) : (
+        )}
+
+        {!isLoading && !errorMessage && rooms.length === 0 && (
           <div className={styles.emptyContent}>
             <strong>아직 공유하는 방이 없어요.</strong>
             <span>친구들과 함께 나의 영양소를 공개해봐요!</span>
           </div>
         )}
 
-        <button
-          type="button"
-          className={styles.openCreateButton}
-          onClick={() => setIsCreateOpen(true)}
-        >
-          새 친구방 만들기
-          <FiPlus />
-        </button>
+        {(isLoading || errorMessage || rooms.length === 0) && (
+          <button
+            type="button"
+            className={styles.openCreateButton}
+            onClick={() => setIsCreateOpen(true)}
+          >
+            새 친구방 만들기
+            <FiPlus />
+          </button>
+        )}
       </section>
 
       {isCreateOpen &&
@@ -150,7 +259,7 @@ export default function ShareRoomSection() {
               <h2>방 이름을 정해주세요.</h2>
               <p>1 ~ 10자 사이로 입력해 주세요.</p>
 
-              <form onSubmit={createRoom}>
+              <form onSubmit={submitCreateRoom}>
                 <label htmlFor="share-room-name">방 이름</label>
                 <input
                   id="share-room-name"
@@ -160,8 +269,8 @@ export default function ShareRoomSection() {
                   autoFocus
                   onChange={(event) => setRoomName(event.target.value)}
                 />
-                <button type="submit" disabled={!trimmedRoomName}>
-                  만들기
+                <button type="submit" disabled={!trimmedRoomName || isCreating}>
+                  {isCreating ? '만드는 중...' : '만들기'}
                 </button>
               </form>
             </section>

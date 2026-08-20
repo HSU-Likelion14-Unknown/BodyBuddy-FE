@@ -2,6 +2,7 @@ import { useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styles from './OnboardingPage2.module.scss';
 import { onboardingCharacter2, iconSearch, iconCloseSmall } from '@/assets';
+import { getPendingInvite } from '@/utils/pendingInvite';
 import OnboardingLayout from './components/OnboardingLayout';
 
 const ALLERGEN_OPTIONS = [
@@ -75,6 +76,12 @@ export default function OnboardingPage2() {
       JSON.stringify({ allergens: [...selected], customAllergens: customTags }),
     );
     localStorage.setItem('onboarding_prev_step', '2');
+
+    if (getPendingInvite()?.onboardingStartedAt) {
+      navigate('/onboarding/1', { replace: true });
+      return;
+    }
+
     navigate(-1);
   };
 
@@ -88,7 +95,9 @@ export default function OnboardingPage2() {
       }),
     );
     localStorage.setItem('onboarding_prev_step', '2');
-    navigate('/onboarding/3');
+    navigate('/onboarding/3', {
+      replace: Boolean(getPendingInvite()?.onboardingStartedAt),
+    });
   };
 
   return (

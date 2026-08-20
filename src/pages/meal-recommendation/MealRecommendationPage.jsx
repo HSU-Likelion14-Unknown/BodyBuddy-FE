@@ -182,18 +182,7 @@ export default function MealRecommendationPage() {
               disabled={isSubmitting || isRefreshing || remainingCount <= 0}
               onClick={showAnotherRecommendation}
             >
-              {isRefreshing ? (
-                <>
-                  추천을 바꾸는 중
-                  <span className={styles.loadingDots}>
-                    <span />
-                    <span />
-                    <span />
-                  </span>
-                </>
-              ) : (
-                '다른 추천 보기'
-              )}
+              다른 추천 보기
               <span>{remainingCount}번 남음</span>
             </button>
             <button

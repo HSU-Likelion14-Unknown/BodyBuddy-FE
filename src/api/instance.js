@@ -1,5 +1,10 @@
 import axios from 'axios';
-import { getAccessKey } from './tokenStorage';
+import { postAnonymous } from './auth';
+import { clearAccessKey, getAccessKey, setAccessKey } from './tokenStorage';
+import {
+  clearOnboardingCompletedAt,
+  setOnboardingCompletedAt,
+} from './userStorage';
 
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL,
@@ -26,6 +31,39 @@ api.interceptors.request.use((config) => {
   }
 
   return config;
+});
+
+// 401 - 무효해진 accessKey를 버리고 익명 세션을 재발급한 뒤 원요청을 1회만 재시도
+api.interceptors.response.use(undefined, async (error) => {
+  const { config, response } = error;
+
+  if (response?.status !== 401 || !config || config.isRetriedAfterAuth) {
+    return Promise.reject(error);
+  }
+
+  config.isRetriedAfterAuth = true;
+
+  try {
+    clearAccessKey();
+    const session = await postAnonymous();
+    setAccessKey(session.accessKey);
+
+    if (session.onboardingCompletedAt) {
+      setOnboardingCompletedAt(session.onboardingCompletedAt);
+    } else {
+      clearOnboardingCompletedAt();
+
+      if (config.requiresOnboarding) {
+        const onboardingError = new Error('ONBOARDING_REQUIRED');
+        onboardingError.code = 'ONBOARDING_REQUIRED';
+        return Promise.reject(onboardingError);
+      }
+    }
+  } catch {
+    return Promise.reject(error);
+  }
+
+  return api(config);
 });
 
 export default api;
