@@ -15,6 +15,11 @@ const GENDER_MAP = {
   none: 'PREFER_NOT_TO_SAY',
 };
 
+export async function getMe() {
+  const res = await api.get('/users/me');
+  return res.data.data;
+}
+
 export async function putOnboarding({
   nickname,
   birthYear,

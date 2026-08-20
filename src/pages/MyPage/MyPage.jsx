@@ -1,20 +1,29 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { getMe } from '@/api/user';
 import { MdEdit } from 'react-icons/md';
 import { VscChevronRight } from 'react-icons/vsc';
 import styles from './MyPage.module.scss';
-import { profileChracter, mypageIconAllergy, mypageIconDislike } from '@/assets';
+import {
+  profileChracter,
+  mypageIconAllergy,
+  mypageIconDislike,
+} from '@/assets';
 
 const ALLERGEN_LABEL = {
-  egg: '계란',
-  milk: '우유',
-  nuts: '견과류',
-  shellfish: '갑각류',
-  soy: '대두',
-  wheat: '밀',
+  EGG: '계란',
+  MILK: '우유',
+  NUTS: '견과류',
+  SHELLFISH: '갑각류',
+  SOY: '대두',
+  WHEAT: '밀',
 };
 
-const GENDER_LABEL = { male: '남성', female: '여성', none: '상관 없음' };
+const GENDER_LABEL = {
+  MALE: '남성',
+  FEMALE: '여성',
+  PREFER_NOT_TO_SAY: '상관 없음',
+};
 
 function Toggle({ checked, onChange }) {
   return (
@@ -32,24 +41,46 @@ function Toggle({ checked, onChange }) {
 export default function MyPage() {
   const navigate = useNavigate();
 
-  const step1 = JSON.parse(localStorage.getItem('onboarding_step1') || 'null');
-  const step2 = JSON.parse(localStorage.getItem('onboarding_step2') || 'null');
-  const step3 = JSON.parse(localStorage.getItem('onboarding_step3') || 'null');
-
-  const nickname = step1?.nickname || '닉네임';
-  const birthYear = step1?.birthYear;
-  const gender = step1?.gender;
-
-  const allergens = (step2?.allergens || [])
-    .filter((v) => v !== 'none')
-    .map((v) => ALLERGEN_LABEL[v] || v);
-  const customAllergens = step2?.customAllergens || [];
-  const allAllergens = [...allergens, ...customAllergens];
-
-  const dislikedFoods = step3?.noDisliked ? [] : step3?.dislikedFoods || [];
-
+  const [nickname, setNickname] = useState('닉네임');
+  const [birthYear, setBirthYear] = useState(null);
+  const [gender, setGender] = useState(null);
+  const [allAllergens, setAllAllergens] = useState([]);
+  const [dislikedFoods, setDislikedFoods] = useState([]);
   const [notifOn, setNotifOn] = useState(true);
   const [marketingOn, setMarketingOn] = useState(false);
+  const fetched = useRef(false);
+
+  useEffect(() => {
+    if (fetched.current) return;
+    fetched.current = true;
+    const step2 = JSON.parse(
+      localStorage.getItem('onboarding_step2') || 'null',
+    );
+    const step3 = JSON.parse(
+      localStorage.getItem('onboarding_step3') || 'null',
+    );
+
+    getMe().then((data) => {
+      if (data.nickname) setNickname(data.nickname);
+      if (data.birthYear) setBirthYear(data.birthYear);
+      if (data.gender) setGender(data.gender);
+
+      if (data.allergyCodes) {
+        setAllAllergens(data.allergyCodes.map((c) => ALLERGEN_LABEL[c] || c));
+      } else {
+        const mapped = (step2?.allergens || [])
+          .filter((v) => v !== 'none')
+          .map((v) => ALLERGEN_LABEL[v.toUpperCase()] || v);
+        setAllAllergens([...mapped, ...(step2?.customAllergens || [])]);
+      }
+
+      if (data.dislikedFoods) {
+        setDislikedFoods(data.dislikedFoods);
+      } else {
+        setDislikedFoods(step3?.noDisliked ? [] : step3?.dislikedFoods || []);
+      }
+    });
+  }, []);
 
   const infoText = [birthYear ? `${birthYear}년` : null, GENDER_LABEL[gender]]
     .filter(Boolean)
@@ -135,7 +166,10 @@ export default function MyPage() {
       {/* 정보 */}
       <section className={styles.settingsSection}>
         <h2 className={styles.sectionHeader}>정보</h2>
-        <button type="button" className={`${styles.settingRow} ${styles.settingRowCompact}`}>
+        <button
+          type="button"
+          className={`${styles.settingRow} ${styles.settingRowCompact}`}
+        >
           <span className={styles.settingLabel}>회원탈퇴</span>
           <VscChevronRight className={styles.chevron} />
         </button>
