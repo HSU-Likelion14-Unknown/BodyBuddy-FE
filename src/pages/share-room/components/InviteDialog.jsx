@@ -1,7 +1,5 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { MdClose, MdContentCopy, MdShare } from 'react-icons/md';
-import { getApiErrorMessage } from '@/api/error';
-import { createRoomInvite } from '@/api/rooms';
 import styles from './InviteDialog.module.scss';
 
 // 서버가 준 만료 시각으로 남은 사용 시간 안내
@@ -17,71 +15,103 @@ function toExpiryText(expiresAt) {
     : `${minutes}분 동안 사용할 수 있어요.`;
 }
 
-export default function InviteDialog({ roomId, roomName, onClose }) {
-  const [invite, setInvite] = useState(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [errorMessage, setErrorMessage] = useState('');
+export default function InviteDialog({ invite, roomName, onClose }) {
   const [isCopied, setIsCopied] = useState(false);
+  const [actionMessage, setActionMessage] = useState('');
+  const dialogRef = useRef(null);
+  const closeButtonRef = useRef(null);
+  const onCloseRef = useRef(onClose);
 
   useEffect(() => {
-    if (!roomId) return undefined;
+    onCloseRef.current = onClose;
+  }, [onClose]);
 
-    let cancelled = false;
+  useEffect(() => {
+    closeButtonRef.current?.focus();
 
-    // 초대 코드는 일회성이라 다이얼로그를 열 때마다 새로 발급 받음
-    createRoomInvite(roomId)
-      .then((data) => {
-        if (!cancelled) setInvite(data);
-      })
-      .catch((error) => {
-        if (cancelled) return;
+    const handleKeyDown = (event) => {
+      if (event.key === 'Escape') {
+        onCloseRef.current();
+        return;
+      }
 
-        setErrorMessage(
-          getApiErrorMessage(error, '초대 코드를 만들지 못했어요.'),
-        );
-      })
-      .finally(() => {
-        if (!cancelled) setIsLoading(false);
-      });
+      if (event.key !== 'Tab') return;
 
-    return () => {
-      cancelled = true;
+      const focusableElements = dialogRef.current?.querySelectorAll(
+        'button:not([disabled]), input:not([disabled]), [href], [tabindex]:not([tabindex="-1"])',
+      );
+
+      if (!focusableElements?.length) return;
+
+      const firstElement = focusableElements[0];
+      const lastElement = focusableElements[focusableElements.length - 1];
+
+      if (event.shiftKey && document.activeElement === firstElement) {
+        event.preventDefault();
+        lastElement.focus();
+      } else if (!event.shiftKey && document.activeElement === lastElement) {
+        event.preventDefault();
+        firstElement.focus();
+      }
     };
-  }, [roomId]);
 
-  const inviteUrl = invite
-    ? `${window.location.origin}/share-room/invite/${invite.code}`
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, []);
+
+  const inviteUrl = invite?.code
+    ? `${window.location.origin}/share-room/invite/${encodeURIComponent(invite.code)}`
     : '';
 
-  const copyInviteUrl = () => {
-    if (!inviteUrl) return;
+  const copyInviteUrl = async () => {
+    if (!inviteUrl) return false;
 
-    navigator.clipboard?.writeText(inviteUrl);
-    setIsCopied(true);
+    try {
+      if (!navigator.clipboard?.writeText) throw new Error('CLIPBOARD_MISSING');
+
+      await navigator.clipboard.writeText(inviteUrl);
+      setIsCopied(true);
+      setActionMessage('');
+      return true;
+    } catch {
+      setActionMessage(
+        '링크를 복사하지 못했어요. 주소를 길게 눌러 복사해 주세요.',
+      );
+      return false;
+    }
   };
 
-  const shareInviteUrl = () => {
+  const shareInviteUrl = async () => {
     if (!inviteUrl) return;
 
     if (navigator.share) {
-      navigator.share({
-        title: `${roomName} 초대`,
-        text: '바디버디에서 식사를 함께 기록해요.',
-        url: inviteUrl,
-      });
-      return;
+      try {
+        await navigator.share({
+          title: `${roomName} 초대`,
+          text: '바디버디에서 식사를 함께 기록해요.',
+          url: inviteUrl,
+        });
+        return;
+      } catch (error) {
+        if (error?.name === 'AbortError') return;
+      }
     }
 
-    copyInviteUrl();
+    await copyInviteUrl();
   };
 
   return (
     <div className={styles.overlay} onMouseDown={onClose}>
       <section
+        ref={dialogRef}
         className={styles.dialog}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="invite-dialog-title"
         onMouseDown={(event) => event.stopPropagation()}
       >
         <button
+          ref={closeButtonRef}
           type="button"
           className={styles.closeButton}
           title="닫기"
@@ -91,14 +121,15 @@ export default function InviteDialog({ roomId, roomName, onClose }) {
         </button>
 
         <div className={styles.titleContent}>
-          <h2>친구를 공유방에 초대해요.</h2>
+          <h2 id="invite-dialog-title">친구를 공유방에 초대해요.</h2>
           <p>링크를 받은 친구는 별도의 코드 입력 없이 바로 참여할 수 있어요.</p>
         </div>
 
         <div className={styles.linkContent}>
           <input
             type="text"
-            value={isLoading ? '초대 링크를 만드는 중이에요.' : inviteUrl}
+            value={inviteUrl}
+            aria-label="초대 링크"
             readOnly
             onFocus={(event) => event.target.select()}
           />
@@ -108,8 +139,8 @@ export default function InviteDialog({ roomId, roomName, onClose }) {
           </button>
         </div>
 
-        <p className={styles.expiration}>
-          {errorMessage || (invite ? toExpiryText(invite.expiresAt) : '')}
+        <p className={styles.expiration} aria-live="polite">
+          {actionMessage || (invite ? toExpiryText(invite.expiresAt) : '')}
         </p>
 
         <button

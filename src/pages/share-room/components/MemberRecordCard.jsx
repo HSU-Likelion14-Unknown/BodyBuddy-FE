@@ -1,5 +1,6 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { FiEdit3 } from 'react-icons/fi';
 import { getMealReactions, putMealReactions } from '@/api/rooms';
 import { shareRoomAddIcon } from '@/assets';
 import styles from './MemberRecordCard.module.scss';
@@ -18,6 +19,70 @@ const OPTION_BY_ID = Object.fromEntries(
   REACTION_OPTIONS.map((option) => [option.id, option]),
 );
 
+const REACTION_POLL_INTERVAL = 3000;
+
+function MemberAvatar({ nickname, src }) {
+  const [failedUrl, setFailedUrl] = useState('');
+
+  if (!src || failedUrl === src) {
+    return (
+      <span className={`${styles.avatar} ${styles.avatarFallback}`} aria-hidden>
+        {nickname.trim().slice(0, 1) || '?'}
+      </span>
+    );
+  }
+
+  return (
+    <img
+      className={styles.avatar}
+      src={src}
+      alt={`${nickname} 프로필`}
+      onError={() => setFailedUrl(src)}
+    />
+  );
+}
+
+function MealMedia({ record }) {
+  const [failedUrl, setFailedUrl] = useState('');
+  const hasPhoto = Boolean(record.photoUrl);
+  const imageUrl = record.image;
+
+  if (!hasPhoto) {
+    return (
+      <div className={styles.manualMealContent}>
+        <span className={styles.manualMealIcon} aria-hidden="true">
+          <FiEdit3 />
+        </span>
+        <div className={styles.manualMealText}>
+          <strong>직접 입력한 식사</strong>
+          <span>사진 없이 음식명으로 기록했어요.</span>
+        </div>
+      </div>
+    );
+  }
+
+  if (!imageUrl || failedUrl === imageUrl) {
+    return (
+      <div className={styles.imageFallback}>
+        <strong>사진을 불러오지 못했어요.</strong>
+        <span>음식 목록은 아래에서 확인할 수 있어요.</span>
+      </div>
+    );
+  }
+
+  return (
+    <div className={styles.mealImageContent}>
+      <img
+        className={record.crop ? styles[record.crop] : ''}
+        src={imageUrl}
+        alt={record.foods.join(', ') || '식사 사진'}
+        onError={() => setFailedUrl(imageUrl)}
+      />
+      {record.recommendation && <span>{record.recommendation}</span>}
+    </div>
+  );
+}
+
 export default function MemberRecordCard({ member, roomId }) {
   const navigate = useNavigate();
   const [selectedRecordIndex, setSelectedRecordIndex] = useState(
@@ -27,26 +92,172 @@ export default function MemberRecordCard({ member, roomId }) {
   const [reactionCounts, setReactionCounts] = useState([]);
   const [isSavingReaction, setIsSavingReaction] = useState(false);
   const [isReactionPickerOpen, setIsReactionPickerOpen] = useState(false);
+  const isMountedRef = useRef(false);
+  const isSavingReactionRef = useRef(false);
+  const reactionRequestSequenceRef = useRef(0);
+  const reactionFetchControllerRef = useRef(null);
+  const requestReactionRefreshRef = useRef(() => {});
 
   const hasRecords = member.records.length > 0;
-  const selectedRecord = member.records[selectedRecordIndex];
+  const activeRecordIndex =
+    Number.isInteger(selectedRecordIndex) &&
+    selectedRecordIndex >= 0 &&
+    selectedRecordIndex < member.records.length
+      ? selectedRecordIndex
+      : 0;
+  const selectedRecord = member.records[activeRecordIndex];
   const selectedRecordId = selectedRecord?.id;
+  const isManualRecord = hasRecords && !selectedRecord?.photoUrl;
+
+  useEffect(() => {
+    isMountedRef.current = true;
+
+    return () => {
+      isMountedRef.current = false;
+      isSavingReactionRef.current = false;
+      reactionRequestSequenceRef.current += 1;
+      reactionFetchControllerRef.current?.abort();
+    };
+  }, []);
 
   useEffect(() => {
     if (!roomId || !selectedRecordId) return undefined;
 
-    const controller = new AbortController();
+    let isActive = true;
+    let timerId;
+    let isRequestInFlight = false;
+    let shouldRefreshImmediately = false;
 
-    getMealReactions(roomId, selectedRecordId, { signal: controller.signal })
-      .then((data) => {
+    function clearRefreshTimer() {
+      if (timerId !== undefined) {
+        window.clearTimeout(timerId);
+        timerId = undefined;
+      }
+    }
+
+    function scheduleNextRefresh() {
+      clearRefreshTimer();
+
+      if (!isActive || document.hidden) return;
+
+      timerId = window.setTimeout(
+        requestImmediateRefresh,
+        REACTION_POLL_INTERVAL,
+      );
+    }
+
+    async function refreshReactions() {
+      if (!isActive || document.hidden) return;
+
+      if (isRequestInFlight) {
+        if (reactionFetchControllerRef.current?.signal.aborted) {
+          shouldRefreshImmediately = true;
+        }
+        return;
+      }
+
+      if (isSavingReactionRef.current) {
+        shouldRefreshImmediately = true;
+        return;
+      }
+
+      shouldRefreshImmediately = false;
+      isRequestInFlight = true;
+
+      const controller = new AbortController();
+      const requestSequence = reactionRequestSequenceRef.current + 1;
+
+      reactionRequestSequenceRef.current = requestSequence;
+      reactionFetchControllerRef.current = controller;
+
+      try {
+        const data = await getMealReactions(roomId, selectedRecordId, {
+          signal: controller.signal,
+        });
+
+        if (
+          !isActive ||
+          controller.signal.aborted ||
+          requestSequence !== reactionRequestSequenceRef.current
+        ) {
+          return;
+        }
+
         setMyReactions(data.myReactions ?? []);
         setReactionCounts(data.reactions ?? []);
-      })
-      .catch(() => {
+      } catch {
         // 반응 조회 실패는 기록 표시에 영향 없음
-      });
+      } finally {
+        isRequestInFlight = false;
 
-    return () => controller.abort();
+        if (reactionFetchControllerRef.current === controller) {
+          reactionFetchControllerRef.current = null;
+        }
+
+        if (
+          shouldRefreshImmediately &&
+          isActive &&
+          !document.hidden &&
+          !isSavingReactionRef.current
+        ) {
+          void refreshReactions();
+        } else {
+          scheduleNextRefresh();
+        }
+      }
+    }
+
+    function requestImmediateRefresh() {
+      clearRefreshTimer();
+
+      if (!isActive || document.hidden) return;
+
+      if (isRequestInFlight) {
+        if (reactionFetchControllerRef.current?.signal.aborted) {
+          shouldRefreshImmediately = true;
+        }
+        return;
+      }
+
+      if (isSavingReactionRef.current) {
+        shouldRefreshImmediately = true;
+        return;
+      }
+
+      void refreshReactions();
+    }
+
+    function handleVisibilityChange() {
+      if (document.hidden) {
+        clearRefreshTimer();
+        reactionFetchControllerRef.current?.abort();
+        return;
+      }
+
+      requestImmediateRefresh();
+    }
+
+    function handleWindowFocus() {
+      if (!document.hidden) requestImmediateRefresh();
+    }
+
+    requestReactionRefreshRef.current = requestImmediateRefresh;
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    window.addEventListener('focus', handleWindowFocus);
+    requestImmediateRefresh();
+
+    return () => {
+      isActive = false;
+      reactionRequestSequenceRef.current += 1;
+      clearRefreshTimer();
+      reactionFetchControllerRef.current?.abort();
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      window.removeEventListener('focus', handleWindowFocus);
+
+      if (requestReactionRefreshRef.current === requestImmediateRefresh) {
+        requestReactionRefreshRef.current = () => {};
+      }
+    };
   }, [roomId, selectedRecordId]);
 
   // 서버는 26종 허용 — 화면에 아이콘 있는 것만 노출
@@ -65,10 +276,21 @@ export default function MemberRecordCard({ member, roomId }) {
 
   // 서버는 복수 허용 — 화면은 단일 선택 유지
   const leaveReaction = async (option) => {
-    if (!roomId || !selectedRecordId || isSavingReaction) return;
+    if (
+      !roomId ||
+      !selectedRecordId ||
+      isSavingReaction ||
+      isSavingReactionRef.current
+    ) {
+      return;
+    }
 
     const nextReactions = myReactions.includes(option.id) ? [] : [option.id];
+    const mutationSequence = reactionRequestSequenceRef.current + 1;
 
+    reactionRequestSequenceRef.current = mutationSequence;
+    reactionFetchControllerRef.current?.abort();
+    isSavingReactionRef.current = true;
     setIsSavingReaction(true);
 
     try {
@@ -78,22 +300,34 @@ export default function MemberRecordCard({ member, roomId }) {
         nextReactions,
       );
 
-      setMyReactions(data.myReactions ?? nextReactions);
-      setReactionCounts(data.reactions ?? []);
+      if (
+        isMountedRef.current &&
+        mutationSequence === reactionRequestSequenceRef.current
+      ) {
+        setMyReactions(data.myReactions ?? nextReactions);
+        setReactionCounts(data.reactions ?? []);
+      }
     } catch {
       // 실패 시 기존 반응 유지
     } finally {
-      setIsSavingReaction(false);
-      setIsReactionPickerOpen(false);
+      isSavingReactionRef.current = false;
+
+      if (isMountedRef.current) {
+        setIsSavingReaction(false);
+        setIsReactionPickerOpen(false);
+        requestReactionRefreshRef.current();
+      }
     }
   };
 
   return (
     <article
-      className={`${styles.card} ${hasRecords ? styles.recorded : styles.empty}`}
+      className={`${styles.card} ${
+        hasRecords ? styles.recorded : styles.empty
+      } ${isManualRecord ? styles.manualRecorded : ''}`}
     >
       <header className={styles.memberHeader}>
-        <img className={styles.avatar} src={member.avatar} />
+        <MemberAvatar nickname={member.nickname} src={member.avatar} />
 
         <div className={styles.memberContent}>
           <h2>
@@ -107,7 +341,7 @@ export default function MemberRecordCard({ member, roomId }) {
                 <button
                   key={record.id}
                   type="button"
-                  className={index === selectedRecordIndex ? styles.active : ''}
+                  className={index === activeRecordIndex ? styles.active : ''}
                   onClick={() => selectRecord(index)}
                 >
                   {record.label}
@@ -120,14 +354,7 @@ export default function MemberRecordCard({ member, roomId }) {
 
       {hasRecords ? (
         <>
-          <div className={styles.mealImageContent}>
-            <img
-              className={selectedRecord.crop ? styles[selectedRecord.crop] : ''}
-              src={selectedRecord.image}
-              alt={selectedRecord.foods.join(', ')}
-            />
-            <span>{selectedRecord.recommendation}</span>
-          </div>
+          <MealMedia record={selectedRecord} />
 
           <div className={styles.foodList}>
             {selectedRecord.foods.map((food) => (

@@ -42,8 +42,10 @@ export const joinRoom = async (code) => {
 };
 
 // POST 일회성 초대 코드 발급
-export const createRoomInvite = async (roomId) => {
-  const response = await api.post(`/rooms/${roomId}/invites`);
+export const createRoomInvite = async (roomId, { signal } = {}) => {
+  const response = await api.post(`/rooms/${roomId}/invites`, undefined, {
+    signal,
+  });
   return unwrap(response);
 };
 

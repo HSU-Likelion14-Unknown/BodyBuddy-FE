@@ -21,8 +21,18 @@
 .avatar {
   width: 41px;
   height: 41px;
+  flex: 0 0 41px;
   object-fit: cover;
   border-radius: 50%;
+}
+
+.avatarFallback {
+  @include flex;
+
+  color: $color-brown4;
+  font-size: 15px;
+  font-weight: $font-weight-semibold;
+  background-color: $color-primary-soft;
 }
 
 .memberContent {
@@ -98,6 +108,78 @@
 
 .recorded {
   min-height: 313px;
+}
+
+.manualRecorded {
+  min-height: 0;
+}
+
+.manualMealContent {
+  @include flex(row, center, center, 10px);
+
+  width: 100%;
+  height: 72px;
+  margin-top: 10px;
+  color: $color-brown4;
+  background-color: $color-primary-soft;
+  border-radius: 5px;
+}
+
+.manualMealIcon {
+  @include flex;
+
+  width: 32px;
+  height: 32px;
+  flex: 0 0 32px;
+  color: $color-white;
+  background-color: $color-primary-accent;
+  border-radius: 50%;
+
+  svg {
+    width: 15px;
+    height: 15px;
+  }
+}
+
+.manualMealText {
+  @include flex(column, flex-start, center, 2px);
+
+  min-width: 0;
+
+  strong {
+    font-size: 12px;
+    font-weight: $font-weight-semibold;
+    letter-spacing: -0.3px;
+  }
+
+  span {
+    color: $color-gray5;
+    font-size: 10px;
+    font-weight: $font-weight-medium;
+    letter-spacing: -0.25px;
+  }
+}
+
+.imageFallback {
+  @include flex(column, center, center, 3px);
+
+  width: 100%;
+  height: 147px;
+  margin-top: 10px;
+  color: $color-gray5;
+  text-align: center;
+  background-color: $color-gray2;
+  border-radius: 5px;
+
+  strong {
+    font-size: 12px;
+    font-weight: $font-weight-semibold;
+  }
+
+  span {
+    font-size: 10px;
+    font-weight: $font-weight-medium;
+  }
 }
 
 .mealImageContent {
