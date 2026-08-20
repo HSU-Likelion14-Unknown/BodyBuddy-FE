@@ -7,7 +7,7 @@ import { useNetworkRequest } from '@/hooks/useNetworkRequest';
 import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
 import styles from './CalendarPage.module.scss';
-import { iconBell, iconChevronDown, iconForkKnife } from '@/assets';
+import { iconChevronDown, iconForkKnife } from '@/assets';
 import { BsChevronLeft } from 'react-icons/bs';
 import { MdEdit } from 'react-icons/md';
 
@@ -397,9 +397,6 @@ export default function CalendarPage() {
       <div className={styles.header}>
         <button className={styles.iconBtn} onClick={() => navigate(-1)}>
           <BsChevronLeft size={19} />
-        </button>
-        <button className={styles.iconBtn} aria-label="알림">
-          <img src={iconBell} alt="알림" />
         </button>
       </div>
 
