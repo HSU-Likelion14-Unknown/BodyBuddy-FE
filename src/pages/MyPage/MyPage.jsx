@@ -82,10 +82,6 @@ export default function MyPage() {
     });
   }, []);
 
-  const infoText = [birthYear ? `${birthYear}년` : null, GENDER_LABEL[gender]]
-    .filter(Boolean)
-    .join(' ');
-
   return (
     <div className={styles.page}>
       {/* 프로필 */}
@@ -95,7 +91,12 @@ export default function MyPage() {
           <img src={profileChracter} alt="" className={styles.avatarImg} />
         </div>
         <h1 className={styles.nickname}>{nickname}</h1>
-        {infoText && <p className={styles.userInfo}>{infoText}</p>}
+        {(birthYear || gender) && (
+          <p className={styles.userInfo}>
+            {birthYear && <span>{birthYear}년</span>}
+            {gender && <span>{GENDER_LABEL[gender]}</span>}
+          </p>
+        )}
         <button
           type="button"
           className={styles.editBtn}

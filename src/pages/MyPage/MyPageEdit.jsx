@@ -164,10 +164,6 @@ export default function MyPageEdit() {
     }
   };
 
-  const infoText = [birthYear ? `${birthYear}년` : null, GENDER_LABEL[gender]]
-    .filter(Boolean)
-    .join(' ');
-
   return (
     <div className={styles.page}>
       <section className={styles.profileSection}>
@@ -214,7 +210,12 @@ export default function MyPageEdit() {
           )}
         </div>
 
-        {infoText && <p className={styles.userInfo}>{infoText}</p>}
+        {(birthYear || gender) && (
+          <p className={styles.userInfo}>
+            {birthYear && <span>{birthYear}년</span>}
+            {gender && <span>{GENDER_LABEL[gender]}</span>}
+          </p>
+        )}
       </section>
 
       <div className={styles.formSection}>

@@ -112,7 +112,8 @@
   font-weight: $font-weight-medium;
   color: $color-gray-medium;
   letter-spacing: -0.3px;
-  word-spacing: 22px;
+  display: flex;
+  gap: 22px;
 }
 
 /* ── 폼 섹션 ── */
