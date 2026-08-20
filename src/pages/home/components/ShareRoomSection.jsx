@@ -10,6 +10,7 @@ import {
   getRoomMembers,
   resolveImageUrl,
 } from '@/api/rooms';
+import { getRoomCoverTheme } from '@/utils/roomCoverTheme';
 import styles from './ShareRoomSection.module.scss';
 
 const MEMBER_PREVIEW_LIMIT = 3;
@@ -203,6 +204,7 @@ export default function ShareRoomSection({ nickname }) {
                 key={room.roomId}
                 type="button"
                 className={styles.roomCard}
+                data-cover-theme={getRoomCoverTheme(room.roomId)}
                 title={`${room.roomName} 공유방 들어가기`}
                 onClick={() => openRoom(room)}
               >

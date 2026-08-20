@@ -67,6 +67,10 @@
 }
 
 .roomCard {
+  --room-cover-start: #ffcc70;
+  --room-cover-middle: #ffa449;
+  --room-cover-end: #fe7e35;
+
   position: relative;
   width: auto;
   min-width: 86px;
@@ -76,7 +80,28 @@
   overflow: hidden;
   color: $color-white;
   text-align: left;
-  background-color: $color-gray5;
+  background:
+    linear-gradient(
+      180deg,
+      rgba($color-black, 0) 42%,
+      rgba($color-brown5, 0.52) 100%
+    ),
+    radial-gradient(
+      circle at 18% 18%,
+      rgba($color-white, 0.28) 0 12px,
+      rgba($color-white, 0) 13px
+    ),
+    radial-gradient(
+      circle at 88% 23%,
+      rgba($color-white, 0.16) 0 21px,
+      rgba($color-white, 0) 22px
+    ),
+    linear-gradient(
+      135deg,
+      var(--room-cover-start) 0%,
+      var(--room-cover-middle) 58%,
+      var(--room-cover-end) 100%
+    );
   border: 0;
   border-radius: 5px;
   outline: 0;
@@ -86,6 +111,24 @@
   &:focus-visible {
     outline: 2px solid $color-primary-accent;
     outline-offset: 2px;
+  }
+
+  &[data-cover-theme='1'] {
+    --room-cover-start: #b9dda5;
+    --room-cover-middle: #78ba80;
+    --room-cover-end: #4d976d;
+  }
+
+  &[data-cover-theme='2'] {
+    --room-cover-start: #b7dfed;
+    --room-cover-middle: #76bed9;
+    --room-cover-end: #4f94c6;
+  }
+
+  &[data-cover-theme='3'] {
+    --room-cover-start: #ffd0bd;
+    --room-cover-middle: #f59a78;
+    --room-cover-end: #e47265;
   }
 }
 

@@ -16,10 +16,53 @@
 
 // Room cover
 .coverHeader {
+  --room-cover-start: #ffebd8;
+  --room-cover-middle: #ffb134;
+  --room-cover-end: #ffa449;
+
   position: relative;
   height: 194px;
   overflow: visible;
-  background-color: $color-gray4;
+  background:
+    radial-gradient(
+      circle at 14% 18%,
+      rgba($color-white, 0.32) 0 42px,
+      rgba($color-white, 0) 43px
+    ),
+    radial-gradient(
+      circle at 88% 24%,
+      rgba($color-white, 0.18) 0 68px,
+      rgba($color-white, 0) 69px
+    ),
+    radial-gradient(
+      circle at 68% 112%,
+      rgba($color-black, 0.07) 0 108px,
+      rgba($color-black, 0) 109px
+    ),
+    linear-gradient(
+      135deg,
+      var(--room-cover-start) 0%,
+      var(--room-cover-middle) 55%,
+      var(--room-cover-end) 100%
+    );
+
+  &[data-cover-theme='1'] {
+    --room-cover-start: #e1f0d8;
+    --room-cover-middle: #9ccb91;
+    --room-cover-end: #70af79;
+  }
+
+  &[data-cover-theme='2'] {
+    --room-cover-start: #e0f2f8;
+    --room-cover-middle: #9bd1e4;
+    --room-cover-end: #70b2d1;
+  }
+
+  &[data-cover-theme='3'] {
+    --room-cover-start: #ffebe3;
+    --room-cover-middle: #f8b49a;
+    --room-cover-end: #ef8b75;
+  }
 
   h1 {
     @include flex(row, center, flex-start);

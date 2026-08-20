@@ -16,6 +16,7 @@ import {
   resolveImageUrl,
   updateRoomCover,
 } from '@/api/rooms';
+import { getRoomCoverTheme } from '@/utils/roomCoverTheme';
 import InviteDialog from './components/InviteDialog';
 import MemberRecordCard from './components/MemberRecordCard';
 import { useRoomFeed } from './hooks/useRoomFeed';
@@ -237,6 +238,7 @@ export default function ShareRoomPage() {
     >
       <header
         className={`${styles.coverHeader} ${isInitial ? styles.initial : ''}`}
+        data-cover-theme={getRoomCoverTheme(roomId)}
       >
         {hasCoverImage && (
           <img
