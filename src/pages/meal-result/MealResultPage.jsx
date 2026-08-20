@@ -34,6 +34,7 @@ export default function MealResultPage() {
     state,
   );
   const [isConfirmed, setIsConfirmed] = useState(false);
+  const [nutritionSummary, setNutritionSummary] = useState(null);
   const [pendingAction, setPendingAction] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
 
@@ -70,11 +71,16 @@ export default function MealResultPage() {
     setErrorMessage('');
 
     try {
+      let currentNutritionSummary = nutritionSummary;
+
       if (!isConfirmed) {
-        await confirmMeal(mealId, {
+        const confirmedMeal = await confirmMeal(mealId, {
           items: toMealItems(foods),
           eatenAt: eatenAt ?? new Date().toISOString(),
         });
+
+        currentNutritionSummary = confirmedMeal?.nutritionSummary ?? null;
+        setNutritionSummary(currentNutritionSummary);
         setIsConfirmed(true);
       }
 
@@ -82,7 +88,12 @@ export default function MealResultPage() {
         const recommendation = await createMealRecommendation(mealId);
         navigate('/meals/recommendation', {
           replace: true,
-          state: { ...state, foods, recommendation },
+          state: {
+            ...state,
+            foods,
+            nutritionSummary: currentNutritionSummary,
+            recommendation,
+          },
         });
       } else {
         await completeMeal(mealId);

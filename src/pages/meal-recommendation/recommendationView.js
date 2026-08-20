@@ -13,10 +13,18 @@ export function formatAmount(value) {
   return Number(Number(value).toFixed(1));
 }
 
-// 부족한 영양소를 앞에 두고 최대 3개까지 (현재값 / 목표값)
-export function getNutrientSummary(recommendation) {
+function toNumberOrNull(value) {
+  if (value == null || value === '') return null;
+
+  const number = Number(value);
+  return Number.isFinite(number) ? number : null;
+}
+
+// 부족한 영양소를 앞에 두고 현재 식사 섭취량과 하루 목표를 최대 3개까지 표시
+export function getNutrientSummary(recommendation, nutritionSummary) {
   const daily = recommendation?.dailyNutrition ?? {};
   const gap = recommendation?.nutrientGap ?? {};
+  const currentMeal = nutritionSummary ?? {};
   const fields = [
     NUTRIENTS[recommendation?.targetNutrient],
     NUTRIENTS.PROTEIN,
@@ -29,7 +37,7 @@ export function getNutrientSummary(recommendation) {
 
   return fields.map((field) => ({
     ...field,
-    current: Number(daily[field.key]) || 0,
+    current: toNumberOrNull(currentMeal[field.key]),
     target:
       (Number(daily[field.key]) || 0) + (Number(gap[field.key]) || 0) || 1,
   }));
