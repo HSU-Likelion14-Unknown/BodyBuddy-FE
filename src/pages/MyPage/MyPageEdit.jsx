@@ -102,7 +102,8 @@ export default function MyPageEdit() {
         setOrigShareRecords(data.shareToRoom);
       }
     });
-  }, [networkRequest]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const nicknameChanged = nickname !== initialNickname;
   const nicknameValid =
