@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { getMe } from '@/api/user';
+import { getMe, deleteMe } from '@/api/user';
 import { MdEdit } from 'react-icons/md';
 import { VscChevronRight } from 'react-icons/vsc';
 import styles from './MyPage.module.scss';
@@ -49,6 +49,7 @@ export default function MyPage() {
   const [dislikedFoods, setDislikedFoods] = useState([]);
   const [notifOn, setNotifOn] = useState(true);
   const [marketingOn, setMarketingOn] = useState(false);
+  const [showDeleteSheet, setShowDeleteSheet] = useState(false);
   const fetched = useRef(false);
 
   useEffect(() => {
@@ -176,12 +177,49 @@ export default function MyPage() {
         <button
           type="button"
           className={`${styles.settingRow} ${styles.settingRowCompact}`}
+          onClick={() => setShowDeleteSheet(true)}
         >
           <span className={styles.settingLabel}>회원탈퇴</span>
           <VscChevronRight className={styles.chevron} />
         </button>
         <hr className={styles.divider} />
       </section>
+      {showDeleteSheet && (
+        <>
+          <div
+            className={styles.overlay}
+            onClick={() => setShowDeleteSheet(false)}
+          />
+          <div className={styles.bottomSheet}>
+            <p className={styles.sheetTitle}>정말 탈퇴하시겠어요?</p>
+            <p className={styles.sheetDesc}>
+              탈퇴하면 모든 정보가 삭제되며 복구할 수 없어요.
+            </p>
+            <button
+              type="button"
+              className={styles.sheetDeleteBtn}
+              onClick={async () => {
+                try {
+                  await deleteMe();
+                  localStorage.clear();
+                  navigate('/', { replace: true });
+                } catch (e) {
+                  console.error('탈퇴 실패:', e);
+                }
+              }}
+            >
+              탈퇴하기
+            </button>
+            <button
+              type="button"
+              className={styles.sheetCancelBtn}
+              onClick={() => setShowDeleteSheet(false)}
+            >
+              취소
+            </button>
+          </div>
+        </>
+      )}
     </div>
   );
 }

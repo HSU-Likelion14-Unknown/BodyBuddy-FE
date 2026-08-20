@@ -68,6 +68,10 @@ export async function patchMe({
   return res.data.data;
 }
 
+export async function deleteMe() {
+  await api.delete('/users/me');
+}
+
 export async function putOnboarding({
   nickname,
   birthYear,
