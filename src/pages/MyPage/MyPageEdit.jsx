@@ -1,6 +1,6 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { patchMe, patchProfileImage } from '@/api/user';
+import { getMe, patchMe, patchProfileImage } from '@/api/user';
 import { MdBorderColor, MdEdit } from 'react-icons/md';
 import styles from './MyPageEdit.module.scss';
 import {
@@ -69,7 +69,14 @@ export default function MyPageEdit() {
   const [allergenInput, setAllergenInput] = useState('');
   const [dislikedInput, setDislikedInput] = useState('');
   const [profilePhoto, setProfilePhoto] = useState(null);
+  const [serverProfileImageUrl, setServerProfileImageUrl] = useState(null);
   const [saveSuccess, setSaveSuccess] = useState(false);
+
+  useEffect(() => {
+    getMe().then((data) => {
+      if (data.profileImageUrl) setServerProfileImageUrl(data.profileImageUrl);
+    });
+  }, []);
 
   const nicknameChanged = nickname !== initialNickname;
   const nicknameValid =
@@ -159,11 +166,13 @@ export default function MyPageEdit() {
     <div className={styles.page}>
       <section className={styles.profileSection}>
         <div className={styles.avatarArea}>
-          {!profilePhoto && <div className={styles.avatarBg} />}
+          {!profilePhoto && !serverProfileImageUrl && (
+            <div className={styles.avatarBg} />
+          )}
           <img
-            src={profilePhoto || profileChracter}
+            src={profilePhoto || serverProfileImageUrl || profileChracter}
             alt=""
-            className={`${styles.avatarImg} ${profilePhoto ? styles.avatarImgFilled : ''}`}
+            className={`${styles.avatarImg} ${profilePhoto || serverProfileImageUrl ? styles.avatarImgFilled : ''}`}
           />
           <button
             type="button"
