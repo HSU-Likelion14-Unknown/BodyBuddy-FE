@@ -13,20 +13,17 @@ import {
   homeHeroZinc,
 } from '@/assets';
 import { useMyNickname } from '@/hooks/useMyNickname';
+import { getHomeRecommendation } from '@/utils/recentRecommendation';
 import ShareRoomSection from './components/ShareRoomSection';
 import WeeklyCalendar from './components/WeeklyCalendar';
 import styles from './HomePage.module.scss';
 
-const MOCK_RECOMMENDATION = {
-  name: '연어 구이',
-  description:
-    '연어 100g으로 비타민 D와 오메가3의 하루 권장량의 80%를 채울 수 있어요.',
-  tip: '다음 끼니에 추가하면 밸런스가 좋아요.',
-};
-
 export default function HomePage() {
   const navigate = useNavigate();
   const nickname = useMyNickname();
+  const recommendation = getHomeRecommendation();
+  const recommendationReason =
+    recommendation.reason || '최근 식사 기록을 바탕으로 추천한 재료예요.';
 
   return (
     <main className={styles.container}>
@@ -108,13 +105,13 @@ export default function HomePage() {
               <FaUtensils />
               오늘의 추천 음식
             </span>
-            <h2>{MOCK_RECOMMENDATION.name}</h2>
+            <h2>{recommendation.ingredientName}</h2>
           </div>
 
           <p>
-            {MOCK_RECOMMENDATION.description}
+            {recommendationReason}
             <br />
-            {MOCK_RECOMMENDATION.tip}
+            다음 끼니에 추가하면 밸런스가 좋아요.
           </p>
         </section>
 

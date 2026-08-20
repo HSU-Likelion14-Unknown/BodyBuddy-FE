@@ -2,7 +2,10 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getApiErrorMessage } from '@/api/error';
 import { completeMeal, decideRecommendation } from '@/api/meals';
-import { saveRecentRecommendation } from '@/utils/recentRecommendation';
+import {
+  clearRecentRecommendation,
+  saveRecentRecommendation,
+} from '@/utils/recentRecommendation';
 
 // 추천 선택, 건너뛰기, 기록 완료를 처리하고 캘린더로 이동
 export function useRecommendationDecision(recommendationResult, mealId) {
@@ -53,8 +56,11 @@ export function useRecommendationDecision(recommendationResult, mealId) {
       if (decision === 'SELECTED') {
         saveRecentRecommendation({
           ingredientName: ingredient.ingredientName,
+          reason: ingredient.reason,
           dishNames: ingredient.dishes?.map((dish) => dish.dishName) ?? [],
         });
+      } else {
+        clearRecentRecommendation();
       }
     }, '추천 선택을 저장하지 못했어요.');
   };
