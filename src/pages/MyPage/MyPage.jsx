@@ -48,7 +48,6 @@ export default function MyPage() {
   const [allAllergens, setAllAllergens] = useState([]);
   const [dislikedFoods, setDislikedFoods] = useState([]);
   const [notifOn, setNotifOn] = useState(true);
-  const [marketingOn, setMarketingOn] = useState(false);
   const [showDeleteSheet, setShowDeleteSheet] = useState(false);
   const fetched = useRef(false);
 
@@ -159,14 +158,6 @@ export default function MyPage() {
         <div className={styles.settingRow}>
           <span className={styles.settingLabel}>알림</span>
           <Toggle checked={notifOn} onChange={() => setNotifOn((v) => !v)} />
-        </div>
-        <hr className={styles.divider} />
-        <div className={styles.settingRow}>
-          <span className={styles.settingLabel}>마케팅 수신 동의</span>
-          <Toggle
-            checked={marketingOn}
-            onChange={() => setMarketingOn((v) => !v)}
-          />
         </div>
         <hr className={styles.divider} />
       </section>
