@@ -9,7 +9,6 @@ import styles from './CalendarPage.module.scss';
 import {
   iconBell,
   iconChevronDown,
-  mealPlaceholder,
   iconForkKnife,
 } from '@/assets';
 import { BsChevronLeft } from 'react-icons/bs';
@@ -207,11 +206,13 @@ function DateDetailCard({ date, meals, onPhotoUpload }) {
 
           <div className={styles.photoArea}>
             <div className={styles.photoWrapper}>
-              <img
-                src={meal.photoUrl ?? mealPlaceholder}
-                alt="식사 사진"
-                className={styles.foodPhoto}
-              />
+              {meal.photoUrl && (
+                <img
+                  src={meal.photoUrl}
+                  alt="식사 사진"
+                  className={styles.foodPhoto}
+                />
+              )}
               <button
                 className={styles.editBtn}
                 aria-label="수정"
