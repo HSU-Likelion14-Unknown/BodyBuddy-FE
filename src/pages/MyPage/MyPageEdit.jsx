@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getMe, patchMe, patchProfileImage } from '@/api/user';
-import { MdBorderColor, MdEdit } from 'react-icons/md';
+import { MdBorderColor, MdEdit, MdCheck } from 'react-icons/md';
+import YearPicker from '../Onboarding/components/YearPicker';
 import styles from './MyPageEdit.module.scss';
 import {
   profileChracter,
@@ -22,6 +23,11 @@ const ALLERGEN_OPTIONS = [
 ];
 
 const GENDER_LABEL = { male: '남성', female: '여성', none: '상관 없음' };
+const REVERSE_GENDER_MAP = {
+  MALE: 'male',
+  FEMALE: 'female',
+  PREFER_NOT_TO_SAY: 'none',
+};
 
 function Toggle({ checked, onChange }) {
   return (
@@ -55,11 +61,14 @@ export default function MyPageEdit() {
     : step3?.dislikedFoods || [];
   const initialShareRecords = savedSettings?.shareRecords ?? false;
 
-  const birthYear = step1?.birthYear;
-  const gender = step1?.gender;
+  const [birthYear, setBirthYear] = useState(step1?.birthYear ?? null);
+  const [gender, setGender] = useState(step1?.gender ?? null);
+  const [origBirthYear, setOrigBirthYear] = useState(step1?.birthYear ?? null);
+  const [origGender, setOrigGender] = useState(step1?.gender ?? null);
 
   const [nickname, setNickname] = useState(initialNickname);
-  const [isEditingNickname, setIsEditingNickname] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [showYearPicker, setShowYearPicker] = useState(false);
   const [allergens, setAllergens] = useState(initialAllergens);
   const [customAllergens, setCustomAllergens] = useState(
     initialCustomAllergens,
@@ -75,6 +84,15 @@ export default function MyPageEdit() {
   useEffect(() => {
     getMe().then((data) => {
       if (data.profileImageUrl) setServerProfileImageUrl(data.profileImageUrl);
+      if (data.birthYear) {
+        setBirthYear(data.birthYear);
+        setOrigBirthYear(data.birthYear);
+      }
+      if (data.gender) {
+        const fg = REVERSE_GENDER_MAP[data.gender] ?? null;
+        setGender(fg);
+        setOrigGender(fg);
+      }
     });
   }, []);
 
@@ -85,6 +103,8 @@ export default function MyPageEdit() {
 
   const hasChanges =
     nickname !== initialNickname ||
+    birthYear !== origBirthYear ||
+    gender !== origGender ||
     profilePhoto !== null ||
     JSON.stringify([...allergens].sort()) !==
       JSON.stringify([...initialAllergens].sort()) ||
@@ -184,37 +204,59 @@ export default function MyPageEdit() {
         </div>
 
         <div className={styles.nicknameRow}>
-          {isEditingNickname ? (
+          {isEditing ? (
             <input
               className={styles.nicknameInput}
               value={nickname}
               onChange={(e) => setNickname(e.target.value)}
               maxLength={7}
               autoFocus
-              onBlur={() => setIsEditingNickname(false)}
-              onKeyDown={(e) =>
-                e.key === 'Enter' && setIsEditingNickname(false)
-              }
             />
           ) : (
             <span className={styles.nickname}>{nickname || '닉네임'}</span>
           )}
-          {!isEditingNickname && (
-            <button
-              type="button"
-              className={styles.editNicknameBtn}
-              onClick={() => setIsEditingNickname(true)}
-            >
+          <button
+            type="button"
+            className={styles.editNicknameBtn}
+            onClick={() => setIsEditing((v) => !v)}
+          >
+            {isEditing ? (
+              <MdCheck className={styles.editNicknameIcon} />
+            ) : (
               <MdBorderColor className={styles.editNicknameIcon} />
-            </button>
-          )}
+            )}
+          </button>
         </div>
 
-        {(birthYear || gender) && (
+        {isEditing ? (
           <p className={styles.userInfo}>
-            {birthYear && <span>{birthYear}년</span>}
-            {gender && <span>{GENDER_LABEL[gender]}</span>}
+            <button
+              type="button"
+              className={styles.infoEditBtn}
+              onClick={() => setShowYearPicker(true)}
+            >
+              {birthYear ? `${birthYear}년` : '출생연도'}
+            </button>
+            <select
+              className={styles.infoEditSelect}
+              value={gender ?? ''}
+              onChange={(e) => setGender(e.target.value || null)}
+            >
+              <option value="" disabled>
+                성별
+              </option>
+              <option value="male">남성</option>
+              <option value="female">여성</option>
+              <option value="none">상관 없음</option>
+            </select>
           </p>
+        ) : (
+          (birthYear || gender) && (
+            <p className={styles.userInfo}>
+              {birthYear && <span>{birthYear}년</span>}
+              {gender && <span>{GENDER_LABEL[gender]}</span>}
+            </p>
+          )
         )}
       </section>
 
@@ -359,6 +401,14 @@ export default function MyPageEdit() {
         style={{ display: 'none' }}
         onChange={handlePhotoSelect}
       />
+
+      {showYearPicker && (
+        <YearPicker
+          value={birthYear}
+          onChange={(year) => setBirthYear(year)}
+          onClose={() => setShowYearPicker(false)}
+        />
+      )}
     </div>
   );
 }

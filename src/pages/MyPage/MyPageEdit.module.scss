@@ -124,6 +124,32 @@
   gap: 22px;
 }
 
+/* ── 정보 인라인 편집 ── */
+.infoEditBtn {
+  background: none;
+  border: none;
+  border-bottom: 1px solid $color-gray-medium;
+  padding: 0;
+  font-size: rem(12px);
+  font-weight: $font-weight-medium;
+  color: $color-gray-medium;
+  letter-spacing: -0.3px;
+  cursor: pointer;
+}
+
+.infoEditSelect {
+  background: none;
+  border: none;
+  border-bottom: 1px solid $color-gray-medium;
+  padding: 0;
+  font-size: rem(12px);
+  font-weight: $font-weight-medium;
+  color: $color-gray-medium;
+  letter-spacing: -0.3px;
+  cursor: pointer;
+  outline: none;
+}
+
 /* ── 폼 섹션 ── */
 .formSection {
   margin-top: 20px;
