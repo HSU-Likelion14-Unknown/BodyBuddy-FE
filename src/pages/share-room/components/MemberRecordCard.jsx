@@ -85,13 +85,20 @@ function MealMedia({ record }) {
 
 export default function MemberRecordCard({ member, roomId }) {
   const navigate = useNavigate();
-  const [selectedRecordIndex, setSelectedRecordIndex] = useState(
-    member.initialRecordIndex ?? 0,
-  );
+  const [selectedMealId, setSelectedMealId] = useState(() => {
+    if (Number.isInteger(member.initialRecordIndex)) {
+      return member.records[member.initialRecordIndex]?.id ?? '';
+    }
+
+    return member.records[member.records.length - 1]?.id ?? '';
+  });
   const [myReactions, setMyReactions] = useState([]);
   const [reactionCounts, setReactionCounts] = useState([]);
+  const [reactionTargetKey, setReactionTargetKey] = useState('');
   const [isSavingReaction, setIsSavingReaction] = useState(false);
   const [isReactionPickerOpen, setIsReactionPickerOpen] = useState(false);
+  const recordTabsRef = useRef(null);
+  const activeRecordButtonRef = useRef(null);
   const isMountedRef = useRef(false);
   const isSavingReactionRef = useRef(false);
   const reactionRequestSequenceRef = useRef(0);
@@ -99,15 +106,38 @@ export default function MemberRecordCard({ member, roomId }) {
   const requestReactionRefreshRef = useRef(() => {});
 
   const hasRecords = member.records.length > 0;
+  const selectedRecordIndex = member.records.findIndex(
+    (record) => record.id === selectedMealId,
+  );
   const activeRecordIndex =
-    Number.isInteger(selectedRecordIndex) &&
-    selectedRecordIndex >= 0 &&
-    selectedRecordIndex < member.records.length
+    selectedRecordIndex >= 0
       ? selectedRecordIndex
-      : 0;
+      : Math.max(member.records.length - 1, 0);
   const selectedRecord = member.records[activeRecordIndex];
   const selectedRecordId = selectedRecord?.id;
   const isManualRecord = hasRecords && !selectedRecord?.photoUrl;
+  const selectedReactionTargetKey =
+    roomId && selectedRecordId ? `${roomId}:${selectedRecordId}` : '';
+  const visibleMyReactions =
+    reactionTargetKey === selectedReactionTargetKey ? myReactions : [];
+  const visibleReactionCounts =
+    reactionTargetKey === selectedReactionTargetKey ? reactionCounts : [];
+
+  useEffect(() => {
+    const tabs = recordTabsRef.current;
+    const activeButton = activeRecordButtonRef.current;
+
+    if (!tabs || !activeButton) return;
+
+    const tabsRect = tabs.getBoundingClientRect();
+    const activeButtonRect = activeButton.getBoundingClientRect();
+
+    if (activeButtonRect.left < tabsRect.left) {
+      tabs.scrollLeft -= tabsRect.left - activeButtonRect.left;
+    } else if (activeButtonRect.right > tabsRect.right) {
+      tabs.scrollLeft += activeButtonRect.right - tabsRect.right;
+    }
+  }, [member.records.length, selectedRecordId]);
 
   useEffect(() => {
     isMountedRef.current = true;
@@ -185,6 +215,7 @@ export default function MemberRecordCard({ member, roomId }) {
 
         setMyReactions(data.myReactions ?? []);
         setReactionCounts(data.reactions ?? []);
+        setReactionTargetKey(selectedReactionTargetKey);
       } catch {
         // 반응 조회 실패는 기록 표시에 영향 없음
       } finally {
@@ -258,10 +289,10 @@ export default function MemberRecordCard({ member, roomId }) {
         requestReactionRefreshRef.current = () => {};
       }
     };
-  }, [roomId, selectedRecordId]);
+  }, [roomId, selectedReactionTargetKey, selectedRecordId]);
 
   // 서버는 26종 허용 — 화면에 아이콘 있는 것만 노출
-  const reactions = reactionCounts
+  const reactions = visibleReactionCounts
     .map(({ emojiType, count }) => ({
       ...OPTION_BY_ID[emojiType],
       id: emojiType,
@@ -269,8 +300,8 @@ export default function MemberRecordCard({ member, roomId }) {
     }))
     .filter((reaction) => reaction.emoji);
 
-  const selectRecord = (index) => {
-    setSelectedRecordIndex(index);
+  const selectRecord = (mealId) => {
+    setSelectedMealId(mealId);
     setIsReactionPickerOpen(false);
   };
 
@@ -285,7 +316,9 @@ export default function MemberRecordCard({ member, roomId }) {
       return;
     }
 
-    const nextReactions = myReactions.includes(option.id) ? [] : [option.id];
+    const nextReactions = visibleMyReactions.includes(option.id)
+      ? []
+      : [option.id];
     const mutationSequence = reactionRequestSequenceRef.current + 1;
 
     reactionRequestSequenceRef.current = mutationSequence;
@@ -306,6 +339,7 @@ export default function MemberRecordCard({ member, roomId }) {
       ) {
         setMyReactions(data.myReactions ?? nextReactions);
         setReactionCounts(data.reactions ?? []);
+        setReactionTargetKey(selectedReactionTargetKey);
       }
     } catch {
       // 실패 시 기존 반응 유지
@@ -336,13 +370,18 @@ export default function MemberRecordCard({ member, roomId }) {
           </h2>
 
           {hasRecords && (
-            <div className={styles.recordTabs}>
+            <div ref={recordTabsRef} className={styles.recordTabs}>
               {member.records.map((record, index) => (
                 <button
                   key={record.id}
+                  ref={
+                    index === activeRecordIndex
+                      ? activeRecordButtonRef
+                      : undefined
+                  }
                   type="button"
                   className={index === activeRecordIndex ? styles.active : ''}
-                  onClick={() => selectRecord(index)}
+                  onClick={() => selectRecord(record.id)}
                 >
                   {record.label}
                 </button>
@@ -369,10 +408,14 @@ export default function MemberRecordCard({ member, roomId }) {
                   key={reaction.id}
                   type="button"
                   className={`${styles.reactionButton} ${
-                    myReactions.includes(reaction.id) ? styles.selected : ''
+                    visibleMyReactions.includes(reaction.id)
+                      ? styles.selected
+                      : ''
                   }`}
                   title={`${reaction.label} 반응 ${
-                    myReactions.includes(reaction.id) ? '취소' : '남기기'
+                    visibleMyReactions.includes(reaction.id)
+                      ? '취소'
+                      : '남기기'
                   }`}
                   onClick={() => leaveReaction(reaction)}
                 >
@@ -403,7 +446,9 @@ export default function MemberRecordCard({ member, roomId }) {
                     key={option.id}
                     type="button"
                     className={
-                      myReactions.includes(option.id) ? styles.selected : ''
+                      visibleMyReactions.includes(option.id)
+                        ? styles.selected
+                        : ''
                     }
                     title={option.label}
                     onClick={() => leaveReaction(option)}

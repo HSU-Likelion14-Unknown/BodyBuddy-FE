@@ -36,6 +36,7 @@
 }
 
 .memberContent {
+  flex: 1;
   min-width: 0;
 
   h2 {
@@ -50,12 +51,20 @@
 .recordTabs {
   @include flex(row, center, flex-start, 12px);
 
+  width: 100%;
   margin-top: 3px;
+  overflow-x: auto;
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
 
   button {
     @include flex;
 
     height: 21px;
+    flex: 0 0 auto;
     padding: 0;
     color: $color-brown2;
     font-size: 12px;
