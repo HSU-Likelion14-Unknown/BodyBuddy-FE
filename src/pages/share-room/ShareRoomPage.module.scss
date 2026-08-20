@@ -260,3 +260,12 @@
     transform: translateY(-4px) scale(0.98);
   }
 }
+
+// 피드 로딩·오류 안내
+.feedMessage {
+  padding: 40px 0;
+  color: $color-gray5;
+  font-size: $font-size-13;
+  font-weight: $font-weight-medium;
+  text-align: center;
+}

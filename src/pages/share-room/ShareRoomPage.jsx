@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import {
   shareRoomAddIcon,
   shareRoomAddWhiteIcon,
@@ -10,36 +10,31 @@ import {
   shareRoomMoreIcon,
   shareRoomPhotoIcon,
 } from '@/assets';
+import { getApiErrorMessage } from '@/api/error';
+import { leaveRoom, updateRoomCover } from '@/api/rooms';
 import InviteDialog from './components/InviteDialog';
 import MemberRecordCard from './components/MemberRecordCard';
-import {
-  EMPTY_MEMBERS,
-  INITIAL_MEMBERS,
-  RECORDED_MEMBERS,
-} from './shareRoomMock';
+import { useRoomFeed } from './hooks/useRoomFeed';
 import styles from './ShareRoomPage.module.scss';
-
-const VIEW_MEMBERS = {
-  initial: INITIAL_MEMBERS,
-  empty: EMPTY_MEMBERS,
-  records: RECORDED_MEMBERS,
-};
 
 export default function ShareRoomPage() {
   const location = useLocation();
+  const { roomId } = useParams();
   const navigate = useNavigate();
   const [isInviteOpen, setIsInviteOpen] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [customCoverUrl, setCustomCoverUrl] = useState('');
+  const [menuErrorMessage, setMenuErrorMessage] = useState('');
+  const [isLeaving, setIsLeaving] = useState(false);
   const fileInputRef = useRef(null);
   const coverObjectUrlRef = useRef('');
 
-  const viewFromQuery = new URLSearchParams(location.search).get('view');
-  const requestedView = location.state?.view || viewFromQuery;
-  const view = VIEW_MEMBERS[requestedView] ? requestedView : 'records';
-  const members = VIEW_MEMBERS[view];
-  const roomName = location.state?.roomName || '알수없음조';
-  const isInitial = view === 'initial';
+  const { members, isLoading, errorMessage } = useRoomFeed(roomId);
+  const roomName = location.state?.roomName || '공유방';
+  // 나 혼자면 초대 유도 화면, 기록이 하나라도 있으면 기록 화면
+  const isInitial = !isLoading && members.length <= 1;
+  const hasRecords = members.some((member) => member.records.length > 0);
+  const view = hasRecords ? 'records' : 'empty';
   const coverImageUrl = customCoverUrl || (!isInitial ? shareRoomCover : '');
 
   useEffect(
@@ -61,19 +56,48 @@ export default function ShareRoomPage() {
     fileInputRef.current?.click();
   };
 
-  const changeCoverImage = (event) => {
+  const changeCoverImage = async (event) => {
     const [file] = event.target.files;
 
-    if (!file) return;
+    event.target.value = '';
 
+    if (!file || !roomId) return;
+
+    // 업로드가 끝나기 전에도 고른 사진을 먼저 보여줌
     if (coverObjectUrlRef.current) {
       URL.revokeObjectURL(coverObjectUrlRef.current);
     }
 
-    const nextCoverUrl = URL.createObjectURL(file);
-    coverObjectUrlRef.current = nextCoverUrl;
-    setCustomCoverUrl(nextCoverUrl);
-    event.target.value = '';
+    const previewUrl = URL.createObjectURL(file);
+    coverObjectUrlRef.current = previewUrl;
+    setCustomCoverUrl(previewUrl);
+    setMenuErrorMessage('');
+
+    try {
+      await updateRoomCover(roomId, file);
+    } catch (error) {
+      setMenuErrorMessage(
+        getApiErrorMessage(error, '커버 사진을 저장하지 못했어요.'),
+      );
+    }
+  };
+
+  const exitRoom = async () => {
+    if (!roomId || isLeaving) return;
+
+    setIsLeaving(true);
+    setMenuErrorMessage('');
+
+    try {
+      await leaveRoom(roomId);
+      navigate('/home', { replace: true });
+    } catch (error) {
+      setMenuErrorMessage(
+        getApiErrorMessage(error, '공유방에서 나가지 못했어요.'),
+      );
+    } finally {
+      setIsLeaving(false);
+    }
   };
 
   return (
@@ -125,7 +149,7 @@ export default function ShareRoomPage() {
                   </span>
                 </button>
                 <span className={styles.menuDivider} />
-                <button type="button" onClick={() => navigate('/home')}>
+                <button type="button" disabled={isLeaving} onClick={exitRoom}>
                   나가기
                   <span className={styles.menuIcon}>
                     <img src={shareRoomLogoutIcon} alt="" />
@@ -147,10 +171,26 @@ export default function ShareRoomPage() {
         )}
       </header>
 
+      {menuErrorMessage && (
+        <p className={styles.feedMessage} role="alert">
+          {menuErrorMessage}
+        </p>
+      )}
+
       <section className={styles.memberList}>
-        {members.map((member) => (
-          <MemberRecordCard key={`${view}-${member.id}`} member={member} />
-        ))}
+        {errorMessage && <p className={styles.feedMessage}>{errorMessage}</p>}
+        {!errorMessage && isLoading && (
+          <p className={styles.feedMessage}>공유방을 불러오는 중이에요.</p>
+        )}
+        {!errorMessage &&
+          !isLoading &&
+          members.map((member) => (
+            <MemberRecordCard
+              key={`${view}-${member.id}`}
+              member={member}
+              roomId={roomId}
+            />
+          ))}
       </section>
 
       {isInitial && (
@@ -179,7 +219,7 @@ export default function ShareRoomPage() {
 
       {isInviteOpen && (
         <InviteDialog
-          inviteCode="BODY26"
+          roomId={roomId}
           roomName={roomName}
           onClose={() => setIsInviteOpen(false)}
         />
