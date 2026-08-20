@@ -39,8 +39,8 @@ export async function putOnboarding({
     nickname,
     birthYear: birthYear ?? null,
     gender: GENDER_MAP[gender] ?? 'PREFER_NOT_TO_SAY',
-    allergyCodes: allergyCodes.length ? allergyCodes : ['NONE'],
-    dislikedFoods: dislikedFoods.length ? dislikedFoods : ['NONE'],
+    allergyCodes,
+    dislikedFoods,
   });
 
   return res.data.data;

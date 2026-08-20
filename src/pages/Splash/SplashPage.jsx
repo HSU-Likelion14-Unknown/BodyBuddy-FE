@@ -4,6 +4,7 @@ import styles from './SplashPage.module.scss';
 import { postAnonymous } from '@/api/auth';
 import { getAccessKey, setAccessKey } from '@/api/tokenStorage';
 import {
+  clearOnboardingCompletedAt,
   getOnboardingCompletedAt,
   setOnboardingCompletedAt,
 } from '@/api/userStorage';
@@ -34,6 +35,8 @@ export default function SplashPage() {
           setAccessKey(data.accessKey);
           if (data.onboardingCompletedAt) {
             setOnboardingCompletedAt(data.onboardingCompletedAt);
+          } else {
+            clearOnboardingCompletedAt();
           }
           onboardingCompletedAt = data.onboardingCompletedAt;
         } else {

@@ -84,9 +84,9 @@ export default function OnboardingPage3() {
         dislikedFoods: isNone ? [] : customTags,
       });
 
-      if (result.onboardingCompletedAt) {
-        setOnboardingCompletedAt(result.onboardingCompletedAt);
-      }
+      setOnboardingCompletedAt(
+        result.onboardingCompletedAt ?? new Date().toISOString(),
+      );
 
       const pendingInvite = getPendingInvite();
 
