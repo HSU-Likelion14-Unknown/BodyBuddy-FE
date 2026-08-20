@@ -15,7 +15,7 @@ const GENDER_MAP = {
   none: 'PREFER_NOT_TO_SAY',
 };
 
-function resolveImageUrl(url) {
+export function resolveImageUrl(url) {
   if (typeof url !== 'string' || !url.trim()) return null;
 
   const normalizedUrl = url.trim();
@@ -26,10 +26,7 @@ function resolveImageUrl(url) {
 
   if (/^[a-z][a-z\d+.-]*:/i.test(normalizedUrl)) return null;
 
-  const publicPath = normalizedUrl.replace(
-    /^\/+app(?=\/uploads\/)/i,
-    '',
-  );
+  const publicPath = normalizedUrl.replace(/^\/+app(?=\/uploads\/)/i, '');
 
   try {
     const apiOrigin = new URL(import.meta.env.VITE_API_URL).origin;
