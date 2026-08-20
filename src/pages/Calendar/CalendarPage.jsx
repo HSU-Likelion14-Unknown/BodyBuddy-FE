@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { getDayMeals, getMonthStats } from '@/api/calendar';
+import { getDayMeals, getMonthStats, patchMealImage } from '@/api/calendar';
 import { getMe } from '@/api/user';
 import { useNetworkRequest } from '@/hooks/useNetworkRequest';
 import Calendar from 'react-calendar';
@@ -122,7 +122,7 @@ function NutritionBar({ label, consumed, goal }) {
   );
 }
 
-function DateDetailCard({ date, meals, datePhotos, onPhotoChange }) {
+function DateDetailCard({ date, meals, onPhotoUpload }) {
   const [activeTab, setActiveTab] = useState(0);
   const fileInputRef = useRef(null);
 
@@ -132,10 +132,8 @@ function DateDetailCard({ date, meals, datePhotos, onPhotoChange }) {
 
   const handlePhotoChange = (e) => {
     const file = e.target.files?.[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = () => onPhotoChange(activeTab, String(reader.result));
-    reader.readAsDataURL(file);
+    if (!file || !meal) return;
+    onPhotoUpload(meal.mealId, file);
     e.target.value = '';
   };
 
@@ -210,7 +208,7 @@ function DateDetailCard({ date, meals, datePhotos, onPhotoChange }) {
           <div className={styles.photoArea}>
             <div className={styles.photoWrapper}>
               <img
-                src={datePhotos[activeTab] ?? meal.photoUrl ?? mealPlaceholder}
+                src={meal.photoUrl ?? mealPlaceholder}
                 alt="식사 사진"
                 className={styles.foodPhoto}
               />
@@ -313,7 +311,6 @@ export default function CalendarPage() {
   const [viewDate, setViewDate] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState(null);
   const [showPicker, setShowPicker] = useState(false);
-  const [allLocalPhotos, setAllLocalPhotos] = useState({});
   const [dayMeals, setDayMeals] = useState([]);
   const [monthStats, setMonthStats] = useState(null);
   const [dotDays, setDotDays] = useState({});
@@ -358,11 +355,18 @@ export default function CalendarPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedDate]);
 
-  const handlePhotoChange = (dateKey, tabIndex, dataUrl) => {
-    setAllLocalPhotos((prev) => ({
-      ...prev,
-      [dateKey]: { ...(prev[dateKey] ?? {}), [tabIndex]: dataUrl },
-    }));
+  const handlePhotoUpload = async (mealId, file) => {
+    try {
+      const data = await networkRequest(() => patchMealImage(mealId, file));
+      if (!data) return;
+      setDayMeals((prev) =>
+        prev.map((m) =>
+          m.mealId === mealId ? { ...m, photoUrl: data.photoUrl } : m,
+        ),
+      );
+    } catch {
+      // 업로드 실패 시 무시
+    }
   };
 
   const year = viewDate.getFullYear();
@@ -451,10 +455,7 @@ export default function CalendarPage() {
             key={formatDateKey(selectedDate)}
             date={selectedDate}
             meals={dayMeals}
-            datePhotos={allLocalPhotos[formatDateKey(selectedDate)] ?? {}}
-            onPhotoChange={(tabIndex, dataUrl) =>
-              handlePhotoChange(formatDateKey(selectedDate), tabIndex, dataUrl)
-            }
+            onPhotoUpload={handlePhotoUpload}
           />
         </>
       )}
