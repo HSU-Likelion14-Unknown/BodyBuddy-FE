@@ -8,7 +8,7 @@ import {
 } from '@/utils/recentRecommendation';
 
 // 분석이 일찍 끝나도 이 시간만큼은 분석 화면을 유지한다 (진행 애니메이션 길이와 동일)
-const ANALYSIS_MIN_DURATION = 12_000;
+const ANALYSIS_MIN_DURATION = 15_000;
 
 // 서버는 엔드포인트마다 인식 결과의 키가 다르다.
 // GET /meals/{mealId}                        -> recognizedItems[].foodName
