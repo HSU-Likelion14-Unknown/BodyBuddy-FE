@@ -1,10 +1,11 @@
 import { useLocation } from 'react-router-dom';
+import { useMyNickname } from '@/hooks/useMyNickname';
 import AnalysisPreview from './components/AnalysisPreview';
 import styles from './MealAnalysisPage.module.scss';
 
 export default function MealAnalysisPage() {
   const { state } = useLocation();
-  const nickname = state?.nickname || '00';
+  const nickname = useMyNickname();
 
   return (
     <main className={styles.container}>

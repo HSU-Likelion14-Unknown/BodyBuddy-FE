@@ -79,7 +79,7 @@ function RoomMemberProfiles({ members = [] }) {
   );
 }
 
-export default function ShareRoomSection() {
+export default function ShareRoomSection({ nickname }) {
   const navigate = useNavigate();
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [roomName, setRoomName] = useState('');
@@ -185,7 +185,7 @@ export default function ShareRoomSection() {
     <>
       <section className={styles.roomSection}>
         <img className={styles.mascot} src={homeShareRoomMascot} alt="" />
-        <h2>00님의 친구 공유 방</h2>
+        <h2>{nickname}님의 친구 공유 방</h2>
 
         {isLoading && <p className={styles.stateMessage}>불러오는 중이에요.</p>}
 

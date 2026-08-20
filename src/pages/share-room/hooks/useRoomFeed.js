@@ -23,9 +23,30 @@ function toRecord(feed) {
     image: '',
     photoUrl: feed.photoUrl ?? '',
     foods: feed.foodNames ?? [],
+    eatenAt: feed.eatenAt ?? '',
     recommendation: '',
     reactions: [],
   };
+}
+
+function labelRecords(records) {
+  return [...records]
+    .sort((left, right) => {
+      const leftTime = Date.parse(left.eatenAt);
+      const rightTime = Date.parse(right.eatenAt);
+
+      if (!Number.isNaN(leftTime) && !Number.isNaN(rightTime)) {
+        const timeDifference = leftTime - rightTime;
+
+        if (timeDifference !== 0) return timeDifference;
+      }
+
+      return String(left.id).localeCompare(String(right.id));
+    })
+    .map((record, index) => ({
+      ...record,
+      label: `기록${index + 1}`,
+    }));
 }
 
 // 멤버 목록 + 피드 → 화면용 형태로 조립
@@ -44,17 +65,21 @@ function toMembers(members, feeds, currentUserId) {
     return grouped;
   }, {});
 
-  return members.map((member) => ({
-    id: member.userId,
-    nickname: member.nickname ?? '이름 없음',
-    isMe:
-      member.isMe === true ||
-      (Boolean(currentUserId) && member.userId === currentUserId),
-    avatar: resolveImageUrl(
-      member.profileImageUrl || feedProfileByUser[member.userId],
-    ),
-    records: recordsByUser[member.userId] ?? [],
-  }));
+  return members.map((member) => {
+    const records = labelRecords(recordsByUser[member.userId] ?? []);
+
+    return {
+      id: member.userId,
+      nickname: member.nickname ?? '이름 없음',
+      isMe:
+        member.isMe === true ||
+        (Boolean(currentUserId) && member.userId === currentUserId),
+      avatar: resolveImageUrl(
+        member.profileImageUrl || feedProfileByUser[member.userId],
+      ),
+      records,
+    };
+  });
 }
 
 function getPhotoCacheKey(record) {

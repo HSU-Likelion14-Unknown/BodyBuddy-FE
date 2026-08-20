@@ -1,51 +1,12 @@
 import { useNavigate } from 'react-router-dom';
 import { FiArrowRight } from 'react-icons/fi';
 import { FaStar } from 'react-icons/fa6';
-import {
-  homeCalendarFri,
-  homeCalendarMon,
-  homeCalendarSat,
-  homeCalendarTue,
-  homeCalendarWed,
-} from '@/assets';
+import { useWeeklyCalendar } from '@/hooks/useWeeklyCalendar';
 import styles from './WeeklyCalendar.module.scss';
-
-const WEEK_DAYS = [
-  { weekday: '일', date: 4 },
-  {
-    weekday: '월',
-    date: 5,
-    image: homeCalendarMon,
-    recommended: true,
-  },
-  {
-    weekday: '화',
-    date: 6,
-    image: homeCalendarTue,
-    recommended: true,
-  },
-  {
-    weekday: '수',
-    date: 7,
-    image: homeCalendarWed,
-  },
-  { weekday: '목', date: 8 },
-  {
-    weekday: '금',
-    date: 9,
-    image: homeCalendarFri,
-  },
-  {
-    weekday: '토',
-    date: 10,
-    image: homeCalendarSat,
-    recommended: true,
-    isToday: true,
-  },
-];
 
 export default function WeeklyCalendar() {
   const navigate = useNavigate();
+  const weekDays = useWeeklyCalendar();
 
   return (
     <section className={styles.calendarSection}>
@@ -56,15 +17,15 @@ export default function WeeklyCalendar() {
 
         <div className={styles.week}>
           <div className={styles.weekdays}>
-            {WEEK_DAYS.map(({ weekday, date }) => (
-              <span key={date}>{weekday}</span>
+            {weekDays.map(({ weekday, dateKey }) => (
+              <span key={dateKey}>{weekday}</span>
             ))}
           </div>
 
           <ol className={styles.dates}>
-            {WEEK_DAYS.map((day) => (
+            {weekDays.map((day) => (
               <li
-                key={day.date}
+                key={day.dateKey}
                 className={`${styles.dateItem} ${
                   day.isToday ? styles.today : ''
                 }`}
@@ -76,6 +37,9 @@ export default function WeeklyCalendar() {
                       className={styles.thumbnailImage}
                       src={day.image}
                       alt=""
+                      onError={({ currentTarget }) => {
+                        currentTarget.hidden = true;
+                      }}
                     />
                   )}
                 </span>

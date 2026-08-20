@@ -205,6 +205,25 @@
   flex-shrink: 0;
 }
 
+.dataSource {
+  margin: 32px 20px 0;
+  color: $color-gray5;
+  font-size: rem(11px);
+  font-weight: $font-weight-regular;
+  letter-spacing: -0.275px;
+  line-height: 1.6;
+  text-align: center;
+
+  p {
+    margin: 0;
+  }
+
+  .dataSourceLabel {
+    margin-bottom: 4px;
+    font-weight: $font-weight-semibold;
+  }
+}
+
 /* ── 바텀시트 ── */
 .overlay {
   position: fixed;

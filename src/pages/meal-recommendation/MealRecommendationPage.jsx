@@ -32,7 +32,10 @@ export default function MealRecommendationPage() {
   const recommendation = activeIngredient
     ? toCard(activeIngredient, recommendationResult.targetNutrient)
     : null;
-  const nutrients = getNutrientSummary(recommendationResult);
+  const nutrients = getNutrientSummary(
+    recommendationResult,
+    state?.nutritionSummary,
+  );
   const { submitDecision, completeRecord, isSubmitting, errorMessage } =
     useRecommendationDecision(recommendationResult, state?.mealId);
 
@@ -80,12 +83,12 @@ export default function MealRecommendationPage() {
           {state?.foods?.slice(0, 3).map((food) => (
             <span key={food.id}>{food.name}</span>
           ))}
-          {recommendationResult?.dailyNutrition?.caloriesKcal != null && (
-            <strong>
-              {formatAmount(recommendationResult.dailyNutrition.caloriesKcal)}{' '}
-              Kcal
-            </strong>
-          )}
+          <strong>
+            {state?.nutritionSummary?.caloriesKcal == null
+              ? '-'
+              : formatAmount(state.nutritionSummary.caloriesKcal)}{' '}
+            Kcal
+          </strong>
         </div>
 
         <ul className={styles.mealNutrients}>
@@ -95,16 +98,22 @@ export default function MealRecommendationPage() {
               <div className={styles.mealNutrientBar}>
                 <span
                   style={{
-                    width: `${Math.min(
-                      (nutrient.current / nutrient.target) * 100,
-                      100,
-                    )}%`,
+                    width: `${
+                      nutrient.current == null
+                        ? 0
+                        : Math.min(
+                            (nutrient.current / nutrient.target) * 100,
+                            100,
+                          )
+                    }%`,
                   }}
                 />
               </div>
               <strong>
-                {formatAmount(nutrient.current)}
-                {nutrient.unit} / {formatAmount(nutrient.target)}
+                {nutrient.current == null
+                  ? '-'
+                  : `${formatAmount(nutrient.current)}${nutrient.unit}`}{' '}
+                / {formatAmount(nutrient.target)}
                 {nutrient.unit}
               </strong>
             </li>
