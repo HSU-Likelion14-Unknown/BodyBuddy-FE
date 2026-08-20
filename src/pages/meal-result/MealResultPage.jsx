@@ -29,17 +29,39 @@ export default function MealResultPage() {
   const { state } = useLocation();
   const navigate = useNavigate();
   const mealId = state?.mealId;
-  const { isAnalyzing, foods, setFoods, eatenAt } = useMealAnalysis(
-    mealId,
-    state,
-  );
+  const {
+    isAnalyzing,
+    analysisStatus,
+    isTakingLonger,
+    attemptKey,
+    retryAnalysis,
+    foods,
+    setFoods,
+    eatenAt,
+  } = useMealAnalysis(mealId, state);
   const [isConfirmed, setIsConfirmed] = useState(false);
   const [nutritionSummary, setNutritionSummary] = useState(null);
   const [pendingAction, setPendingAction] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
 
   if (isAnalyzing) {
-    return <MealAnalysisPage />;
+    return (
+      <MealAnalysisPage
+        status={analysisStatus}
+        isTakingLonger={isTakingLonger}
+        attemptKey={attemptKey}
+        onRetry={retryAnalysis}
+        onManualInput={() =>
+          navigate('/meals/new', {
+            replace: true,
+            state: {
+              initialMode: 'manual',
+              manualText: state?.description ?? '',
+            },
+          })
+        }
+      />
+    );
   }
 
   const addFood = (name) => {
