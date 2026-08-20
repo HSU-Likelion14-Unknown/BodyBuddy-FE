@@ -15,9 +15,29 @@ const GENDER_MAP = {
   none: 'PREFER_NOT_TO_SAY',
 };
 
+function resolveImageUrl(url) {
+  if (!url) return null;
+  try {
+    new URL(url); // 절대 경로면 그대로
+    return url;
+  } catch {
+    // 상대 경로면 + API origin
+    return `${new URL(import.meta.env.VITE_API_URL).origin}${url}`;
+  }
+}
+
 export async function getMe() {
   const res = await api.get('/users/me');
-  return res.data.data;
+  const data = res.data.data;
+  return { ...data, profileImageUrl: resolveImageUrl(data.profileImageUrl) };
+}
+
+export async function patchProfileImage(file) {
+  const formData = new FormData();
+  formData.append('image', file);
+  const res = await api.patch('/users/me/profile-image', formData);
+  const data = res.data.data;
+  return { ...data, profileImageUrl: resolveImageUrl(data.profileImageUrl) };
 }
 
 export async function patchMe({

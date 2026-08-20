@@ -44,6 +44,7 @@ export default function MyPage() {
   const [nickname, setNickname] = useState('닉네임');
   const [birthYear, setBirthYear] = useState(null);
   const [gender, setGender] = useState(null);
+  const [profileImageUrl, setProfileImageUrl] = useState(null);
   const [allAllergens, setAllAllergens] = useState([]);
   const [dislikedFoods, setDislikedFoods] = useState([]);
   const [notifOn, setNotifOn] = useState(true);
@@ -64,6 +65,7 @@ export default function MyPage() {
       if (data.nickname) setNickname(data.nickname);
       if (data.birthYear) setBirthYear(data.birthYear);
       if (data.gender) setGender(data.gender);
+      if (data.profileImageUrl) setProfileImageUrl(data.profileImageUrl);
 
       if (data.allergyCodes) {
         setAllAllergens(data.allergyCodes.map((c) => ALLERGEN_LABEL[c] || c));
@@ -88,7 +90,11 @@ export default function MyPage() {
       <section className={styles.profileSection}>
         <div className={styles.avatarArea}>
           <div className={styles.avatarBg} />
-          <img src={profileChracter} alt="" className={styles.avatarImg} />
+          <img
+            src={profileImageUrl || profileChracter}
+            alt=""
+            className={styles.avatarImg}
+          />
         </div>
         <h1 className={styles.nickname}>{nickname}</h1>
         {(birthYear || gender) && (

@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { patchMe } from '@/api/user';
+import { patchMe, patchProfileImage } from '@/api/user';
 import { MdBorderColor, MdEdit } from 'react-icons/md';
 import styles from './MyPageEdit.module.scss';
 import {
@@ -140,12 +140,18 @@ export default function MyPageEdit() {
     }
   };
 
-  const handlePhotoSelect = (e) => {
+  const handlePhotoSelect = async (e) => {
     const file = e.target.files?.[0];
-    if (file) {
-      const url = URL.createObjectURL(file);
-      setProfilePhoto(url);
-      e.target.value = '';
+    if (!file) return;
+
+    const previewUrl = URL.createObjectURL(file);
+    setProfilePhoto(previewUrl);
+    e.target.value = '';
+
+    try {
+      await patchProfileImage(file);
+    } catch (err) {
+      console.error('프로필 사진 업로드 실패:', err);
     }
   };
 
