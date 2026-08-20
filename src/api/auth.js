@@ -1,6 +1,12 @@
-import api from './instance';
+import axios from 'axios';
 
 const ANONYMOUS_IDEM_KEY = 'bodybuddy.anonymousIdempotencyKey';
+
+// 익명 발급은 인증 헤더도, 401 재발급도 타면 안 되므로 별도 클라이언트 사용
+const authClient = axios.create({
+  baseURL: import.meta.env.VITE_API_URL,
+  headers: { Accept: 'application/json' },
+});
 
 function getOrCreateIdempotencyKey() {
   let key = localStorage.getItem(ANONYMOUS_IDEM_KEY);
@@ -12,13 +18,10 @@ function getOrCreateIdempotencyKey() {
 }
 
 export async function postAnonymous() {
-  const res = await api.post(
+  const res = await authClient.post(
     '/auth/anonymous',
     {},
-    {
-      skipAuth: true,
-      headers: { 'Idempotency-Key': getOrCreateIdempotencyKey() },
-    },
+    { headers: { 'Idempotency-Key': getOrCreateIdempotencyKey() } },
   );
-  return res.data.data;
+  return res.data?.data ?? res.data;
 }
