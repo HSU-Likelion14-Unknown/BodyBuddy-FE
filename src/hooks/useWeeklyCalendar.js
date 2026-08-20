@@ -140,8 +140,9 @@ export function useWeeklyCalendar() {
           weekDays.map(async (day) => {
             const status = statusByDate.get(day.dateKey);
             const recommended = (status?.selectedRecommendationCount ?? 0) > 0;
+            const hasRecord = (status?.mealCount ?? 0) > 0;
 
-            if (!status?.mealCount) return { ...day, recommended };
+            if (!hasRecord) return { ...day, hasRecord, recommended };
 
             try {
               const dailyResult = await getDayMeals(day.dateKey, {
@@ -154,9 +155,10 @@ export function useWeeklyCalendar() {
                 objectUrls,
               );
 
-              return { ...day, image, recommended };
-            } catch {
-              return { ...day, recommended };
+              return { ...day, hasRecord, image, recommended };
+            } catch (error) {
+              if (controller.signal.aborted) throw error;
+              return { ...day, hasRecord, recommended };
             }
           }),
         );

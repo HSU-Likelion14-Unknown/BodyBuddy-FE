@@ -6,7 +6,7 @@
 
   min-height: 100dvh;
   padding: 44px 12px 110px;
-  overflow: hidden;
+  overflow-x: hidden;
   background-color: $color-white;
 }
 
@@ -63,6 +63,12 @@
     background-color: $color-primary-accent;
     border-radius: inherit;
     animation: progress var(--analysis-duration) forwards;
+    transition: width 0.3s ease-out;
+  }
+
+  span.progressComplete {
+    width: 100%;
+    animation: none;
   }
 }
 
@@ -81,6 +87,37 @@
   }
 }
 
+.timeoutActions {
+  @include flex(column, stretch, flex-start, 10px);
+
+  margin-top: 20px;
+
+  button {
+    width: 100%;
+    min-height: 45px;
+    font-size: 14px;
+    font-weight: $font-weight-semibold;
+    border: 0;
+    border-radius: 10px;
+    cursor: pointer;
+
+    &:first-child {
+      color: $color-white;
+      background-color: $color-primary-accent;
+    }
+
+    &:last-child {
+      color: $color-brown4;
+      background-color: $color-primary-soft;
+    }
+
+    &:focus-visible {
+      outline: 2px solid $color-primary-accent;
+      outline-offset: 2px;
+    }
+  }
+}
+
 @keyframes progress {
   0% {
     width: 0;
@@ -95,10 +132,10 @@
   }
 
   95% {
-    width: 98%;
+    width: 92%;
   }
 
   100% {
-    width: 100%;
+    width: 94%;
   }
 }

@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FiEdit3 } from 'react-icons/fi';
+import { FiClock, FiEdit3 } from 'react-icons/fi';
 import { getMealReactions, putMealReactions } from '@/api/rooms';
 import { shareRoomAddIcon } from '@/assets';
 import styles from './MemberRecordCard.module.scss';
@@ -462,7 +462,21 @@ export default function MemberRecordCard({ member, roomId }) {
         </>
       ) : (
         <>
-          <div className={styles.noResponse}>...응답 없음...</div>
+          <div
+            className={`${styles.manualMealContent} ${styles.emptyMealContent}`}
+          >
+            <span className={styles.manualMealIcon} aria-hidden="true">
+              <FiClock />
+            </span>
+            <div className={styles.manualMealText}>
+              <strong>아직 오늘의 식사 기록이 없어요.</strong>
+              <span>
+                {member.isMe
+                  ? '기록을 남기면 친구들과 바로 공유돼요.'
+                  : `${member.nickname}님의 새 기록을 기다려 주세요.`}
+              </span>
+            </div>
+          </div>
           {member.isMe && (
             <button
               type="button"

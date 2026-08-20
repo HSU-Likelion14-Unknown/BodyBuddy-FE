@@ -48,8 +48,12 @@ export default function ShareRoomPage() {
   const [menuErrorMessage, setMenuErrorMessage] = useState('');
   const [isCoverUploading, setIsCoverUploading] = useState(false);
   const [isLeaving, setIsLeaving] = useState(false);
+  const [isLeaveConfirmOpen, setIsLeaveConfirmOpen] = useState(false);
   const fileInputRef = useRef(null);
   const moreButtonRef = useRef(null);
+  const leaveDialogRef = useRef(null);
+  const leaveCancelButtonRef = useRef(null);
+  const isLeavingRef = useRef(false);
   const coverObjectUrlRef = useRef('');
   const inviteRequestControllerRef = useRef(null);
   const inviteToastTimerRef = useRef(null);
@@ -87,6 +91,56 @@ export default function ShareRoomPage() {
     activeRoomIdRef.current = roomId;
     inviteRequestControllerRef.current?.abort();
   }, [roomId]);
+
+  useEffect(() => {
+    if (!isLeaveConfirmOpen) return undefined;
+
+    const returnFocusElement = moreButtonRef.current;
+    const previousBodyOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    leaveCancelButtonRef.current?.focus();
+
+    const handleKeyDown = (event) => {
+      if (event.key === 'Escape') {
+        if (!isLeavingRef.current) {
+          event.preventDefault();
+          setIsLeaveConfirmOpen(false);
+        }
+        return;
+      }
+
+      if (event.key !== 'Tab') return;
+
+      const focusableElements = leaveDialogRef.current?.querySelectorAll(
+        'button:not([disabled]), [href], [tabindex]:not([tabindex="-1"])',
+      );
+
+      if (!focusableElements?.length) {
+        event.preventDefault();
+        leaveDialogRef.current?.focus();
+        return;
+      }
+
+      const firstElement = focusableElements[0];
+      const lastElement = focusableElements[focusableElements.length - 1];
+
+      if (event.shiftKey && document.activeElement === firstElement) {
+        event.preventDefault();
+        lastElement.focus();
+      } else if (!event.shiftKey && document.activeElement === lastElement) {
+        event.preventDefault();
+        firstElement.focus();
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+      document.body.style.overflow = previousBodyOverflow;
+      returnFocusElement?.focus();
+    };
+  }, [isLeaveConfirmOpen]);
 
   const showInviteToast = (message) => {
     window.clearTimeout(inviteToastTimerRef.current);
@@ -214,11 +268,27 @@ export default function ShareRoomPage() {
     }
   };
 
-  const exitRoom = async () => {
-    if (!roomId || isLeaving) return;
+  const openLeaveConfirm = () => {
+    if (isLeavingRef.current) return;
 
+    setMenuErrorMessage('');
+    setIsMenuOpen(false);
+    setIsLeaveConfirmOpen(true);
+  };
+
+  const closeLeaveConfirm = () => {
+    if (isLeavingRef.current) return;
+
+    setIsLeaveConfirmOpen(false);
+  };
+
+  const exitRoom = async () => {
+    if (!roomId || isLeavingRef.current) return;
+
+    isLeavingRef.current = true;
     setIsLeaving(true);
     setMenuErrorMessage('');
+    leaveDialogRef.current?.focus();
 
     try {
       await leaveRoom(roomId);
@@ -227,7 +297,9 @@ export default function ShareRoomPage() {
       setMenuErrorMessage(
         getApiErrorMessage(error, '공유방에서 나가지 못했어요.'),
       );
+      setIsLeaveConfirmOpen(false);
     } finally {
+      isLeavingRef.current = false;
       setIsLeaving(false);
     }
   };
@@ -292,7 +364,11 @@ export default function ShareRoomPage() {
                   </span>
                 </button>
                 <span className={styles.menuDivider} />
-                <button type="button" disabled={isLeaving} onClick={exitRoom}>
+                <button
+                  type="button"
+                  disabled={isLeaving}
+                  onClick={openLeaveConfirm}
+                >
                   나가기
                   <span className={styles.menuIcon}>
                     <img src={shareRoomLogoutIcon} alt="" />
@@ -368,6 +444,56 @@ export default function ShareRoomPage() {
         disabled={isCoverUploading}
         onChange={changeCoverImage}
       />
+
+      {isLeaveConfirmOpen && (
+        <div
+          className={styles.leaveDialogOverlay}
+          onMouseDown={(event) => {
+            if (event.target === event.currentTarget) closeLeaveConfirm();
+          }}
+        >
+          <section
+            ref={leaveDialogRef}
+            className={styles.leaveDialog}
+            role="alertdialog"
+            aria-modal="true"
+            aria-labelledby="leave-room-dialog-title"
+            aria-describedby="leave-room-dialog-description"
+            aria-busy={isLeaving}
+            tabIndex={-1}
+            onMouseDown={(event) => event.stopPropagation()}
+          >
+            <span className={styles.leaveDialogIcon} aria-hidden="true">
+              <img src={shareRoomLogoutIcon} alt="" />
+            </span>
+            <h2 id="leave-room-dialog-title">‘{roomName}’에서 나갈까요?</h2>
+            <p id="leave-room-dialog-description">
+              나가면 이 방의 기록을 더 이상 볼 수 없어요.
+              <br />
+              다시 참여하려면 새로운 초대 링크가 필요해요.
+            </p>
+            <div className={styles.leaveDialogActions}>
+              <button
+                ref={leaveCancelButtonRef}
+                type="button"
+                className={styles.leaveCancelButton}
+                disabled={isLeaving}
+                onClick={closeLeaveConfirm}
+              >
+                취소
+              </button>
+              <button
+                type="button"
+                className={styles.leaveConfirmButton}
+                disabled={isLeaving}
+                onClick={exitRoom}
+              >
+                {isLeaving ? '나가는 중...' : '나가기'}
+              </button>
+            </div>
+          </section>
+        </div>
+      )}
 
       {isInviteOpen && invite && inviteRoomId === roomId && (
         <InviteDialog
