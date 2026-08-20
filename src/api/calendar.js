@@ -6,10 +6,12 @@ export async function getDayMeals(date) {
   const data = res.data.data;
   return {
     ...data,
-    meals: (data.meals ?? []).map((meal) => ({
-      ...meal,
-      photoUrl: meal.photoUrl ? resolveImageUrl(meal.photoUrl) : null,
-    })),
+    meals: (data.meals ?? [])
+      .sort((a, b) => new Date(a.eatenAt) - new Date(b.eatenAt))
+      .map((meal) => ({
+        ...meal,
+        photoUrl: meal.photoUrl ? resolveImageUrl(meal.photoUrl) : null,
+      })),
   };
 }
 
