@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getDayMeals, getMonthStats } from '@/api/calendar';
+import { getMe } from '@/api/user';
 import { useNetworkRequest } from '@/hooks/useNetworkRequest';
 import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
@@ -21,10 +22,6 @@ const formatDateKey = (date) => {
   return `${y}-${m}-${d}`;
 };
 
-const savedOnboarding = JSON.parse(
-  localStorage.getItem('onboarding_step1') || 'null',
-);
-
 function DotMatrix({ consumed, goal, color }) {
   const total = 42;
   const filled = Math.round((consumed / goal) * total);
@@ -41,10 +38,8 @@ function DotMatrix({ consumed, goal, color }) {
   );
 }
 
-function MonthlyNutritionCard({ stats }) {
+function MonthlyNutritionCard({ stats, nickname }) {
   if (!stats) return null;
-
-  const nickname = savedOnboarding?.nickname ?? '00';
   const days = stats.days ?? [];
   const recommendFollowed = days.reduce(
     (s, d) => s + d.selectedRecommendationCount,
@@ -322,7 +317,15 @@ export default function CalendarPage() {
   const [dayMeals, setDayMeals] = useState([]);
   const [monthStats, setMonthStats] = useState(null);
   const [dotDays, setDotDays] = useState({});
+  const [nickname, setNickname] = useState('');
   const networkRequest = useNetworkRequest();
+
+  useEffect(() => {
+    networkRequest(() => getMe()).then((data) => {
+      if (data) setNickname(data.nickname ?? '');
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     const year = viewDate.getFullYear();
@@ -436,7 +439,7 @@ export default function CalendarPage() {
         </span>
       </div>
 
-      <MonthlyNutritionCard stats={monthStats} />
+      <MonthlyNutritionCard stats={monthStats} nickname={nickname} />
 
       {selectedDate && (
         <>
