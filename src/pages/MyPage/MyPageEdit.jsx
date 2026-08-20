@@ -159,11 +159,11 @@ export default function MyPageEdit() {
     <div className={styles.page}>
       <section className={styles.profileSection}>
         <div className={styles.avatarArea}>
-          <div className={styles.avatarBg} />
+          {!profilePhoto && <div className={styles.avatarBg} />}
           <img
             src={profilePhoto || profileChracter}
             alt=""
-            className={styles.avatarImg}
+            className={`${styles.avatarImg} ${profilePhoto ? styles.avatarImgFilled : ''}`}
           />
           <button
             type="button"

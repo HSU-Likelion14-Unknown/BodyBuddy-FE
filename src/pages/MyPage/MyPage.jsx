@@ -89,11 +89,11 @@ export default function MyPage() {
       {/* 프로필 */}
       <section className={styles.profileSection}>
         <div className={styles.avatarArea}>
-          <div className={styles.avatarBg} />
+          {!profileImageUrl && <div className={styles.avatarBg} />}
           <img
             src={profileImageUrl || profileChracter}
             alt=""
-            className={styles.avatarImg}
+            className={`${styles.avatarImg} ${profileImageUrl ? styles.avatarImgFilled : ''}`}
           />
         </div>
         <h1 className={styles.nickname}>{nickname}</h1>
