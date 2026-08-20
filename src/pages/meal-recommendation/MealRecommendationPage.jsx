@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { MdArrowForward } from 'react-icons/md';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { mealPlaceholder, perfectDecoration, perfectResult } from '@/assets';
+import { perfectDecoration, perfectResult } from '@/assets';
 import RecommendationCard from './components/RecommendationCard';
 import { useRecommendationDecision } from './hooks/useRecommendationDecision';
 import { useRecommendationRefresh } from './hooks/useRecommendationRefresh';
@@ -24,6 +24,7 @@ export default function MealRecommendationPage() {
   const activeIngredient = ingredients[activeIndex];
   const isNoCandidate = recommendationResult?.status === 'NO_CANDIDATE';
   const isCreated = recommendationResult?.status === 'CREATED';
+  const hasMealImage = Boolean(state?.image) && state?.source !== 'manual';
   // NO_CANDIDATE 사유 구분 — BALANCED_MEAL만 "완벽한 식사",
   // NO_SAFE_CANDIDATE는 부족분이 있으나 추천 재료를 못 찾은 경우
   const isBalancedMeal =
@@ -121,10 +122,10 @@ export default function MealRecommendationPage() {
         </ul>
       </section>
 
-      {isNoCandidate && !isBalancedMeal && (
+      {isNoCandidate && !isBalancedMeal && hasMealImage && (
         <img
           className={styles.mealImage}
-          src={state?.image || mealPlaceholder}
+          src={state.image}
           alt="기록한 식사"
         />
       )}
@@ -143,7 +144,11 @@ export default function MealRecommendationPage() {
           </button>
         </div>
       ) : isNoCandidate ? (
-        <div className={styles.perfectActionContent}>
+        <div
+          className={`${styles.perfectActionContent} ${
+            !hasMealImage && !isBalancedMeal ? styles.withoutMealImage : ''
+          }`}
+        >
           <button
             type="button"
             className={styles.completeButton}
