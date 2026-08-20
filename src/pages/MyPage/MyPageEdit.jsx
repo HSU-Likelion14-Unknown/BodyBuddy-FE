@@ -75,6 +75,7 @@ export default function MyPageEdit() {
   );
   const [dislikedFoods, setDislikedFoods] = useState(initialDislikedFoods);
   const [shareRecords, setShareRecords] = useState(initialShareRecords);
+  const [origShareRecords, setOrigShareRecords] = useState(initialShareRecords);
   const [allergenInput, setAllergenInput] = useState('');
   const [dislikedInput, setDislikedInput] = useState('');
   const [profilePhoto, setProfilePhoto] = useState(null);
@@ -92,6 +93,10 @@ export default function MyPageEdit() {
         const fg = REVERSE_GENDER_MAP[data.gender] ?? null;
         setGender(fg);
         setOrigGender(fg);
+      }
+      if (data.shareToRoom != null) {
+        setShareRecords(data.shareToRoom);
+        setOrigShareRecords(data.shareToRoom);
       }
     });
   }, []);
@@ -112,7 +117,7 @@ export default function MyPageEdit() {
       JSON.stringify([...initialCustomAllergens].sort()) ||
     JSON.stringify([...dislikedFoods].sort()) !==
       JSON.stringify([...initialDislikedFoods].sort()) ||
-    shareRecords !== initialShareRecords;
+    shareRecords !== origShareRecords;
 
   const canSave = hasChanges && nicknameValid && !saveSuccess;
 
