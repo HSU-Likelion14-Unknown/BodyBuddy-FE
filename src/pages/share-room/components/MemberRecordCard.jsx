@@ -1,101 +1,91 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { getMealReactions, putMealReactions } from '@/api/rooms';
 import { shareRoomAddIcon } from '@/assets';
 import styles from './MemberRecordCard.module.scss';
 
+// id = 서버 ReactionEmoji enum 값
 const REACTION_OPTIONS = [
-  { id: 'fire', emoji: '🔥', label: '최고예요' },
-  { id: 'heart', emoji: '❤️', label: '좋아요' },
-  { id: 'yum', emoji: '🤤', label: '맛있겠어요' },
-  { id: 'tired', emoji: '😩', label: '힘들겠어요' },
-  { id: 'dislike', emoji: '🤮', label: '아쉬워요' },
-  { id: 'angry', emoji: '😡', label: '화나요' },
+  { id: 'FIRE', emoji: '🔥', label: '최고예요' },
+  { id: 'HEART', emoji: '❤️', label: '좋아요' },
+  { id: 'YUMMY', emoji: '🤤', label: '맛있겠어요' },
+  { id: 'SAD', emoji: '😩', label: '힘들겠어요' },
+  { id: 'THUMBS_DOWN', emoji: '🤮', label: '아쉬워요' },
+  { id: 'ANGRY', emoji: '😡', label: '화나요' },
 ];
 
-const createReactionState = (records) =>
-  Object.fromEntries(
-    records.map((record) => [
-      record.id,
-      {
-        items: record.reactions.map((reaction) => ({ ...reaction })),
-        selectedReactionId: null,
-      },
-    ]),
-  );
+const OPTION_BY_ID = Object.fromEntries(
+  REACTION_OPTIONS.map((option) => [option.id, option]),
+);
 
-const changeReactionCount = (reactions, option, amount) => {
-  const targetReaction = reactions.find(
-    (reaction) => reaction.id === option.id,
-  );
-
-  if (!targetReaction) {
-    return amount > 0
-      ? [...reactions, { ...option, count: amount }]
-      : reactions;
-  }
-
-  return reactions
-    .map((reaction) =>
-      reaction.id === option.id
-        ? { ...reaction, count: reaction.count + amount }
-        : reaction,
-    )
-    .filter((reaction) => reaction.count > 0);
-};
-
-export default function MemberRecordCard({ member }) {
+export default function MemberRecordCard({ member, roomId }) {
   const navigate = useNavigate();
   const [selectedRecordIndex, setSelectedRecordIndex] = useState(
     member.initialRecordIndex ?? 0,
   );
-  const [reactionState, setReactionState] = useState(() =>
-    createReactionState(member.records),
-  );
+  const [myReactions, setMyReactions] = useState([]);
+  const [reactionCounts, setReactionCounts] = useState([]);
+  const [isSavingReaction, setIsSavingReaction] = useState(false);
   const [isReactionPickerOpen, setIsReactionPickerOpen] = useState(false);
+
   const hasRecords = member.records.length > 0;
   const selectedRecord = member.records[selectedRecordIndex];
-  const selectedReactionState = selectedRecord
-    ? reactionState[selectedRecord.id]
-    : null;
-  const reactions = selectedReactionState?.items ?? [];
+  const selectedRecordId = selectedRecord?.id;
+
+  useEffect(() => {
+    if (!roomId || !selectedRecordId) return undefined;
+
+    const controller = new AbortController();
+
+    getMealReactions(roomId, selectedRecordId, { signal: controller.signal })
+      .then((data) => {
+        setMyReactions(data.myReactions ?? []);
+        setReactionCounts(data.reactions ?? []);
+      })
+      .catch(() => {
+        // 반응 조회 실패는 기록 표시에 영향 없음
+      });
+
+    return () => controller.abort();
+  }, [roomId, selectedRecordId]);
+
+  // 서버는 26종 허용 — 화면에 아이콘 있는 것만 노출
+  const reactions = reactionCounts
+    .map(({ emojiType, count }) => ({
+      ...OPTION_BY_ID[emojiType],
+      id: emojiType,
+      count,
+    }))
+    .filter((reaction) => reaction.emoji);
 
   const selectRecord = (index) => {
     setSelectedRecordIndex(index);
     setIsReactionPickerOpen(false);
   };
 
-  const leaveReaction = (option) => {
-    const recordId = selectedRecord.id;
+  // 서버는 복수 허용 — 화면은 단일 선택 유지
+  const leaveReaction = async (option) => {
+    if (!roomId || !selectedRecordId || isSavingReaction) return;
 
-    setReactionState((currentState) => {
-      const currentReactionState = currentState[recordId];
-      const previousReactionId = currentReactionState.selectedReactionId;
-      const previousOption = REACTION_OPTIONS.find(
-        (reactionOption) => reactionOption.id === previousReactionId,
+    const nextReactions = myReactions.includes(option.id) ? [] : [option.id];
+
+    setIsSavingReaction(true);
+
+    try {
+      const data = await putMealReactions(
+        roomId,
+        selectedRecordId,
+        nextReactions,
       );
-      let nextItems = currentReactionState.items;
 
-      if (previousOption) {
-        nextItems = changeReactionCount(nextItems, previousOption, -1);
-      }
-
-      const nextReactionId =
-        previousReactionId === option.id ? null : option.id;
-
-      if (nextReactionId) {
-        nextItems = changeReactionCount(nextItems, option, 1);
-      }
-
-      return {
-        ...currentState,
-        [recordId]: {
-          items: nextItems,
-          selectedReactionId: nextReactionId,
-        },
-      };
-    });
-
-    setIsReactionPickerOpen(false);
+      setMyReactions(data.myReactions ?? nextReactions);
+      setReactionCounts(data.reactions ?? []);
+    } catch {
+      // 실패 시 기존 반응 유지
+    } finally {
+      setIsSavingReaction(false);
+      setIsReactionPickerOpen(false);
+    }
   };
 
   return (
@@ -152,14 +142,10 @@ export default function MemberRecordCard({ member }) {
                   key={reaction.id}
                   type="button"
                   className={`${styles.reactionButton} ${
-                    selectedReactionState.selectedReactionId === reaction.id
-                      ? styles.selected
-                      : ''
+                    myReactions.includes(reaction.id) ? styles.selected : ''
                   }`}
                   title={`${reaction.label} 반응 ${
-                    selectedReactionState.selectedReactionId === reaction.id
-                      ? '취소'
-                      : '남기기'
+                    myReactions.includes(reaction.id) ? '취소' : '남기기'
                   }`}
                   onClick={() => leaveReaction(reaction)}
                 >
@@ -190,9 +176,7 @@ export default function MemberRecordCard({ member }) {
                     key={option.id}
                     type="button"
                     className={
-                      selectedReactionState.selectedReactionId === option.id
-                        ? styles.selected
-                        : ''
+                      myReactions.includes(option.id) ? styles.selected : ''
                     }
                     title={option.label}
                     onClick={() => leaveReaction(option)}
