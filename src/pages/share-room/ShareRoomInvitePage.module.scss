@@ -82,3 +82,22 @@
     transform: translateY(-7px);
   }
 }
+
+// 참여 실패 안내
+.errorIcon {
+  color: $color-white;
+  background-color: $color-gray-medium;
+}
+
+.homeButton {
+  height: 45px;
+  margin-top: 28px;
+  padding: 0 28px;
+  color: $color-white;
+  font-size: $font-size-16;
+  font-weight: $font-weight-semibold;
+  background-color: $color-primary-accent;
+  border: 0;
+  border-radius: 10px;
+  cursor: pointer;
+}
