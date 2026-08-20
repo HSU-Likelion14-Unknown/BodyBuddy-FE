@@ -3,6 +3,26 @@ import api from './instance';
 // 공유방 API는 응답을 {isSuccess, ..., data} 형태로 감쌈
 const unwrap = (response) => response.data?.data ?? response.data;
 
+// 공개 이미지 경로 → API 서버 URL
+export const resolveImageUrl = (imageUrl) => {
+  if (typeof imageUrl !== 'string' || !imageUrl.trim()) return '';
+
+  const normalizedUrl = imageUrl.trim();
+  if (/^(https?:|blob:|data:image\/)/i.test(normalizedUrl)) {
+    return normalizedUrl;
+  }
+  if (/^[a-z][a-z\d+.-]*:/i.test(normalizedUrl)) return '';
+
+  const publicPath = normalizedUrl.replace(/^\/+app(?=\/uploads\/)/i, '');
+
+  try {
+    const apiOrigin = new URL(import.meta.env.VITE_API_URL).origin;
+    return new URL(publicPath, `${apiOrigin}/`).href;
+  } catch {
+    return '';
+  }
+};
+
 // POST 공유방 생성
 export const createRoom = async (payload) => {
   const response = await api.post('/rooms', payload);
