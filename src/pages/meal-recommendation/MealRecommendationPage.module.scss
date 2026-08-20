@@ -152,7 +152,7 @@ $color-primary-pale: #ffe4b8;
 
   li {
     display: grid;
-    grid-template-columns: 51px minmax(0, 1fr) 58px;
+    grid-template-columns: 51px minmax(0, 1fr) 96px;
     gap: 10px;
     align-items: center;
     min-height: 22px;
@@ -168,6 +168,7 @@ $color-primary-pale: #ffe4b8;
 
     strong {
       text-align: right;
+      font-variant-numeric: tabular-nums;
     }
   }
 }
@@ -318,7 +319,7 @@ $color-primary-pale: #ffe4b8;
   }
 
   .mealNutrients li {
-    grid-template-columns: 47px minmax(0, 1fr) 55px;
+    grid-template-columns: 47px minmax(0, 1fr) 96px;
     gap: 7px;
   }
 }
