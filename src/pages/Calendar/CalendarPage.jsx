@@ -1,16 +1,13 @@
 import { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getDayMeals, getMonthStats, patchMealImage } from '@/api/calendar';
+import { getMealImageBlob } from '@/api/meals';
 import { getMe } from '@/api/user';
 import { useNetworkRequest } from '@/hooks/useNetworkRequest';
 import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
 import styles from './CalendarPage.module.scss';
-import {
-  iconBell,
-  iconChevronDown,
-  iconForkKnife,
-} from '@/assets';
+import { iconBell, iconChevronDown, iconForkKnife } from '@/assets';
 import { BsChevronLeft } from 'react-icons/bs';
 import { MdEdit } from 'react-icons/md';
 
@@ -123,11 +120,33 @@ function NutritionBar({ label, consumed, goal }) {
 
 function DateDetailCard({ date, meals, onPhotoUpload }) {
   const [activeTab, setActiveTab] = useState(0);
+  const [blobUrl, setBlobUrl] = useState(null);
+  const blobUrlRef = useRef(null);
   const fileInputRef = useRef(null);
 
   const month = date.getMonth() + 1;
   const day = date.getDate();
   const meal = meals[activeTab] ?? null;
+
+  useEffect(() => {
+    if (!meal?.photoUrl) return;
+    const controller = new AbortController();
+    getMealImageBlob(meal.photoUrl, { signal: controller.signal })
+      .then((blob) => {
+        if (!blob || controller.signal.aborted) return;
+        const url = URL.createObjectURL(blob);
+        blobUrlRef.current = url;
+        setBlobUrl(url);
+      })
+      .catch(() => {});
+    return () => {
+      controller.abort();
+      if (blobUrlRef.current) {
+        URL.revokeObjectURL(blobUrlRef.current);
+        blobUrlRef.current = null;
+      }
+    };
+  }, [meal?.photoUrl]);
 
   const handlePhotoChange = (e) => {
     const file = e.target.files?.[0];
@@ -206,9 +225,9 @@ function DateDetailCard({ date, meals, onPhotoUpload }) {
 
           <div className={styles.photoArea}>
             <div className={styles.photoWrapper}>
-              {meal.photoUrl && (
+              {meal.photoUrl && blobUrl && (
                 <img
-                  src={meal.photoUrl}
+                  src={blobUrl}
                   alt="식사 사진"
                   className={styles.foodPhoto}
                 />
