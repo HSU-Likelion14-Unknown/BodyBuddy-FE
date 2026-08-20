@@ -60,8 +60,8 @@
 .weekdays,
 .dates {
   display: grid;
-  grid-template-columns: repeat(7, 32px);
-  gap: 15px;
+  grid-template-columns: repeat(7, minmax(28px, 32px));
+  gap: clamp(6px, 3.8vw, 15px);
   justify-content: center;
   width: 100%;
 }
@@ -91,7 +91,8 @@
   @include flex(column, center, flex-start, 7px);
 
   position: relative;
-  width: 32px;
+  width: 100%;
+  max-width: 32px;
   height: 41px;
 }
 
@@ -116,12 +117,36 @@
 }
 
 .thumbnail {
+  @include flex;
+
   position: relative;
-  width: 32px;
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 32px;
   height: 21px;
   overflow: hidden;
-  background-color: $color-gray4;
   border-radius: 3px;
+}
+
+.emptyThumbnail {
+  background-color: $color-gray3;
+
+  &::after {
+    width: 8px;
+    height: 1px;
+    background-color: $color-gray-medium;
+    content: '';
+  }
+}
+
+.recordedThumbnail {
+  color: $color-primary-accent;
+  background-color: $color-primary-soft;
+
+  svg {
+    width: 10px;
+    height: 10px;
+  }
 }
 
 .today .thumbnail {
@@ -130,6 +155,9 @@
 
 .thumbnailImage {
   display: block;
+  position: absolute;
+  inset: 0;
+  z-index: 1;
   width: 100%;
   height: 100%;
   object-fit: cover;
@@ -156,6 +184,7 @@
 .calendarLink {
   @include flex(row, center, center, 0);
 
+  position: relative;
   height: 13px;
   padding: 0;
   color: $color-brown2;
@@ -165,6 +194,12 @@
   background: transparent;
   border: 0;
   cursor: pointer;
+
+  &::before {
+    position: absolute;
+    inset: -15px -12px -16px;
+    content: '';
+  }
 
   svg {
     width: 9px;
