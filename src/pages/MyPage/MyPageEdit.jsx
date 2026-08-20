@@ -1,6 +1,9 @@
-import { useState, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { MdBorderColor, MdEdit } from 'react-icons/md';
+import { getMe, patchMe, patchProfileImage } from '@/api/user';
+import { useNetworkRequest } from '@/hooks/useNetworkRequest';
+import { MdBorderColor, MdEdit, MdCheck } from 'react-icons/md';
+import YearPicker from '../Onboarding/components/YearPicker';
 import styles from './MyPageEdit.module.scss';
 import {
   profileChracter,
@@ -21,6 +24,11 @@ const ALLERGEN_OPTIONS = [
 ];
 
 const GENDER_LABEL = { male: '남성', female: '여성', none: '상관 없음' };
+const REVERSE_GENDER_MAP = {
+  MALE: 'male',
+  FEMALE: 'female',
+  PREFER_NOT_TO_SAY: 'none',
+};
 
 function Toggle({ checked, onChange }) {
   return (
@@ -54,21 +62,47 @@ export default function MyPageEdit() {
     : step3?.dislikedFoods || [];
   const initialShareRecords = savedSettings?.shareRecords ?? false;
 
-  const birthYear = step1?.birthYear;
-  const gender = step1?.gender;
+  const [birthYear, setBirthYear] = useState(step1?.birthYear ?? null);
+  const [gender, setGender] = useState(step1?.gender ?? null);
+  const [origBirthYear, setOrigBirthYear] = useState(step1?.birthYear ?? null);
+  const [origGender, setOrigGender] = useState(step1?.gender ?? null);
 
   const [nickname, setNickname] = useState(initialNickname);
-  const [isEditingNickname, setIsEditingNickname] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [showYearPicker, setShowYearPicker] = useState(false);
   const [allergens, setAllergens] = useState(initialAllergens);
   const [customAllergens, setCustomAllergens] = useState(
     initialCustomAllergens,
   );
   const [dislikedFoods, setDislikedFoods] = useState(initialDislikedFoods);
   const [shareRecords, setShareRecords] = useState(initialShareRecords);
+  const [origShareRecords, setOrigShareRecords] = useState(initialShareRecords);
   const [allergenInput, setAllergenInput] = useState('');
   const [dislikedInput, setDislikedInput] = useState('');
   const [profilePhoto, setProfilePhoto] = useState(null);
+  const [serverProfileImageUrl, setServerProfileImageUrl] = useState(null);
   const [saveSuccess, setSaveSuccess] = useState(false);
+  const networkRequest = useNetworkRequest();
+
+  useEffect(() => {
+    networkRequest(() => getMe()).then((data) => {
+      if (!data) return;
+      if (data.profileImageUrl) setServerProfileImageUrl(data.profileImageUrl);
+      if (data.birthYear) {
+        setBirthYear(data.birthYear);
+        setOrigBirthYear(data.birthYear);
+      }
+      if (data.gender) {
+        const fg = REVERSE_GENDER_MAP[data.gender] ?? null;
+        setGender(fg);
+        setOrigGender(fg);
+      }
+      if (data.shareToRoom != null) {
+        setShareRecords(data.shareToRoom);
+        setOrigShareRecords(data.shareToRoom);
+      }
+    });
+  }, [networkRequest]);
 
   const nicknameChanged = nickname !== initialNickname;
   const nicknameValid =
@@ -77,6 +111,8 @@ export default function MyPageEdit() {
 
   const hasChanges =
     nickname !== initialNickname ||
+    birthYear !== origBirthYear ||
+    gender !== origGender ||
     profilePhoto !== null ||
     JSON.stringify([...allergens].sort()) !==
       JSON.stringify([...initialAllergens].sort()) ||
@@ -84,7 +120,7 @@ export default function MyPageEdit() {
       JSON.stringify([...initialCustomAllergens].sort()) ||
     JSON.stringify([...dislikedFoods].sort()) !==
       JSON.stringify([...initialDislikedFoods].sort()) ||
-    shareRecords !== initialShareRecords;
+    shareRecords !== origShareRecords;
 
   const canSave = hasChanges && nicknameValid && !saveSuccess;
 
@@ -118,65 +154,55 @@ export default function MyPageEdit() {
     }
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!canSave) return;
 
-    const step1Data = JSON.parse(
-      localStorage.getItem('onboarding_step1') || '{}',
-    );
-    localStorage.setItem(
-      'onboarding_step1',
-      JSON.stringify({ ...step1Data, nickname: nickname.trim() }),
-    );
+    try {
+      await networkRequest(() =>
+        patchMe({
+          nickname: nickname.trim(),
+          birthYear,
+          gender,
+          allergens,
+          customAllergens,
+          dislikedFoods,
+          shareToRoom: shareRecords,
+        }),
+      );
 
-    const step2Data = JSON.parse(
-      localStorage.getItem('onboarding_step2') || '{}',
-    );
-    localStorage.setItem(
-      'onboarding_step2',
-      JSON.stringify({ ...step2Data, allergens, customAllergens }),
-    );
-
-    const step3Data = JSON.parse(
-      localStorage.getItem('onboarding_step3') || '{}',
-    );
-    localStorage.setItem(
-      'onboarding_step3',
-      JSON.stringify({
-        ...step3Data,
-        dislikedFoods,
-        noDisliked: dislikedFoods.length === 0,
-      }),
-    );
-
-    localStorage.setItem('mypage_settings', JSON.stringify({ shareRecords }));
-
-    setSaveSuccess(true);
-    setTimeout(() => navigate('/mypage'), 3000);
-  };
-
-  const handlePhotoSelect = (e) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      const url = URL.createObjectURL(file);
-      setProfilePhoto(url);
-      e.target.value = '';
+      setSaveSuccess(true);
+      setTimeout(() => navigate('/mypage'), 3000);
+    } catch (e) {
+      console.error('저장 실패:', e);
     }
   };
 
-  const infoText = [birthYear ? `${birthYear}년` : null, GENDER_LABEL[gender]]
-    .filter(Boolean)
-    .join(' ');
+  const handlePhotoSelect = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const previewUrl = URL.createObjectURL(file);
+    setProfilePhoto(previewUrl);
+    e.target.value = '';
+
+    try {
+      await networkRequest(() => patchProfileImage(file));
+    } catch (err) {
+      console.error('프로필 사진 업로드 실패:', err);
+    }
+  };
 
   return (
     <div className={styles.page}>
       <section className={styles.profileSection}>
         <div className={styles.avatarArea}>
-          <div className={styles.avatarBg} />
+          {!profilePhoto && !serverProfileImageUrl && (
+            <div className={styles.avatarBg} />
+          )}
           <img
-            src={profilePhoto || profileChracter}
+            src={profilePhoto || serverProfileImageUrl || profileChracter}
             alt=""
-            className={styles.avatarImg}
+            className={`${styles.avatarImg} ${profilePhoto || serverProfileImageUrl ? styles.avatarImgFilled : ''}`}
           />
           <button
             type="button"
@@ -188,33 +214,60 @@ export default function MyPageEdit() {
         </div>
 
         <div className={styles.nicknameRow}>
-          {isEditingNickname ? (
+          {isEditing ? (
             <input
               className={styles.nicknameInput}
               value={nickname}
               onChange={(e) => setNickname(e.target.value)}
               maxLength={7}
               autoFocus
-              onBlur={() => setIsEditingNickname(false)}
-              onKeyDown={(e) =>
-                e.key === 'Enter' && setIsEditingNickname(false)
-              }
             />
           ) : (
             <span className={styles.nickname}>{nickname || '닉네임'}</span>
           )}
-          {!isEditingNickname && (
-            <button
-              type="button"
-              className={styles.editNicknameBtn}
-              onClick={() => setIsEditingNickname(true)}
-            >
+          <button
+            type="button"
+            className={styles.editNicknameBtn}
+            onClick={() => setIsEditing((v) => !v)}
+          >
+            {isEditing ? (
+              <MdCheck className={styles.editNicknameIcon} />
+            ) : (
               <MdBorderColor className={styles.editNicknameIcon} />
-            </button>
-          )}
+            )}
+          </button>
         </div>
 
-        {infoText && <p className={styles.userInfo}>{infoText}</p>}
+        {isEditing ? (
+          <p className={styles.userInfo}>
+            <button
+              type="button"
+              className={styles.infoEditBtn}
+              onClick={() => setShowYearPicker(true)}
+            >
+              {birthYear ? `${birthYear}년` : '출생연도'}
+            </button>
+            <select
+              className={styles.infoEditSelect}
+              value={gender ?? ''}
+              onChange={(e) => setGender(e.target.value || null)}
+            >
+              <option value="" disabled>
+                성별
+              </option>
+              <option value="male">남성</option>
+              <option value="female">여성</option>
+              <option value="none">상관 없음</option>
+            </select>
+          </p>
+        ) : (
+          (birthYear || gender) && (
+            <p className={styles.userInfo}>
+              {birthYear && <span>{birthYear}년</span>}
+              {gender && <span>{GENDER_LABEL[gender]}</span>}
+            </p>
+          )
+        )}
       </section>
 
       <div className={styles.formSection}>
@@ -231,19 +284,16 @@ export default function MyPageEdit() {
               </div>
               <div className={styles.pillArea}>
                 {ALLERGEN_OPTIONS.map((opt) => (
-                  <>
+                  <React.Fragment key={opt.key}>
                     <button
-                      key={opt.key}
                       type="button"
                       className={`${styles.pill} ${allergens.includes(opt.key) ? styles.pillSelected : ''}`}
                       onClick={() => toggleAllergen(opt.key)}
                     >
                       {opt.label}
                     </button>
-                    {opt.key === 'nuts' && (
-                      <div key="break" className={styles.pillBreak} />
-                    )}
-                  </>
+                    {opt.key === 'nuts' && <div className={styles.pillBreak} />}
+                  </React.Fragment>
                 ))}
               </div>
               <div className={styles.searchArea}>
@@ -361,6 +411,14 @@ export default function MyPageEdit() {
         style={{ display: 'none' }}
         onChange={handlePhotoSelect}
       />
+
+      {showYearPicker && (
+        <YearPicker
+          value={birthYear}
+          onChange={(year) => setBirthYear(year)}
+          onClose={() => setShowYearPicker(false)}
+        />
+      )}
     </div>
   );
 }

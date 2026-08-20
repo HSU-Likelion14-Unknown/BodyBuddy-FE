@@ -1,20 +1,30 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { getMe, deleteMe } from '@/api/user';
+import { useNetworkRequest } from '@/hooks/useNetworkRequest';
 import { MdEdit } from 'react-icons/md';
 import { VscChevronRight } from 'react-icons/vsc';
 import styles from './MyPage.module.scss';
-import { profileChracter, mypageIconAllergy, mypageIconDislike } from '@/assets';
+import {
+  profileChracter,
+  mypageIconAllergy,
+  mypageIconDislike,
+} from '@/assets';
 
 const ALLERGEN_LABEL = {
-  egg: '계란',
-  milk: '우유',
-  nuts: '견과류',
-  shellfish: '갑각류',
-  soy: '대두',
-  wheat: '밀',
+  EGG: '계란',
+  MILK: '우유',
+  NUTS: '견과류',
+  SHELLFISH: '갑각류',
+  SOY: '대두',
+  WHEAT: '밀',
 };
 
-const GENDER_LABEL = { male: '남성', female: '여성', none: '상관 없음' };
+const GENDER_LABEL = {
+  MALE: '남성',
+  FEMALE: '여성',
+  PREFER_NOT_TO_SAY: '상관 없음',
+};
 
 function Toggle({ checked, onChange }) {
   return (
@@ -32,39 +42,70 @@ function Toggle({ checked, onChange }) {
 export default function MyPage() {
   const navigate = useNavigate();
 
-  const step1 = JSON.parse(localStorage.getItem('onboarding_step1') || 'null');
-  const step2 = JSON.parse(localStorage.getItem('onboarding_step2') || 'null');
-  const step3 = JSON.parse(localStorage.getItem('onboarding_step3') || 'null');
-
-  const nickname = step1?.nickname || '닉네임';
-  const birthYear = step1?.birthYear;
-  const gender = step1?.gender;
-
-  const allergens = (step2?.allergens || [])
-    .filter((v) => v !== 'none')
-    .map((v) => ALLERGEN_LABEL[v] || v);
-  const customAllergens = step2?.customAllergens || [];
-  const allAllergens = [...allergens, ...customAllergens];
-
-  const dislikedFoods = step3?.noDisliked ? [] : step3?.dislikedFoods || [];
-
+  const [nickname, setNickname] = useState('닉네임');
+  const [birthYear, setBirthYear] = useState(null);
+  const [gender, setGender] = useState(null);
+  const [profileImageUrl, setProfileImageUrl] = useState(null);
+  const [allAllergens, setAllAllergens] = useState([]);
+  const [dislikedFoods, setDislikedFoods] = useState([]);
   const [notifOn, setNotifOn] = useState(true);
-  const [marketingOn, setMarketingOn] = useState(false);
+  const [showDeleteSheet, setShowDeleteSheet] = useState(false);
+  const fetched = useRef(false);
+  const networkRequest = useNetworkRequest();
 
-  const infoText = [birthYear ? `${birthYear}년` : null, GENDER_LABEL[gender]]
-    .filter(Boolean)
-    .join(' ');
+  useEffect(() => {
+    if (fetched.current) return;
+    fetched.current = true;
+    const step2 = JSON.parse(
+      localStorage.getItem('onboarding_step2') || 'null',
+    );
+    const step3 = JSON.parse(
+      localStorage.getItem('onboarding_step3') || 'null',
+    );
+
+    networkRequest(() => getMe()).then((data) => {
+      if (!data) return;
+      if (data.nickname) setNickname(data.nickname);
+      if (data.birthYear) setBirthYear(data.birthYear);
+      if (data.gender) setGender(data.gender);
+      if (data.profileImageUrl) setProfileImageUrl(data.profileImageUrl);
+
+      if (data.allergyCodes) {
+        setAllAllergens(data.allergyCodes.map((c) => ALLERGEN_LABEL[c] || c));
+      } else {
+        const mapped = (step2?.allergens || [])
+          .filter((v) => v !== 'none')
+          .map((v) => ALLERGEN_LABEL[v.toUpperCase()] || v);
+        setAllAllergens([...mapped, ...(step2?.customAllergens || [])]);
+      }
+
+      if (data.dislikedFoods) {
+        setDislikedFoods(data.dislikedFoods);
+      } else {
+        setDislikedFoods(step3?.noDisliked ? [] : step3?.dislikedFoods || []);
+      }
+    });
+  }, [networkRequest]);
 
   return (
     <div className={styles.page}>
       {/* 프로필 */}
       <section className={styles.profileSection}>
         <div className={styles.avatarArea}>
-          <div className={styles.avatarBg} />
-          <img src={profileChracter} alt="" className={styles.avatarImg} />
+          {!profileImageUrl && <div className={styles.avatarBg} />}
+          <img
+            src={profileImageUrl || profileChracter}
+            alt=""
+            className={`${styles.avatarImg} ${profileImageUrl ? styles.avatarImgFilled : ''}`}
+          />
         </div>
         <h1 className={styles.nickname}>{nickname}</h1>
-        {infoText && <p className={styles.userInfo}>{infoText}</p>}
+        {(birthYear || gender) && (
+          <p className={styles.userInfo}>
+            {birthYear && <span>{birthYear}년</span>}
+            {gender && <span>{GENDER_LABEL[gender]}</span>}
+          </p>
+        )}
         <button
           type="button"
           className={styles.editBtn}
@@ -122,25 +163,57 @@ export default function MyPage() {
           <Toggle checked={notifOn} onChange={() => setNotifOn((v) => !v)} />
         </div>
         <hr className={styles.divider} />
-        <div className={styles.settingRow}>
-          <span className={styles.settingLabel}>마케팅 수신 동의</span>
-          <Toggle
-            checked={marketingOn}
-            onChange={() => setMarketingOn((v) => !v)}
-          />
-        </div>
-        <hr className={styles.divider} />
       </section>
 
       {/* 정보 */}
       <section className={styles.settingsSection}>
         <h2 className={styles.sectionHeader}>정보</h2>
-        <button type="button" className={`${styles.settingRow} ${styles.settingRowCompact}`}>
+        <button
+          type="button"
+          className={`${styles.settingRow} ${styles.settingRowCompact}`}
+          onClick={() => setShowDeleteSheet(true)}
+        >
           <span className={styles.settingLabel}>회원탈퇴</span>
           <VscChevronRight className={styles.chevron} />
         </button>
         <hr className={styles.divider} />
       </section>
+      {showDeleteSheet && (
+        <>
+          <div
+            className={styles.overlay}
+            onClick={() => setShowDeleteSheet(false)}
+          />
+          <div className={styles.bottomSheet}>
+            <p className={styles.sheetTitle}>정말 탈퇴하시겠어요?</p>
+            <p className={styles.sheetDesc}>
+              탈퇴하면 모든 정보가 삭제되며 복구할 수 없어요.
+            </p>
+            <button
+              type="button"
+              className={styles.sheetDeleteBtn}
+              onClick={async () => {
+                try {
+                  await deleteMe();
+                  localStorage.clear();
+                  navigate('/', { replace: true });
+                } catch (e) {
+                  console.error('탈퇴 실패:', e);
+                }
+              }}
+            >
+              탈퇴하기
+            </button>
+            <button
+              type="button"
+              className={styles.sheetCancelBtn}
+              onClick={() => setShowDeleteSheet(false)}
+            >
+              취소
+            </button>
+          </div>
+        </>
+      )}
     </div>
   );
 }
