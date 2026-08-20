@@ -1,5 +1,6 @@
 import { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { patchMe } from '@/api/user';
 import { MdBorderColor, MdEdit } from 'react-icons/md';
 import styles from './MyPageEdit.module.scss';
 import {
@@ -118,41 +119,25 @@ export default function MyPageEdit() {
     }
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!canSave) return;
 
-    const step1Data = JSON.parse(
-      localStorage.getItem('onboarding_step1') || '{}',
-    );
-    localStorage.setItem(
-      'onboarding_step1',
-      JSON.stringify({ ...step1Data, nickname: nickname.trim() }),
-    );
-
-    const step2Data = JSON.parse(
-      localStorage.getItem('onboarding_step2') || '{}',
-    );
-    localStorage.setItem(
-      'onboarding_step2',
-      JSON.stringify({ ...step2Data, allergens, customAllergens }),
-    );
-
-    const step3Data = JSON.parse(
-      localStorage.getItem('onboarding_step3') || '{}',
-    );
-    localStorage.setItem(
-      'onboarding_step3',
-      JSON.stringify({
-        ...step3Data,
+    try {
+      await patchMe({
+        nickname: nickname.trim(),
+        birthYear,
+        gender,
+        allergens,
+        customAllergens,
         dislikedFoods,
-        noDisliked: dislikedFoods.length === 0,
-      }),
-    );
+        shareToRoom: shareRecords,
+      });
 
-    localStorage.setItem('mypage_settings', JSON.stringify({ shareRecords }));
-
-    setSaveSuccess(true);
-    setTimeout(() => navigate('/mypage'), 3000);
+      setSaveSuccess(true);
+      setTimeout(() => navigate('/mypage'), 3000);
+    } catch (e) {
+      console.error('저장 실패:', e);
+    }
   };
 
   const handlePhotoSelect = (e) => {

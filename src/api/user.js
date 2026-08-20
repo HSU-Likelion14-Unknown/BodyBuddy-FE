@@ -20,6 +20,34 @@ export async function getMe() {
   return res.data.data;
 }
 
+export async function patchMe({
+  nickname,
+  birthYear,
+  gender,
+  allergens,
+  customAllergens,
+  dislikedFoods,
+  shareToRoom,
+}) {
+  const mappedCodes = allergens
+    .filter((k) => k !== 'none')
+    .map((k) => ALLERGEN_CODE_MAP[k])
+    .filter(Boolean);
+
+  const allergyCodes = [...mappedCodes, ...customAllergens];
+
+  const res = await api.patch('/users/me', {
+    nickname,
+    birthYear: birthYear ?? null,
+    gender: GENDER_MAP[gender] ?? null,
+    allergyCodes,
+    dislikeFoods: dislikedFoods,
+    shareToRoom,
+  });
+
+  return res.data.data;
+}
+
 export async function putOnboarding({
   nickname,
   birthYear,
