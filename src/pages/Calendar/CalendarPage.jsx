@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { getDayMeals } from '@/api/calendar';
+import { getDayMeals, getMonthStats } from '@/api/calendar';
 import { useNetworkRequest } from '@/hooks/useNetworkRequest';
 import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
@@ -21,46 +21,14 @@ const formatDateKey = (date) => {
   return `${y}-${m}-${d}`;
 };
 
-// TODO: 실제 API 연동 시 교체
-const DOT_DATA = {
-  '2026-07-10': ['record'],
-  '2026-07-15': ['recommended'],
-  '2026-07-20': ['record', 'missed'],
-  '2026-07-26': ['record'],
-  '2026-07-28': ['record', 'recommended'],
-  '2026-07-31': ['missed'],
-  '2026-08-01': ['record'],
-  '2026-08-02': ['record', 'recommended', 'missed'],
-  '2026-08-04': ['record', 'missed'],
-  '2026-08-07': ['recommended'],
-  '2026-08-10': ['record', 'missed'],
-  '2026-08-12': ['record', 'recommended'],
-  '2026-08-14': ['missed'],
-  '2026-08-15': ['record'],
-};
-
 const savedOnboarding = JSON.parse(
   localStorage.getItem('onboarding_step1') || 'null',
 );
 
-// TODO: 실제 API 연동 시 교체
-const MONTHLY_STATS = {
-  nickname: savedOnboarding?.nickname ?? '00',
-  nutrients: [
-    { name: '단백질', consumed: 180, goal: 650, color: '#8cb3f6' },
-    { name: '탄수화물', consumed: 1700, goal: 3000, color: '#ffa449' },
-    { name: '지방', consumed: 260, goal: 650, color: '#f29cd8' },
-  ],
-  kcal: 660,
-  recommendFollowed: 11,
-  recommendTotal: 15,
-};
-
 function DotMatrix({ consumed, goal, color }) {
-  const total = 42; // 6행 × 7열
+  const total = 42;
   const filled = Math.round((consumed / goal) * total);
   return (
-    // scaleY(-1)로 아래 → 위 방향 채우기
     <div className={styles.dotMatrix}>
       {Array.from({ length: total }, (_, i) => (
         <span
@@ -73,10 +41,45 @@ function DotMatrix({ consumed, goal, color }) {
   );
 }
 
-function MonthlyNutritionCard() {
-  const { nickname, nutrients, kcal, recommendFollowed, recommendTotal } =
-    MONTHLY_STATS;
-  const pct = Math.round((recommendFollowed / recommendTotal) * 100);
+function MonthlyNutritionCard({ stats }) {
+  if (!stats) return null;
+
+  const nickname = savedOnboarding?.nickname ?? '00';
+  const days = stats.days ?? [];
+  const recommendFollowed = days.reduce(
+    (s, d) => s + d.selectedRecommendationCount,
+    0,
+  );
+  const recommendTotal = days.reduce(
+    (s, d) =>
+      s + d.selectedRecommendationCount + d.unselectedRecommendationCount,
+    0,
+  );
+  const pct =
+    recommendTotal > 0
+      ? Math.round((recommendFollowed / recommendTotal) * 100)
+      : 0;
+
+  const nutrients = [
+    {
+      name: '단백질',
+      consumed: stats.averageProtein ?? 0,
+      goal: 65,
+      color: '#8cb3f6',
+    },
+    {
+      name: '탄수화물',
+      consumed: stats.averageCarbohydrate ?? 0,
+      goal: 300,
+      color: '#ffa449',
+    },
+    {
+      name: '지방',
+      consumed: stats.averageFat ?? 0,
+      goal: 65,
+      color: '#f29cd8',
+    },
+  ];
 
   return (
     <div className={styles.nutritionCard}>
@@ -91,7 +94,9 @@ function MonthlyNutritionCard() {
           ))}
         </div>
         <div className={styles.kcalCircle}>
-          <span className={styles.kcalNumber}>{kcal}</span>
+          <span className={styles.kcalNumber}>
+            {stats.averageCalories ?? '-'}
+          </span>
           <span className={styles.kcalLabel}>Kcal</span>
         </div>
       </div>
@@ -315,11 +320,33 @@ export default function CalendarPage() {
   const [showPicker, setShowPicker] = useState(false);
   const [allLocalPhotos, setAllLocalPhotos] = useState({});
   const [dayMeals, setDayMeals] = useState([]);
+  const [monthStats, setMonthStats] = useState(null);
+  const [dotDays, setDotDays] = useState({});
   const networkRequest = useNetworkRequest();
 
   useEffect(() => {
+    const year = viewDate.getFullYear();
+    const month = viewDate.getMonth() + 1;
+    networkRequest(() => getMonthStats(year, month)).then((data) => {
+      if (!data) return;
+      setMonthStats(data);
+      const dots = {};
+      (data.days ?? []).forEach(({ date, records = [] }) => {
+        const statuses = new Set(records.map((r) => r.status));
+        const dayDots = [];
+        if (statuses.has('RECORD_ONLY')) dayDots.push('record');
+        if (statuses.has('RECOMMENDATION_FOLLOWED'))
+          dayDots.push('recommended');
+        if (statuses.has('RECOMMENDATION_MISSED')) dayDots.push('missed');
+        if (dayDots.length > 0) dots[date] = dayDots;
+      });
+      setDotDays(dots);
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [viewDate]);
+
+  useEffect(() => {
     if (!selectedDate) return;
-    setDayMeals([]);
     networkRequest(() => getDayMeals(formatDateKey(selectedDate))).then(
       (data) => {
         if (data) setDayMeals(data.meals ?? []);
@@ -379,7 +406,7 @@ export default function CalendarPage() {
           }}
           tileContent={({ date, view }) => {
             if (view !== 'month') return null;
-            const dots = DOT_DATA[formatDateKey(date)];
+            const dots = dotDays[formatDateKey(date)];
             return (
               <div className={styles.dotRow}>
                 {dots?.map((type, i) => (
@@ -409,7 +436,7 @@ export default function CalendarPage() {
         </span>
       </div>
 
-      <MonthlyNutritionCard />
+      <MonthlyNutritionCard stats={monthStats} />
 
       {selectedDate && (
         <>
