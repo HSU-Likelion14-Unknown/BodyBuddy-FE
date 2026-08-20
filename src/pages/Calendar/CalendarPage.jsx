@@ -1,7 +1,11 @@
 import { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { getDayMeals, getMonthStats, patchMealImage } from '@/api/calendar';
-import { getMealImageBlob } from '@/api/meals';
+import {
+  getDayMeals,
+  getMonthStats,
+  patchMealImage,
+  getCalendarPhotoBlob,
+} from '@/api/calendar';
 import { getMe } from '@/api/user';
 import { useNetworkRequest } from '@/hooks/useNetworkRequest';
 import Calendar from 'react-calendar';
@@ -131,9 +135,10 @@ function DateDetailCard({ date, meals, onPhotoUpload }) {
   useEffect(() => {
     if (!meal?.photoUrl) return;
     const controller = new AbortController();
-    getMealImageBlob(meal.photoUrl, { signal: controller.signal })
+    getCalendarPhotoBlob(meal.photoUrl, { signal: controller.signal })
       .then((blob) => {
         if (!blob || controller.signal.aborted) return;
+        if (blobUrlRef.current) URL.revokeObjectURL(blobUrlRef.current);
         const url = URL.createObjectURL(blob);
         blobUrlRef.current = url;
         setBlobUrl(url);
@@ -141,16 +146,25 @@ function DateDetailCard({ date, meals, onPhotoUpload }) {
       .catch(() => {});
     return () => {
       controller.abort();
+    };
+  }, [meal?.photoUrl]);
+
+  useEffect(() => {
+    return () => {
       if (blobUrlRef.current) {
         URL.revokeObjectURL(blobUrlRef.current);
         blobUrlRef.current = null;
       }
     };
-  }, [meal?.photoUrl]);
+  }, []);
 
   const handlePhotoChange = (e) => {
     const file = e.target.files?.[0];
     if (!file || !meal) return;
+    const localUrl = URL.createObjectURL(file);
+    if (blobUrlRef.current) URL.revokeObjectURL(blobUrlRef.current);
+    blobUrlRef.current = localUrl;
+    setBlobUrl(localUrl);
     onPhotoUpload(meal.mealId, file);
     e.target.value = '';
   };
@@ -223,31 +237,33 @@ function DateDetailCard({ date, meals, onPhotoUpload }) {
             </div>
           )}
 
-          <div className={styles.photoArea}>
-            <div className={styles.photoWrapper}>
-              {meal.photoUrl && blobUrl && (
-                <img
-                  src={blobUrl}
-                  alt="식사 사진"
-                  className={styles.foodPhoto}
+          {meal.photoUrl && (
+            <div className={styles.photoArea}>
+              <div className={styles.photoWrapper}>
+                {blobUrl && (
+                  <img
+                    src={blobUrl}
+                    alt="식사 사진"
+                    className={styles.foodPhoto}
+                  />
+                )}
+                <button
+                  className={styles.editBtn}
+                  aria-label="수정"
+                  onClick={() => fileInputRef.current?.click()}
+                >
+                  <MdEdit size={12} />
+                </button>
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*"
+                  hidden
+                  onChange={handlePhotoChange}
                 />
-              )}
-              <button
-                className={styles.editBtn}
-                aria-label="수정"
-                onClick={() => fileInputRef.current?.click()}
-              >
-                <MdEdit size={12} />
-              </button>
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept="image/*"
-                hidden
-                onChange={handlePhotoChange}
-              />
+              </div>
             </div>
-          </div>
+          )}
         </>
       ) : (
         <p className={styles.noRecord}>기록이 없습니다</p>
@@ -377,13 +393,7 @@ export default function CalendarPage() {
 
   const handlePhotoUpload = async (mealId, file) => {
     try {
-      const data = await networkRequest(() => patchMealImage(mealId, file));
-      if (!data) return;
-      setDayMeals((prev) =>
-        prev.map((m) =>
-          m.mealId === mealId ? { ...m, photoUrl: data.photoUrl } : m,
-        ),
-      );
+      await networkRequest(() => patchMealImage(mealId, file));
     } catch {
       // 업로드 실패 시 무시
     }

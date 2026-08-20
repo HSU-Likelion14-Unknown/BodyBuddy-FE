@@ -21,6 +21,12 @@ export async function getMonthStats(year, month) {
   return res.data.data;
 }
 
+export async function getCalendarPhotoBlob(photoUrl, { signal } = {}) {
+  if (!photoUrl) return null;
+  const res = await api.get(photoUrl, { responseType: 'blob', signal });
+  return res.data;
+}
+
 export async function patchMealImage(mealId, file) {
   const form = new FormData();
   form.append('image', file);
