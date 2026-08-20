@@ -12,6 +12,7 @@ import {
   homeHeroRays,
   homeHeroZinc,
 } from '@/assets';
+import { useMyNickname } from '@/hooks/useMyNickname';
 import ShareRoomSection from './components/ShareRoomSection';
 import WeeklyCalendar from './components/WeeklyCalendar';
 import styles from './HomePage.module.scss';
@@ -25,6 +26,7 @@ const MOCK_RECOMMENDATION = {
 
 export default function HomePage() {
   const navigate = useNavigate();
+  const nickname = useMyNickname();
 
   return (
     <main className={styles.container}>
@@ -37,7 +39,7 @@ export default function HomePage() {
             기록하러 가기
           </h1>
           <span className={styles.divider} />
-          <p>바디버디가 00님의 영양소를 채워드릴게요!</p>
+          <p>바디버디가 {nickname}님의 영양소를 채워드릴게요!</p>
 
           <button
             type="button"
@@ -117,7 +119,7 @@ export default function HomePage() {
         </section>
 
         {/* 친구 공유방 */}
-        <ShareRoomSection />
+        <ShareRoomSection nickname={nickname} />
 
         {/* 주간 캘린더 */}
         <WeeklyCalendar />
