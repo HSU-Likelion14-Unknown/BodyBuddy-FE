@@ -1,5 +1,8 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { getDayMeals, getMonthStats, patchMealImage } from '@/api/calendar';
+import { getMe } from '@/api/user';
+import { useNetworkRequest } from '@/hooks/useNetworkRequest';
 import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
 import styles from './CalendarPage.module.scss';
@@ -19,114 +22,10 @@ const formatDateKey = (date) => {
   return `${y}-${m}-${d}`;
 };
 
-// TODO: 실제 API 연동 시 교체
-const DOT_DATA = {
-  '2026-07-10': ['record'],
-  '2026-07-15': ['recommended'],
-  '2026-07-20': ['record', 'missed'],
-  '2026-07-26': ['record'],
-  '2026-07-28': ['record', 'recommended'],
-  '2026-07-31': ['missed'],
-  '2026-08-01': ['record'],
-  '2026-08-02': ['record', 'recommended', 'missed'],
-  '2026-08-04': ['record', 'missed'],
-  '2026-08-07': ['recommended'],
-  '2026-08-10': ['record', 'missed'],
-  '2026-08-12': ['record', 'recommended'],
-  '2026-08-14': ['missed'],
-  '2026-08-15': ['record'],
-};
-
-// TODO: 실제 API 연동 시 교체
-const MEAL_RECORDS = {
-  '2026-08-15': [
-    {
-      foods: ['마라탕'],
-      kcal: 450,
-      protein: { consumed: 48, goal: 65 },
-      carbs: { consumed: 284, goal: 300 },
-      fat: { consumed: 51, goal: 65 },
-      recommendation: '연어 구이',
-    },
-  ],
-  '2026-08-12': [
-    {
-      foods: ['샐러드', '닭가슴살'],
-      kcal: 320,
-      protein: { consumed: 40, goal: 65 },
-      carbs: { consumed: 180, goal: 300 },
-      fat: { consumed: 18, goal: 65 },
-      recommendation: '삼겹살',
-    },
-    {
-      foods: ['비빔밥', '환장국', '깍두기'],
-      kcal: 620,
-      protein: { consumed: 54, goal: 65 },
-      carbs: { consumed: 264, goal: 300 },
-      fat: { consumed: 36, goal: 65 },
-      recommendation: null,
-    },
-  ],
-  '2026-08-02': [
-    {
-      foods: ['돼지국밥'],
-      kcal: 580,
-      protein: { consumed: 50, goal: 65 },
-      carbs: { consumed: 240, goal: 300 },
-      fat: { consumed: 45, goal: 65 },
-      recommendation: '야채 샐러드',
-    },
-    {
-      foods: ['김치찌개', '공기밥'],
-      kcal: 520,
-      protein: { consumed: 35, goal: 65 },
-      carbs: { consumed: 280, goal: 300 },
-      fat: { consumed: 28, goal: 65 },
-      recommendation: '닭가슴살',
-    },
-    {
-      foods: ['치킨', '맥주'],
-      kcal: 890,
-      protein: { consumed: 60, goal: 65 },
-      carbs: { consumed: 295, goal: 300 },
-      fat: { consumed: 62, goal: 65 },
-      recommendation: null,
-    },
-  ],
-  '2026-08-04': [
-    {
-      foods: ['토스트', '커피'],
-      kcal: 280,
-      protein: { consumed: 15, goal: 65 },
-      carbs: { consumed: 160, goal: 300 },
-      fat: { consumed: 12, goal: 65 },
-      recommendation: '닭볶음탕',
-    },
-  ],
-};
-
-const savedOnboarding = JSON.parse(
-  localStorage.getItem('onboarding_step1') || 'null',
-);
-
-// TODO: 실제 API 연동 시 교체
-const MONTHLY_STATS = {
-  nickname: savedOnboarding?.nickname ?? '00',
-  nutrients: [
-    { name: '단백질', consumed: 180, goal: 650, color: '#8cb3f6' },
-    { name: '탄수화물', consumed: 1700, goal: 3000, color: '#ffa449' },
-    { name: '지방', consumed: 260, goal: 650, color: '#f29cd8' },
-  ],
-  kcal: 660,
-  recommendFollowed: 11,
-  recommendTotal: 15,
-};
-
 function DotMatrix({ consumed, goal, color }) {
-  const total = 42; // 6행 × 7열
+  const total = 42;
   const filled = Math.round((consumed / goal) * total);
   return (
-    // scaleY(-1)로 아래 → 위 방향 채우기
     <div className={styles.dotMatrix}>
       {Array.from({ length: total }, (_, i) => (
         <span
@@ -139,10 +38,43 @@ function DotMatrix({ consumed, goal, color }) {
   );
 }
 
-function MonthlyNutritionCard() {
-  const { nickname, nutrients, kcal, recommendFollowed, recommendTotal } =
-    MONTHLY_STATS;
-  const pct = Math.round((recommendFollowed / recommendTotal) * 100);
+function MonthlyNutritionCard({ stats, nickname }) {
+  if (!stats) return null;
+  const days = stats.days ?? [];
+  const recommendFollowed = days.reduce(
+    (s, d) => s + d.selectedRecommendationCount,
+    0,
+  );
+  const recommendTotal = days.reduce(
+    (s, d) =>
+      s + d.selectedRecommendationCount + d.unselectedRecommendationCount,
+    0,
+  );
+  const pct =
+    recommendTotal > 0
+      ? Math.round((recommendFollowed / recommendTotal) * 100)
+      : 0;
+
+  const nutrients = [
+    {
+      name: '단백질',
+      consumed: stats.averageProtein ?? 0,
+      goal: 65,
+      color: '#8cb3f6',
+    },
+    {
+      name: '탄수화물',
+      consumed: stats.averageCarbohydrate ?? 0,
+      goal: 300,
+      color: '#ffa449',
+    },
+    {
+      name: '지방',
+      consumed: stats.averageFat ?? 0,
+      goal: 65,
+      color: '#f29cd8',
+    },
+  ];
 
   return (
     <div className={styles.nutritionCard}>
@@ -157,7 +89,9 @@ function MonthlyNutritionCard() {
           ))}
         </div>
         <div className={styles.kcalCircle}>
-          <span className={styles.kcalNumber}>{kcal}</span>
+          <span className={styles.kcalNumber}>
+            {stats.averageCalories ?? '-'}
+          </span>
           <span className={styles.kcalLabel}>Kcal</span>
         </div>
       </div>
@@ -188,24 +122,24 @@ function NutritionBar({ label, consumed, goal }) {
   );
 }
 
-function DateDetailCard({ date, datePhotos, onPhotoChange }) {
-  const dateKey = formatDateKey(date);
-  const records = MEAL_RECORDS[dateKey] || [];
+function DateDetailCard({ date, meals, onPhotoUpload }) {
   const [activeTab, setActiveTab] = useState(0);
   const fileInputRef = useRef(null);
 
   const month = date.getMonth() + 1;
   const day = date.getDate();
-  const record = records[activeTab] ?? null;
+  const meal = meals[activeTab] ?? null;
 
   const handlePhotoChange = (e) => {
     const file = e.target.files?.[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = () => onPhotoChange(activeTab, String(reader.result));
-    reader.readAsDataURL(file);
+    if (!file || !meal) return;
+    onPhotoUpload(meal.mealId, file);
     e.target.value = '';
   };
+
+  const hasNutrition =
+    meal &&
+    (meal.protein != null || meal.carbohydrate != null || meal.fat != null);
 
   return (
     <div className={styles.detailCard}>
@@ -214,12 +148,11 @@ function DateDetailCard({ date, datePhotos, onPhotoChange }) {
           {month}월 {day}일
         </span>
         <div className={styles.tabList}>
-          {[0, 1, 2].map((i) => (
+          {meals.map((_, i) => (
             <button
               key={i}
-              className={`${styles.tabBtn} ${activeTab === i && i < records.length ? styles.tabActive : ''}`}
-              onClick={() => i < records.length && setActiveTab(i)}
-              disabled={i >= records.length}
+              className={`${styles.tabBtn} ${activeTab === i ? styles.tabActive : ''}`}
+              onClick={() => setActiveTab(i)}
             >
               기록 {i + 1}
             </button>
@@ -227,49 +160,55 @@ function DateDetailCard({ date, datePhotos, onPhotoChange }) {
         </div>
       </div>
 
-      {record ? (
+      {meal ? (
         <>
           <div className={styles.foodTags}>
-            {record.foods.map((food) => (
+            {meal.foodNames.map((food) => (
               <span key={food} className={styles.foodTag}>
                 {food}
               </span>
             ))}
-            <span className={styles.kcalTag}>{record.kcal} Kcal</span>
+            {meal.calories != null && (
+              <span className={styles.kcalTag}>{meal.calories} Kcal</span>
+            )}
           </div>
 
-          <div className={styles.nutritionBars}>
-            <NutritionBar
-              label="단백질"
-              consumed={record.protein.consumed}
-              goal={record.protein.goal}
-            />
-            <NutritionBar
-              label="탄수화물"
-              consumed={record.carbs.consumed}
-              goal={record.carbs.goal}
-            />
-            <NutritionBar
-              label="지방"
-              consumed={record.fat.consumed}
-              goal={record.fat.goal}
-            />
-          </div>
+          {hasNutrition && (
+            <div className={styles.nutritionBars}>
+              {meal.protein != null && (
+                <NutritionBar
+                  label="단백질"
+                  consumed={meal.protein}
+                  goal={65}
+                />
+              )}
+              {meal.carbohydrate != null && (
+                <NutritionBar
+                  label="탄수화물"
+                  consumed={meal.carbohydrate}
+                  goal={300}
+                />
+              )}
+              {meal.fat != null && (
+                <NutritionBar label="지방" consumed={meal.fat} goal={65} />
+              )}
+            </div>
+          )}
 
-          <div className={styles.recommendBanner}>
-            <span className={styles.recommendLabel}>
-              <img src={iconForkKnife} alt="" className={styles.forkIcon} />
-              바디버디의 한끼 추천
-            </span>
-            <p className={styles.recommendText}>
-              {record.recommendation ?? '영양소 밸런스가 완벽해요!'}
-            </p>
-          </div>
+          {meal.recommendedDishName && (
+            <div className={styles.recommendBanner}>
+              <span className={styles.recommendLabel}>
+                <img src={iconForkKnife} alt="" className={styles.forkIcon} />
+                바디버디의 한끼 추천
+              </span>
+              <p className={styles.recommendText}>{meal.recommendedDishName}</p>
+            </div>
+          )}
 
           <div className={styles.photoArea}>
             <div className={styles.photoWrapper}>
               <img
-                src={datePhotos[activeTab] ?? record.photo ?? mealPlaceholder}
+                src={meal.photoUrl ?? mealPlaceholder}
                 alt="식사 사진"
                 className={styles.foodPhoto}
               />
@@ -372,13 +311,62 @@ export default function CalendarPage() {
   const [viewDate, setViewDate] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState(null);
   const [showPicker, setShowPicker] = useState(false);
-  const [allLocalPhotos, setAllLocalPhotos] = useState({});
+  const [dayMeals, setDayMeals] = useState([]);
+  const [monthStats, setMonthStats] = useState(null);
+  const [dotDays, setDotDays] = useState({});
+  const [nickname, setNickname] = useState('');
+  const networkRequest = useNetworkRequest();
 
-  const handlePhotoChange = (dateKey, tabIndex, dataUrl) => {
-    setAllLocalPhotos((prev) => ({
-      ...prev,
-      [dateKey]: { ...(prev[dateKey] ?? {}), [tabIndex]: dataUrl },
-    }));
+  useEffect(() => {
+    networkRequest(() => getMe()).then((data) => {
+      if (data) setNickname(data.nickname ?? '');
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    const year = viewDate.getFullYear();
+    const month = viewDate.getMonth() + 1;
+    networkRequest(() => getMonthStats(year, month)).then((data) => {
+      if (!data) return;
+      setMonthStats(data);
+      const dots = {};
+      (data.days ?? []).forEach(({ date, records = [] }) => {
+        const statuses = new Set(records.map((r) => r.status));
+        const dayDots = [];
+        if (statuses.has('RECORD_ONLY')) dayDots.push('record');
+        if (statuses.has('RECOMMENDATION_FOLLOWED'))
+          dayDots.push('recommended');
+        if (statuses.has('RECOMMENDATION_MISSED')) dayDots.push('missed');
+        if (dayDots.length > 0) dots[date] = dayDots;
+      });
+      setDotDays(dots);
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [viewDate]);
+
+  useEffect(() => {
+    if (!selectedDate) return;
+    networkRequest(() => getDayMeals(formatDateKey(selectedDate))).then(
+      (data) => {
+        if (data) setDayMeals(data.meals ?? []);
+      },
+    );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedDate]);
+
+  const handlePhotoUpload = async (mealId, file) => {
+    try {
+      const data = await networkRequest(() => patchMealImage(mealId, file));
+      if (!data) return;
+      setDayMeals((prev) =>
+        prev.map((m) =>
+          m.mealId === mealId ? { ...m, photoUrl: data.photoUrl } : m,
+        ),
+      );
+    } catch {
+      // 업로드 실패 시 무시
+    }
   };
 
   const year = viewDate.getFullYear();
@@ -425,7 +413,7 @@ export default function CalendarPage() {
           }}
           tileContent={({ date, view }) => {
             if (view !== 'month') return null;
-            const dots = DOT_DATA[formatDateKey(date)];
+            const dots = dotDays[formatDateKey(date)];
             return (
               <div className={styles.dotRow}>
                 {dots?.map((type, i) => (
@@ -455,7 +443,7 @@ export default function CalendarPage() {
         </span>
       </div>
 
-      <MonthlyNutritionCard />
+      <MonthlyNutritionCard stats={monthStats} nickname={nickname} />
 
       {selectedDate && (
         <>
@@ -466,10 +454,8 @@ export default function CalendarPage() {
           <DateDetailCard
             key={formatDateKey(selectedDate)}
             date={selectedDate}
-            datePhotos={allLocalPhotos[formatDateKey(selectedDate)] ?? {}}
-            onPhotoChange={(tabIndex, dataUrl) =>
-              handlePhotoChange(formatDateKey(selectedDate), tabIndex, dataUrl)
-            }
+            meals={dayMeals}
+            onPhotoUpload={handlePhotoUpload}
           />
         </>
       )}
