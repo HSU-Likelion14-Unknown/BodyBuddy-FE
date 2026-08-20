@@ -1,17 +1,17 @@
 import { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { getDayMeals, getMonthStats, patchMealImage } from '@/api/calendar';
+import {
+  getDayMeals,
+  getMonthStats,
+  patchMealImage,
+  getCalendarPhotoBlob,
+} from '@/api/calendar';
 import { getMe } from '@/api/user';
 import { useNetworkRequest } from '@/hooks/useNetworkRequest';
 import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
 import styles from './CalendarPage.module.scss';
-import {
-  iconBell,
-  iconChevronDown,
-  mealPlaceholder,
-  iconForkKnife,
-} from '@/assets';
+import { iconChevronDown, iconForkKnife } from '@/assets';
 import { BsChevronLeft } from 'react-icons/bs';
 import { MdEdit } from 'react-icons/md';
 
@@ -124,15 +124,47 @@ function NutritionBar({ label, consumed, goal }) {
 
 function DateDetailCard({ date, meals, onPhotoUpload }) {
   const [activeTab, setActiveTab] = useState(0);
+  const [blobUrl, setBlobUrl] = useState(null);
+  const blobUrlRef = useRef(null);
   const fileInputRef = useRef(null);
 
   const month = date.getMonth() + 1;
   const day = date.getDate();
   const meal = meals[activeTab] ?? null;
 
+  useEffect(() => {
+    if (!meal?.photoUrl) return;
+    const controller = new AbortController();
+    getCalendarPhotoBlob(meal.photoUrl, { signal: controller.signal })
+      .then((blob) => {
+        if (!blob || controller.signal.aborted) return;
+        if (blobUrlRef.current) URL.revokeObjectURL(blobUrlRef.current);
+        const url = URL.createObjectURL(blob);
+        blobUrlRef.current = url;
+        setBlobUrl(url);
+      })
+      .catch(() => {});
+    return () => {
+      controller.abort();
+    };
+  }, [meal?.photoUrl]);
+
+  useEffect(() => {
+    return () => {
+      if (blobUrlRef.current) {
+        URL.revokeObjectURL(blobUrlRef.current);
+        blobUrlRef.current = null;
+      }
+    };
+  }, []);
+
   const handlePhotoChange = (e) => {
     const file = e.target.files?.[0];
     if (!file || !meal) return;
+    const localUrl = URL.createObjectURL(file);
+    if (blobUrlRef.current) URL.revokeObjectURL(blobUrlRef.current);
+    blobUrlRef.current = localUrl;
+    setBlobUrl(localUrl);
     onPhotoUpload(meal.mealId, file);
     e.target.value = '';
   };
@@ -205,29 +237,33 @@ function DateDetailCard({ date, meals, onPhotoUpload }) {
             </div>
           )}
 
-          <div className={styles.photoArea}>
-            <div className={styles.photoWrapper}>
-              <img
-                src={meal.photoUrl ?? mealPlaceholder}
-                alt="식사 사진"
-                className={styles.foodPhoto}
-              />
-              <button
-                className={styles.editBtn}
-                aria-label="수정"
-                onClick={() => fileInputRef.current?.click()}
-              >
-                <MdEdit size={12} />
-              </button>
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept="image/*"
-                hidden
-                onChange={handlePhotoChange}
-              />
+          {meal.photoUrl && (
+            <div className={styles.photoArea}>
+              <div className={styles.photoWrapper}>
+                {blobUrl && (
+                  <img
+                    src={blobUrl}
+                    alt="식사 사진"
+                    className={styles.foodPhoto}
+                  />
+                )}
+                <button
+                  className={styles.editBtn}
+                  aria-label="수정"
+                  onClick={() => fileInputRef.current?.click()}
+                >
+                  <MdEdit size={12} />
+                </button>
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*"
+                  hidden
+                  onChange={handlePhotoChange}
+                />
+              </div>
             </div>
-          </div>
+          )}
         </>
       ) : (
         <p className={styles.noRecord}>기록이 없습니다</p>
@@ -357,13 +393,7 @@ export default function CalendarPage() {
 
   const handlePhotoUpload = async (mealId, file) => {
     try {
-      const data = await networkRequest(() => patchMealImage(mealId, file));
-      if (!data) return;
-      setDayMeals((prev) =>
-        prev.map((m) =>
-          m.mealId === mealId ? { ...m, photoUrl: data.photoUrl } : m,
-        ),
-      );
+      await networkRequest(() => patchMealImage(mealId, file));
     } catch {
       // 업로드 실패 시 무시
     }
@@ -377,9 +407,6 @@ export default function CalendarPage() {
       <div className={styles.header}>
         <button className={styles.iconBtn} onClick={() => navigate(-1)}>
           <BsChevronLeft size={19} />
-        </button>
-        <button className={styles.iconBtn} aria-label="알림">
-          <img src={iconBell} alt="알림" />
         </button>
       </div>
 
