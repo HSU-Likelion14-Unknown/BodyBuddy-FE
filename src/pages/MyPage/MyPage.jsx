@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getMe, deleteMe } from '@/api/user';
+import { useNetworkRequest } from '@/hooks/useNetworkRequest';
 import { MdEdit } from 'react-icons/md';
 import { VscChevronRight } from 'react-icons/vsc';
 import styles from './MyPage.module.scss';
@@ -50,6 +51,7 @@ export default function MyPage() {
   const [notifOn, setNotifOn] = useState(true);
   const [showDeleteSheet, setShowDeleteSheet] = useState(false);
   const fetched = useRef(false);
+  const networkRequest = useNetworkRequest();
 
   useEffect(() => {
     if (fetched.current) return;
@@ -61,7 +63,8 @@ export default function MyPage() {
       localStorage.getItem('onboarding_step3') || 'null',
     );
 
-    getMe().then((data) => {
+    networkRequest(() => getMe()).then((data) => {
+      if (!data) return;
       if (data.nickname) setNickname(data.nickname);
       if (data.birthYear) setBirthYear(data.birthYear);
       if (data.gender) setGender(data.gender);
@@ -82,7 +85,7 @@ export default function MyPage() {
         setDislikedFoods(step3?.noDisliked ? [] : step3?.dislikedFoods || []);
       }
     });
-  }, []);
+  }, [networkRequest]);
 
   return (
     <div className={styles.page}>

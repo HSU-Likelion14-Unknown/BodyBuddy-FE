@@ -1,6 +1,7 @@
 import { useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { putOnboarding } from '@/api/user';
+import { useNetworkRequest } from '@/hooks/useNetworkRequest';
 import { setOnboardingCompletedAt } from '@/api/userStorage';
 import styles from './OnboardingPage3.module.scss';
 import { onboardingCharacter3, iconSearch, iconCloseSmall } from '@/assets';
@@ -13,6 +14,7 @@ export default function OnboardingPage3() {
   const [inputValue, setInputValue] = useState('');
   const [customTags, setCustomTags] = useState(saved?.dislikedFoods || []);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const networkRequest = useNetworkRequest();
 
   const isNextEnabled = (isNone || customTags.length > 0) && !isSubmitting;
 
@@ -68,16 +70,16 @@ export default function OnboardingPage3() {
     const step2 = JSON.parse(localStorage.getItem('onboarding_step2') || '{}');
 
     try {
-      const result = await putOnboarding({
+      const result = await networkRequest(() => putOnboarding({
         nickname: step1.nickname,
         birthYear: step1.birthYear ?? null,
         gender: step1.gender ?? 'none',
         allergens: step2.allergens ?? [],
         customAllergens: step2.customAllergens ?? [],
         dislikedFoods: isNone ? [] : customTags,
-      });
+      }));
 
-      if (result.onboardingCompletedAt) {
+      if (result?.onboardingCompletedAt) {
         setOnboardingCompletedAt(result.onboardingCompletedAt);
       }
 

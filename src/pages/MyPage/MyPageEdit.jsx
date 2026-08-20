@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getMe, patchMe, patchProfileImage } from '@/api/user';
+import { useNetworkRequest } from '@/hooks/useNetworkRequest';
 import { MdBorderColor, MdEdit, MdCheck } from 'react-icons/md';
 import YearPicker from '../Onboarding/components/YearPicker';
 import styles from './MyPageEdit.module.scss';
@@ -81,9 +82,11 @@ export default function MyPageEdit() {
   const [profilePhoto, setProfilePhoto] = useState(null);
   const [serverProfileImageUrl, setServerProfileImageUrl] = useState(null);
   const [saveSuccess, setSaveSuccess] = useState(false);
+  const networkRequest = useNetworkRequest();
 
   useEffect(() => {
-    getMe().then((data) => {
+    networkRequest(() => getMe()).then((data) => {
+      if (!data) return;
       if (data.profileImageUrl) setServerProfileImageUrl(data.profileImageUrl);
       if (data.birthYear) {
         setBirthYear(data.birthYear);
@@ -99,7 +102,7 @@ export default function MyPageEdit() {
         setOrigShareRecords(data.shareToRoom);
       }
     });
-  }, []);
+  }, [networkRequest]);
 
   const nicknameChanged = nickname !== initialNickname;
   const nicknameValid =
@@ -155,15 +158,17 @@ export default function MyPageEdit() {
     if (!canSave) return;
 
     try {
-      await patchMe({
-        nickname: nickname.trim(),
-        birthYear,
-        gender,
-        allergens,
-        customAllergens,
-        dislikedFoods,
-        shareToRoom: shareRecords,
-      });
+      await networkRequest(() =>
+        patchMe({
+          nickname: nickname.trim(),
+          birthYear,
+          gender,
+          allergens,
+          customAllergens,
+          dislikedFoods,
+          shareToRoom: shareRecords,
+        }),
+      );
 
       setSaveSuccess(true);
       setTimeout(() => navigate('/mypage'), 3000);
@@ -181,7 +186,7 @@ export default function MyPageEdit() {
     e.target.value = '';
 
     try {
-      await patchProfileImage(file);
+      await networkRequest(() => patchProfileImage(file));
     } catch (err) {
       console.error('프로필 사진 업로드 실패:', err);
     }

@@ -2,6 +2,7 @@ import { useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styles from './SplashPage.module.scss';
 import { postAnonymous } from '@/api/auth';
+import { useNetworkRequest } from '@/hooks/useNetworkRequest';
 import { getAccessKey, setAccessKey } from '@/api/tokenStorage';
 import {
   getOnboardingCompletedAt,
@@ -19,6 +20,7 @@ import {
 export default function SplashPage() {
   const navigate = useNavigate();
   const initialized = useRef(false);
+  const networkRequest = useNetworkRequest();
 
   useEffect(() => {
     if (initialized.current) return;
@@ -30,17 +32,19 @@ export default function SplashPage() {
       let onboardingCompletedAt = null;
       try {
         if (!getAccessKey()) {
-          const data = await postAnonymous();
-          setAccessKey(data.accessKey);
-          if (data.onboardingCompletedAt) {
-            setOnboardingCompletedAt(data.onboardingCompletedAt);
+          const data = await networkRequest(() => postAnonymous());
+          if (data) {
+            setAccessKey(data.accessKey);
+            if (data.onboardingCompletedAt) {
+              setOnboardingCompletedAt(data.onboardingCompletedAt);
+            }
+            onboardingCompletedAt = data.onboardingCompletedAt;
           }
-          onboardingCompletedAt = data.onboardingCompletedAt;
         } else {
           onboardingCompletedAt = getOnboardingCompletedAt();
         }
       } catch {
-        // 실패 시 온보딩으로
+        // 네트워크 외 오류는 온보딩으로
       }
 
       await delay;
@@ -48,7 +52,7 @@ export default function SplashPage() {
     };
 
     init();
-  }, [navigate]);
+  }, [navigate, networkRequest]);
 
   return (
     <div className={styles.splash}>
