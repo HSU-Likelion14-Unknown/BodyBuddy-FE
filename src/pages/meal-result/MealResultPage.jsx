@@ -12,6 +12,7 @@ import {
 } from '@/utils/recentRecommendation';
 import { mealPlaceholder, resultMascot } from '@/assets';
 import MealAnalysisPage from '../meal-analysis/MealAnalysisPage';
+import { applyDemoRecommendationFallback } from '../meal-recommendation/demoRecommendation';
 import RecognizedFoodCard from './components/RecognizedFoodCard';
 import { useMealAnalysis } from './hooks/useMealAnalysis';
 import styles from './MealResultPage.module.scss';
@@ -107,7 +108,10 @@ export default function MealResultPage() {
       }
 
       if (action === 'recommendation') {
-        const recommendation = await createMealRecommendation(mealId);
+        const recommendationResponse = await createMealRecommendation(mealId);
+        const recommendation = applyDemoRecommendationFallback(
+          recommendationResponse,
+        );
         navigate('/meals/recommendation', {
           replace: true,
           state: {

@@ -38,7 +38,11 @@ export default function MealRecommendationPage() {
     state?.nutritionSummary,
   );
   const { submitDecision, completeRecord, isSubmitting, errorMessage } =
-    useRecommendationDecision(recommendationResult, state?.mealId);
+    useRecommendationDecision(
+      recommendationResult,
+      state?.mealId,
+      state?.eatenAt,
+    );
 
   const showPrevious = () => {
     setActiveIndex((index) =>
@@ -123,11 +127,7 @@ export default function MealRecommendationPage() {
       </section>
 
       {isNoCandidate && !isBalancedMeal && hasMealImage && (
-        <img
-          className={styles.mealImage}
-          src={state.image}
-          alt="기록한 식사"
-        />
+        <img className={styles.mealImage} src={state.image} alt="기록한 식사" />
       )}
 
       {(errorMessage || refreshError) && (

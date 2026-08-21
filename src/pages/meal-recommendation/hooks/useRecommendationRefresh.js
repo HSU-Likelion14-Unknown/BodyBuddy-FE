@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { getApiErrorMessage } from '@/api/error';
 import { refreshRecommendation } from '@/api/meals';
+import { getNextDemoRecommendation } from '../demoRecommendation';
 
 const MAX_REFRESH_COUNT = 3;
 
@@ -16,6 +17,12 @@ export function useRecommendationRefresh(initialRecommendation) {
   const refresh = async () => {
     if (isRefreshing || remainingCount <= 0) return false;
     if (!recommendation?.recommendationId) return false;
+
+    if (recommendation.isDemoRecommendation) {
+      setRecommendation(getNextDemoRecommendation(recommendation));
+      setUsedCount((count) => count + 1);
+      return true;
+    }
 
     setIsRefreshing(true);
     setErrorMessage('');

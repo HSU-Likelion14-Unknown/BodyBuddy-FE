@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import {
   getDayMeals,
   getMonthStats,
@@ -344,8 +344,15 @@ function MonthPickerModal({ viewDate, onSelect, onClose }) {
 
 export default function CalendarPage() {
   const navigate = useNavigate();
-  const [viewDate, setViewDate] = useState(new Date());
-  const [selectedDate, setSelectedDate] = useState(null);
+  const { state } = useLocation();
+  const demoCalendar = state?.demoCalendar;
+  const demoDate = demoCalendar?.eatenAt
+    ? new Date(demoCalendar.eatenAt)
+    : null;
+  const initialDemoDate =
+    demoDate && Number.isFinite(demoDate.getTime()) ? demoDate : null;
+  const [viewDate, setViewDate] = useState(initialDemoDate ?? new Date());
+  const [selectedDate, setSelectedDate] = useState(initialDemoDate);
   const [showPicker, setShowPicker] = useState(false);
   const [dayMeals, setDayMeals] = useState([]);
   const [monthStats, setMonthStats] = useState(null);
@@ -385,11 +392,23 @@ export default function CalendarPage() {
     if (!selectedDate) return;
     networkRequest(() => getDayMeals(formatDateKey(selectedDate))).then(
       (data) => {
-        if (data) setDayMeals(data.meals ?? []);
+        if (!data) return;
+
+        setDayMeals(
+          (data.meals ?? []).map((meal) =>
+            meal.mealId === demoCalendar?.mealId &&
+            demoCalendar.recommendedDishName
+              ? {
+                  ...meal,
+                  recommendedDishName: demoCalendar.recommendedDishName,
+                }
+              : meal,
+          ),
+        );
       },
     );
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedDate]);
+  }, [selectedDate, demoCalendar?.mealId, demoCalendar?.recommendedDishName]);
 
   const handlePhotoUpload = async (mealId, file) => {
     try {

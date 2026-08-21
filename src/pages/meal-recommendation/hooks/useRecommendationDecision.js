@@ -8,18 +8,22 @@ import {
 } from '@/utils/recentRecommendation';
 
 // 추천 선택, 건너뛰기, 기록 완료를 처리하고 캘린더로 이동
-export function useRecommendationDecision(recommendationResult, mealId) {
+export function useRecommendationDecision(
+  recommendationResult,
+  mealId,
+  eatenAt,
+) {
   const navigate = useNavigate();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
 
-  const run = async (task, fallbackMessage) => {
+  const run = async (task, fallbackMessage, calendarState) => {
     setIsSubmitting(true);
     setErrorMessage('');
 
     try {
       await task();
-      navigate('/calendar', { replace: true });
+      navigate('/calendar', { replace: true, state: calendarState });
     } catch (error) {
       // 이미 결정이 저장된 요청은 재시도로 보고 캘린더로 이동
       if (error.response?.data?.code === 'RECOMMENDATION_ALREADY_DECIDED') {
@@ -37,32 +41,54 @@ export function useRecommendationDecision(recommendationResult, mealId) {
     if (isSubmitting) return;
 
     const ingredientId = ingredient?.ingredientId ?? ingredient?.foodId;
+    const isDemoRecommendation = recommendationResult?.isDemoRecommendation;
 
     if (
       !recommendationResult?.recommendationId ||
+      (isDemoRecommendation && !mealId) ||
       (decision === 'SELECTED' && !ingredientId)
     ) {
       setErrorMessage('추천 정보를 확인할 수 없어요.');
       return;
     }
 
-    await run(async () => {
-      await decideRecommendation(recommendationResult.recommendationId, {
-        decision,
-        ingredientId: decision === 'SELECTED' ? ingredientId : null,
-      });
+    await run(
+      async () => {
+        if (isDemoRecommendation) {
+          await completeMeal(mealId);
+        } else {
+          await decideRecommendation(recommendationResult.recommendationId, {
+            decision,
+            ingredientId: decision === 'SELECTED' ? ingredientId : null,
+          });
+        }
 
-      // 다음 끼니 기록 화면에서 안내하려고 선택한 재료 보관
-      if (decision === 'SELECTED') {
-        saveRecentRecommendation({
-          ingredientName: ingredient.ingredientName,
-          reason: ingredient.reason,
-          dishNames: ingredient.dishes?.map((dish) => dish.dishName) ?? [],
-        });
-      } else {
-        clearRecentRecommendation();
-      }
-    }, '추천 선택을 저장하지 못했어요.');
+        // 다음 끼니 기록 화면에서 안내하려고 선택한 재료 보관
+        if (decision === 'SELECTED') {
+          saveRecentRecommendation({
+            ingredientName: ingredient.ingredientName,
+            reason: ingredient.reason,
+            dishNames: ingredient.dishes?.map((dish) => dish.dishName) ?? [],
+          });
+        } else {
+          clearRecentRecommendation();
+        }
+      },
+      '추천 선택을 저장하지 못했어요.',
+      isDemoRecommendation
+        ? {
+            demoCalendar: {
+              mealId,
+              eatenAt: eatenAt ?? new Date().toISOString(),
+              recommendedDishName:
+                decision === 'SELECTED'
+                  ? (ingredient.dishes?.[0]?.dishName ??
+                    ingredient.ingredientName)
+                  : null,
+            },
+          }
+        : undefined,
+    );
   };
 
   const completeRecord = async () => {
